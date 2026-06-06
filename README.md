@@ -13,4 +13,4 @@ Another way is by adding a *.txt file* and running the command *cerca.py --file 
 
 **Notes**
 1. PC-only version: if used, the .txt file should have one title for each row
-2. PWA version: Render goes into "sleep" mode when the PWA has not been used for more than 15 minutes, and it can take up to 30-40 seconds for the server to come back online. If you don't want that to happen, you can use uptimerobot.com free plan.
+2. PWA version: Render goes into "sleep" mode when the PWA has not been used for more than 15 minutes, and it can take up to 30-40 seconds for the server to come back online. If you don't want that to happen, you can use https://uptimerobot.com free plan.
