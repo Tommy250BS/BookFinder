@@ -6,7 +6,6 @@ Installabile come app sul telefono (PWA).
 ## Deploy su Render (gratuito)
 
 
-``
 
 ### 1. Crea il servizio su Render
 1. Vai su [render.com](https://render.com) e registrati (gratis)
