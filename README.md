@@ -1,6 +1,6 @@
-# RBBC Rezzato — PWA
+# RBBC — PWA
 
-Cerca libri nel catalogo RBBC e verifica la disponibilità alla Biblioteca di Rezzato.
+Cerca libri nel catalogo RBBC e verifica la disponibilità alla biblioteca scelta .
 Installabile come app sul telefono (PWA).
 
 ## Deploy su Render (gratuito)
