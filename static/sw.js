@@ -1,4 +1,4 @@
-const CACHE = "rbbc-v2";
+const CACHE = "rbbc-v3";
 const ASSETS = ["/", "/index.html"];
 
 // INSTALL: salva asset iniziali
