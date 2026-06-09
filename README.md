@@ -1,45 +1,39 @@
 # RBBC — PWA
 
-Cerca libri nel catalogo RBBC e verifica la disponibilità alla biblioteca scelta .
-Installabile come app sul telefono (PWA).
+Search for books within the RBBC environment and verify their availability at the chosen library.
+Can be used as a Progressive Web-App on smartphones.
 
-## Deploy su Render (gratuito)
+## Render Deploy (Free)
 
-
-
-### 1. Crea il servizio su Render
-1. Vai su [render.com](https://render.com) e registrati (gratis)
+1. Visit [render.com](https://render.com) and sign up (free version)
 2. **New → Web Service**
-3. Collega il tuo repo GitHub
-4. Render rileva automaticamente `render.yaml` e configura tutto
-5. Clicca **Deploy** — in 2-3 minuti il sito è online
+3. Connect it with the GitHub repo
+4. Click on **Deploy**
 
-### 2. Installa sul telefono (PWA)
+### 2. Mobile-only version: PWA
 **Android (Chrome):**
-- Apri l'URL del sito in Chrome
-- Tocca i 3 puntini → "Aggiungi a schermata Home"
+- Open the website on Chrome
+- Click on the three dots → "Add to Homepage"
 
 **iPhone (Safari):**
-- Apri l'URL in Safari
-- Tocca il pulsante Condividi (□↑)
-- "Aggiungi a schermata Home"
+- Open the website on Safari
+- Click on Share (□↑)
+- "Add to Homepage"
 
 ---
 
-## Struttura file
+## File structure
 ```
 rbbc-pwa/
 ├── app.py              # Backend Flask (curl + API)
-├── requirements.txt    # Dipendenze Python
-├── render.yaml         # Configurazione deploy Render
+├── requirements.txt    # Python requirements
+├── render.yaml         # Render deploy configurations
 └── static/
-    ├── index.html      # Frontend PWA
-    ├── manifest.json   # Manifest PWA (icona, colori, nome)
-    └── sw.js           # Service Worker (cache offline)
+    ├── index.html      # PWA frontend
+    ├── manifest.json   # PWA manifest (icon, colors, name)
+    └── sw.js           # Service Worker 
 ```
 
 ## Note
-- Il piano gratuito di Render mette il servizio in "sleep" dopo 15 min di inattività.
-  La prima ricerca dopo una pausa può richiedere 20-30 secondi per il risveglio.
-- Per tenerlo sempre sveglio (opzionale): usa [UptimeRobot](https://uptimerobot.com)
-  con un ping ogni 5 minuti sull'URL del tuo sito.
+- Render goes into "sleep mode" after 15 minutes of inactivity. It may then take up to 30-40 seconds for the server to wake up.
+  To avoid so, you can use a free [UptimeRobot](https://uptimerobot.com) which checks in every 5 minutes, not allowing the server to "fall asleep".
