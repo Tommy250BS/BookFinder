@@ -187,6 +187,52 @@
     .tq-rank{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--av3);width:20px;text-align:center;flex-shrink:0}
     .tq-q{font-size:.88rem;flex:1}
     .tq-n{font-size:.75rem;color:#bbb;white-space:nowrap}
+
+    /* ════════════════════════════════════
+       SCHERMATA ESPLORA (S-ESPLORA)
+    ════════════════════════════════════ */
+
+    /* Tab bar */
+    .e-tabs{display:flex;border-bottom:2px solid var(--av3);margin-bottom:20px}
+    .e-tab{flex:1;padding:11px 4px;text-align:center;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#bbb;background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;font-family:'Inter',sans-serif}
+    .e-tab.attivo{color:var(--bosco);border-bottom-color:var(--bosco)}
+    .e-panel{display:none}
+    .e-panel.attivo{display:block}
+
+    /* Card esplora */
+    .ec{background:#fff;border-radius:0 10px 10px 0;border-left:4px solid var(--oro);box-shadow:0 2px 10px var(--ombra2);overflow:hidden;margin-bottom:16px;animation:su .3s ease both}
+    .ec-head{padding:16px 16px 12px}
+    .ec-label{font-size:.63rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--oro);margin-bottom:8px}
+    .ec-titolo{font-family:'Cormorant Garamond',serif;font-size:1.22rem;font-weight:700;line-height:1.3;color:var(--inchio);margin-bottom:5px}
+    .ec-autore{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-style:italic;color:#777}
+    .ec-abstract{padding:12px 16px 14px;font-size:.82rem;line-height:1.7;color:#555;border-top:1px solid var(--av2)}
+    .ec-actions{display:flex;gap:8px;padding:0 16px 14px;flex-wrap:wrap;align-items:center}
+    .btn-opac{font-size:.76rem;font-weight:600;padding:7px 14px;border-radius:20px;background:var(--bosco);color:var(--oro);text-decoration:none;white-space:nowrap;transition:background .15s}
+    .btn-opac:active{background:var(--bosco-2)}
+    .btn-esalva{font-size:.76rem;font-weight:600;padding:6px 13px;border-radius:20px;background:transparent;color:var(--bosco);border:1.5px solid var(--bosco);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
+    .btn-esalva.salvato{background:var(--bosco);color:var(--oro);border-color:var(--bosco)}
+    .btn-esalva:active{transform:scale(.96)}
+
+    /* Pulsante ricarica */
+    .btn-ricarica{display:inline-flex;align-items:center;gap:6px;background:none;border:1.5px solid var(--av3);border-radius:20px;color:#aaa;font-size:.76rem;font-weight:600;padding:6px 13px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;margin-bottom:16px}
+    .btn-ricarica:hover{border-color:var(--bosco);color:var(--bosco)}
+    .btn-ricarica:disabled{opacity:.5;cursor:default}
+    .spin-i{display:inline-block;animation:spin .7s linear infinite}
+
+    /* Libro del giorno: data */
+    .ec-data{font-size:.68rem;color:#bbb;letter-spacing:.07em;text-transform:uppercase;margin-bottom:14px}
+
+    /* Autore */
+    .autore-nome{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;color:var(--bosco);line-height:1.2;margin-bottom:3px}
+    .autore-sub{font-size:.76rem;color:#aaa;margin-bottom:0}
+    .opere-list{padding:4px 16px 14px}
+    .opera-item{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px solid var(--av2)}
+    .opera-item:last-child{border-bottom:none}
+    .opera-n{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--av3);width:22px;flex-shrink:0;text-align:center}
+    .opera-body{flex:1;min-width:0}
+    .opera-titolo{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-weight:600;color:var(--inchio);line-height:1.3}
+    .opera-link{font-size:.7rem;color:var(--bosco-2);text-decoration:none;letter-spacing:.03em}
+    .opera-link:hover{text-decoration:underline}
   </style>
 </head>
 <body>
@@ -279,6 +325,7 @@
         <h1 id="hd-bib-nome">Biblioteca</h1>
         <p>RBBC · Catalogo</p>
       </div>
+      <button class="btn-icon" id="btn-esplora-ric" title="Esplora" style="font-size:.9rem">✦</button>
       <button class="btn-icon" id="btn-profilo-ric" title="Profilo" style="font-size:1rem">👤</button>
     </div>
     <div class="sb">
@@ -362,6 +409,47 @@
   </main>
 </div>
 
+<!-- ════ S-ESPLORA ════ -->
+<div id="s-esplora" class="schermata">
+  <header>
+    <div class="hd-top">
+      <button class="btn-icon" onclick="vai('s-ricerca')">←</button>
+      <div class="hd-testi">
+        <h1>Esplora</h1>
+        <p>Scopri qualcosa di nuovo</p>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="e-tabs">
+      <button class="e-tab attivo" data-tab="giorno" onclick="cambiaTabE('giorno')">📅 Del giorno</button>
+      <button class="e-tab"        data-tab="casuale" onclick="cambiaTabE('casuale')">🎲 A caso</button>
+      <button class="e-tab"        data-tab="autore"  onclick="cambiaTabE('autore')">✍️ Autore</button>
+    </div>
+
+    <!-- Tab: Libro del giorno -->
+    <div class="e-panel attivo" id="ep-giorno">
+      <div id="ec-giorno"><div class="loading"><div class="spinner"></div><p>Scelgo il libro del giorno…</p></div></div>
+    </div>
+
+    <!-- Tab: Libro a caso -->
+    <div class="e-panel" id="ep-casuale">
+      <button class="btn-ricarica" id="btn-nuovo-casuale" onclick="caricaCasuale()">
+        <span id="spin-casuale">↻</span> Altro libro
+      </button>
+      <div id="ec-casuale"><div class="loading"><div class="spinner"></div><p>Pesco dal catalogo…</p></div></div>
+    </div>
+
+    <!-- Tab: Autore a caso -->
+    <div class="e-panel" id="ep-autore">
+      <button class="btn-ricarica" id="btn-nuovo-autore" onclick="caricaAutore()">
+        <span id="spin-autore">↻</span> Altro autore
+      </button>
+      <div id="ec-autore"><div class="loading"><div class="spinner"></div><p>Cerco un autore…</p></div></div>
+    </div>
+  </main>
+</div>
+
 <script>
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
@@ -438,6 +526,7 @@ function vai(id, sub) {
   document.getElementById(id).classList.add('attiva');
   if (id === 's-auth') mostraFormAuth(sub || 'login');
   if (id === 's-profilo') caricaProfilo();
+  if (id === 's-esplora') iniziaEsplora();
 }
 
 /* ── Avvio: controlla sessione ── */
@@ -751,6 +840,9 @@ async function cerca() {
 }
 document.getElementById('btn-cerca').addEventListener('click',cerca);
 document.getElementById('it').addEventListener('keydown',e=>{if(e.key==='Enter')cerca();});
+document.getElementById('btn-profilo-ric').addEventListener('click',()=>vai('s-profilo'));
+document.getElementById('btn-esplora-ric').addEventListener('click',()=>vai('s-esplora'));
+document.getElementById('btn-back-ric').addEventListener('click',()=>vai('s-bib'));
 
 /* ── Profilo ── */
 async function caricaProfilo() {
@@ -842,6 +934,136 @@ async function salvaProfilo() {
     document.getElementById('prof-nome').textContent = d.nome;
     document.getElementById('hd-bib-nome').textContent = d.biblioteca;
     alert('Profilo aggiornato.');
+  }
+}
+
+/* ══════════════════════════════════════
+   ESPLORA
+══════════════════════════════════════ */
+let _esploraAvviato = false;
+
+function iniziaEsplora() {
+  if (_esploraAvviato) return;
+  _esploraAvviato = true;
+  caricaGiorno();
+  caricaCasuale();
+  caricaAutore();
+}
+
+function cambiaTabE(tab) {
+  document.querySelectorAll('.e-tab').forEach(el =>
+    el.classList.toggle('attivo', el.dataset.tab === tab));
+  document.querySelectorAll('.e-panel').forEach(el =>
+    el.classList.toggle('attivo', el.id === `ep-${tab}`));
+}
+
+function cardEC(libro, label) {
+  const salvato = stato.salvatiSet.has(libro.url);
+  const salvBtn = stato.utente
+    ? `<button class="btn-esalva${salvato?' salvato':''}"
+         data-url="${libro.url}"
+         data-titolo="${(libro.titolo||'').replace(/"/g,'&quot;')}"
+         data-autore="${(libro.autore||'').replace(/"/g,'&quot;')}"
+       >${salvato ? '♥ Salvato' : '♡ Salva'}</button>` : '';
+  const abstract = libro.abstract
+    ? `<div class="ec-abstract">${libro.abstract}</div>` : '';
+  return `
+    <div class="ec">
+      <div class="ec-head">
+        <div class="ec-label">${label}</div>
+        <div class="ec-titolo">${libro.titolo}</div>
+        ${libro.autore ? `<div class="ec-autore">${libro.autore}</div>` : ''}
+      </div>
+      ${abstract}
+      <div class="ec-actions">
+        <a class="btn-opac" href="${libro.url}" target="_blank" rel="noopener">Apri nel catalogo →</a>
+        ${salvBtn}
+      </div>
+    </div>`;
+}
+
+function attachSalvaEC(container) {
+  container.querySelectorAll('.btn-esalva').forEach(btn => {
+    if (stato.salvatiSet.has(btn.dataset.url)) {
+      btn.textContent = '♥ Salvato'; btn.classList.add('salvato');
+    }
+    btn.addEventListener('click', async () => {
+      await toggleSalva(btn, { url: btn.dataset.url, titolo: btn.dataset.titolo, autore: btn.dataset.autore });
+    });
+  });
+}
+
+async function caricaGiorno() {
+  const el = document.getElementById('ec-giorno');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div><p>Scelgo il libro del giorno…</p></div>';
+  try {
+    const r = await fetch('/api/esplora/giorno');
+    if (!r.ok) throw new Error();
+    const libro = await r.json();
+    if (libro.error) throw new Error();
+    const oggi = new Date().toLocaleDateString('it-IT', {day:'numeric',month:'long',year:'numeric'});
+    el.innerHTML = `<div class="ec-data">📅 ${oggi}</div>` + cardEC(libro, 'Libro del giorno');
+    attachSalvaEC(el);
+  } catch {
+    el.innerHTML = '<div class="errore">Non è stato possibile caricare il libro del giorno.</div>';
+  }
+}
+
+async function caricaCasuale() {
+  const el = document.getElementById('ec-casuale');
+  const btn = document.getElementById('btn-nuovo-casuale');
+  const sp  = document.getElementById('spin-casuale');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div><p>Pesco dal catalogo…</p></div>';
+  if (btn) { btn.disabled = true; sp.className = 'spin-i'; }
+  try {
+    const r = await fetch('/api/esplora/casuale');
+    if (!r.ok) throw new Error();
+    const libro = await r.json();
+    if (libro.error) throw new Error();
+    el.innerHTML = cardEC(libro, '🎲 Libro a caso');
+    attachSalvaEC(el);
+  } catch {
+    el.innerHTML = '<div class="errore">Non è stato possibile caricare un libro casuale.</div>';
+  } finally {
+    if (btn) { btn.disabled = false; sp.className = ''; }
+  }
+}
+
+async function caricaAutore() {
+  const el = document.getElementById('ec-autore');
+  const btn = document.getElementById('btn-nuovo-autore');
+  const sp  = document.getElementById('spin-autore');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cerco un autore…</p></div>';
+  if (btn) { btn.disabled = true; sp.className = 'spin-i'; }
+  try {
+    const r = await fetch('/api/esplora/autore');
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    if (d.error) throw new Error();
+    const nomeAutore = d.autore.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+    const opereHtml = d.opere?.length
+      ? d.opere.map((o,i) => `
+          <div class="opera-item">
+            <span class="opera-n">${i+1}</span>
+            <div class="opera-body">
+              <div class="opera-titolo">${o.titolo}</div>
+              <a class="opera-link" href="${o.url}" target="_blank" rel="noopener">Apri nel catalogo →</a>
+            </div>
+          </div>`).join('')
+      : '<div class="vuoto-piccolo">Nessuna opera trovata nel catalogo.</div>';
+    el.innerHTML = `
+      <div class="ec">
+        <div class="ec-head">
+          <div class="ec-label">✍️ Autore del momento</div>
+          <div class="autore-nome">${nomeAutore}</div>
+          <div class="autore-sub">${d.opere?.length || 0} opere nel catalogo RBBC</div>
+        </div>
+        <div class="opere-list">${opereHtml}</div>
+      </div>`;
+  } catch {
+    el.innerHTML = '<div class="errore">Non è stato possibile caricare un autore.</div>';
+  } finally {
+    if (btn) { btn.disabled = false; sp.className = ''; }
   }
 }
 </script>

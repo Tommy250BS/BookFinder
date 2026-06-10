@@ -396,6 +396,100 @@ def get_storico():
         "tot_libri":    totali["libri"] or 0,
     })
 
+# ── Esplorazione casuale ─────────────────────────────────────────────────────
+
+def _parse_esplora(html):
+    """
+    Estrae libri da una pagina risultati OPAC.
+    Usa il pattern href+title confermato funzionante.
+    Restituisce lista di {titolo, autore, abstract, url}.
+    """
+    pattern = r'href="opac/detail/view/test:catalog:(\d+)"[\s\S]{0,200}?title="([^"]{5,200})"'
+    visti = {}
+    for num, raw in re.findall(pattern, html):
+        if num not in visti:
+            t = strip_tags(raw)
+            if t and not t.lower().startswith("vai a"):
+                visti[num] = t
+
+    libri = []
+    for num, titolo_raw in list(visti.items())[:20]:
+        titolo, autore = titolo_raw, ""
+        if " - " in titolo_raw:
+            parti = titolo_raw.rsplit(" - ", 1)
+            titolo, autore = parti[0].strip(), strip_tags(parti[1]).strip()
+        # Rimuove anni tipo <1908-1950> dall'autore
+        autore = re.sub(r'\s*<[^>]+>\s*', '', autore).strip()
+        if not titolo or len(titolo) < 3:
+            continue
+        libri.append({
+            "titolo":   strip_tags(titolo),
+            "autore":   autore,
+            "abstract": "",
+            "url":      f"{BASE_URL}/opac/detail/view/test:catalog:{num}",
+        })
+    return libri
+
+
+def _libro_random(sort="newest", seed=None):
+    import random
+    rng = random.Random(seed) if seed is not None else random.Random()
+    max_start = 8000 if sort == "newest" else 4000
+    start = rng.randint(0, max_start // 20) * 20
+    html = curl_get(f"{BASE_URL}/opac/search?sort={sort}&rows=20&start={start}")
+    if not html:
+        return None
+    libri = [l for l in _parse_esplora(html) if l["autore"]]
+    if not libri:
+        return None
+    return rng.choice(libri)
+
+
+@app.route("/api/esplora/casuale")
+def esplora_casuale():
+    libro = _libro_random(sort="newest")
+    if not libro:
+        return jsonify({"error": "Nessun risultato"}), 503
+    return jsonify(libro)
+
+
+@app.route("/api/esplora/giorno")
+def esplora_giorno():
+    from datetime import date
+    seed = date.today().isoformat()
+    libro = _libro_random(sort="mostborrowed", seed=seed)
+    if not libro:
+        return jsonify({"error": "Nessun risultato"}), 503
+    return jsonify({**libro, "data": seed})
+
+
+@app.route("/api/esplora/autore")
+def esplora_autore():
+    import random
+    start = random.randint(0, 150) * 20
+    html = curl_get(f"{BASE_URL}/opac/search?sort=mostborrowed&rows=20&start={start}")
+    if not html:
+        return jsonify({"error": "Nessun risultato"}), 503
+
+    libri = [l for l in _parse_esplora(html) if l["autore"] and len(l["autore"]) > 3]
+    if not libri:
+        return jsonify({"error": "Nessun autore trovato"}), 503
+
+    autore = random.choice(libri)["autore"]
+    # Cerca opere di quell'autore
+    time.sleep(0.4)
+    html2 = curl_get(f"{BASE_URL}/opac/search?q={quote_plus(autore)}&sort=mostborrowed&rows=10")
+    opere = []
+    if html2:
+        tutti = _parse_esplora(html2)
+        # Tieni solo opere con lo stesso autore (confronto case-insensitive)
+        autore_norm = autore.lower().split("<")[0].strip()
+        opere = [o for o in tutti
+                 if autore_norm in o["autore"].lower()][:6]
+
+    return jsonify({"autore": autore, "opere": opere})
+
+
 @app.route("/")
 def index():
     return app.send_static_file("index.html")
