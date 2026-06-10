@@ -305,7 +305,7 @@ def rimuovi_salvato(sid):
     get_db().commit()
     return jsonify({"ok": True})
 
-# ── API Storico e statistiche personali ──────────────────────────────────────
+# ── API Storico e statistiche personali 
 
 @app.route("/api/storico")
 @login_richiesto
