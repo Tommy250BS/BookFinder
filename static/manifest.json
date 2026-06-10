@@ -1,6 +1,6 @@
 {
-  "name": "BookFinder RBBC",
-  "short_name": "BookFinder",
+  "name": "La biblioteca di Babele",
+  "short_name": "Babele",
   "description": "Cerca libri nelle biblioteche della Rete Bibliotecaria Bresciana e Cremonese",
   "start_url": "/",
   "display": "standalone",
