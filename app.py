@@ -1,16 +1,25 @@
 #!/usr/bin/env python3
-"""Backend Flask per RBBC PWA — ricerca per qualsiasi biblioteca della rete."""
+"""
+RBBC PWA — backend Flask con account utente, sessioni e storico ricerche.
+DB: SQLite (file rbbc.db nella stessa cartella)
+Auth: bcrypt + flask-login, cookie di sessione firmato
+"""
 
-import subprocess, re, time, os
+import subprocess, re, time, os, sqlite3, hashlib
+from datetime import datetime
 from urllib.parse import quote_plus
-from flask import Flask, request, jsonify
+from flask import (Flask, request, jsonify, g,
+                   session, redirect, url_for)
 from flask_cors import CORS
+import bcrypt
 
 app = Flask(__name__, static_folder="static", static_url_path="")
-CORS(app)
+app.secret_key = os.environ.get("SECRET_KEY", "cambia-questa-chiave-in-produzione")
+CORS(app, supports_credentials=True)
 
 BASE_URL    = "https://opac.provincia.brescia.it"
-COOKIE_FILE = "/tmp/rbbc_session.txt"
+CURL_COOKIE = "/tmp/rbbc_opac.txt"
+DB_PATH     = os.path.join(os.path.dirname(__file__), "rbbc.db")
 
 HEADERS = [
     "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -20,9 +29,81 @@ HEADERS = [
     "-H", "Accept-Encoding: gzip, deflate, br",
 ]
 
+# ── Database ──────────────────────────────────────────────────────────────────
+
+def get_db():
+    if "db" not in g:
+        g.db = sqlite3.connect(DB_PATH)
+        g.db.row_factory = sqlite3.Row
+    return g.db
+
+@app.teardown_appcontext
+def close_db(e=None):
+    db = g.pop("db", None)
+    if db:
+        db.close()
+
+def init_db():
+    db = sqlite3.connect(DB_PATH)
+    db.executescript("""
+        CREATE TABLE IF NOT EXISTS utenti (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            email       TEXT    UNIQUE NOT NULL,
+            nome        TEXT    NOT NULL,
+            password    TEXT    NOT NULL,
+            biblioteca  TEXT    NOT NULL DEFAULT '',
+            creato_il   TEXT    NOT NULL DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS ricerche (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            utente_id   INTEGER NOT NULL REFERENCES utenti(id),
+            query       TEXT    NOT NULL,
+            biblioteca  TEXT    NOT NULL,
+            trovati     INTEGER NOT NULL DEFAULT 0,
+            a_bib       INTEGER NOT NULL DEFAULT 0,
+            cercato_il  TEXT    NOT NULL DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS salvati (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            utente_id   INTEGER NOT NULL REFERENCES utenti(id),
+            titolo      TEXT    NOT NULL,
+            autore      TEXT    NOT NULL DEFAULT '',
+            url_opac    TEXT    NOT NULL,
+            biblioteca  TEXT    NOT NULL,
+            disponibile INTEGER NOT NULL DEFAULT 0,
+            salvato_il  TEXT    NOT NULL DEFAULT (datetime('now')),
+            UNIQUE(utente_id, url_opac)
+        );
+    """)
+    db.commit()
+    db.close()
+
+init_db()
+
+# ── Helpers auth ──────────────────────────────────────────────────────────────
+
+def utente_corrente():
+    uid = session.get("uid")
+    if not uid:
+        return None
+    return get_db().execute("SELECT * FROM utenti WHERE id=?", (uid,)).fetchone()
+
+def login_richiesto(fn):
+    from functools import wraps
+    @wraps(fn)
+    def wrapper(*a, **kw):
+        if not utente_corrente():
+            return jsonify({"error": "Non autenticato", "login_required": True}), 401
+        return fn(*a, **kw)
+    return wrapper
+
+# ── curl + OPAC ───────────────────────────────────────────────────────────────
+
 def curl_get(url):
     cmd = (["curl", "-s", "-L", "--compressed", "--max-time", "25",
-            "--cookie-jar", COOKIE_FILE, "--cookie", COOKIE_FILE]
+            "--cookie-jar", CURL_COOKIE, "--cookie", CURL_COOKIE]
            + HEADERS + [url])
     r = subprocess.run(cmd, capture_output=True, text=True,
                        encoding="utf-8", errors="replace")
@@ -42,15 +123,13 @@ def cerca_titolo(titolo):
         return []
     pattern = r'href="opac/detail/view/test:catalog:(\d+)"[\s\S]{0,200}?title="([^"]{5,200})"'
     visti = {}
-    for num, titolo_raw in re.findall(pattern, html):
+    for num, raw in re.findall(pattern, html):
         if num not in visti:
-            t = strip_tags(titolo_raw)
+            t = strip_tags(raw)
             if t and not t.lower().startswith("vai a"):
                 visti[num] = t
-    return [
-        {"titolo": tit, "url": f"{BASE_URL}/opac/detail/view/test:catalog:{num}"}
-        for num, tit in list(visti.items())[:10]
-    ]
+    return [{"titolo": tit, "url": f"{BASE_URL}/opac/detail/view/test:catalog:{num}"}
+            for num, tit in list(visti.items())[:10]]
 
 def verifica_disponibilita(url, biblioteca):
     html = curl_get(url)
@@ -64,9 +143,8 @@ def verifica_disponibilita(url, biblioteca):
     for riga in re.findall(r'<tr[\s\S]*?</tr>', html, re.IGNORECASE):
         if not re.search(re.escape(biblioteca), strip_tags(riga), re.IGNORECASE):
             continue
-        celle = [strip_tags(c)
-                 for c in re.findall(r'<td[\s\S]*?</td>', riga, re.IGNORECASE)
-                 if strip_tags(c)]
+        celle = [strip_tags(c) for c in
+                 re.findall(r'<td[\s\S]*?</td>', riga, re.IGNORECASE) if strip_tags(c)]
         copie.append({
             "collocazione": celle[1] if len(celle) > 1 else "—",
             "inventario":   celle[2] if len(celle) > 2 else "—",
@@ -75,19 +153,89 @@ def verifica_disponibilita(url, biblioteca):
         })
     return {"titolo": titolo, "autore": autore, "copie": copie}
 
+# ── API Auth ──────────────────────────────────────────────────────────────────
+
+@app.route("/api/auth/registra", methods=["POST"])
+def registra():
+    d = request.get_json() or {}
+    email      = (d.get("email") or "").strip().lower()
+    nome       = (d.get("nome") or "").strip()
+    password   = (d.get("password") or "")
+    biblioteca = (d.get("biblioteca") or "").strip()
+
+    if not email or not nome or not password or not biblioteca:
+        return jsonify({"error": "Tutti i campi sono obbligatori"}), 400
+    if len(password) < 6:
+        return jsonify({"error": "La password deve avere almeno 6 caratteri"}), 400
+
+    pw_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    try:
+        db = get_db()
+        cur = db.execute(
+            "INSERT INTO utenti (email, nome, password, biblioteca) VALUES (?,?,?,?)",
+            (email, nome, pw_hash, biblioteca))
+        db.commit()
+        uid = cur.lastrowid
+        session["uid"] = uid
+        session.permanent = True
+        return jsonify({"ok": True, "nome": nome, "biblioteca": biblioteca})
+    except sqlite3.IntegrityError:
+        return jsonify({"error": "Email già registrata"}), 409
+
+@app.route("/api/auth/login", methods=["POST"])
+def login():
+    d = request.get_json() or {}
+    email    = (d.get("email") or "").strip().lower()
+    password = (d.get("password") or "")
+    db = get_db()
+    u = db.execute("SELECT * FROM utenti WHERE email=?", (email,)).fetchone()
+    if not u or not bcrypt.checkpw(password.encode(), u["password"].encode()):
+        return jsonify({"error": "Email o password errati"}), 401
+    session["uid"] = u["id"]
+    session.permanent = True
+    return jsonify({"ok": True, "nome": u["nome"], "biblioteca": u["biblioteca"]})
+
+@app.route("/api/auth/logout", methods=["POST"])
+def logout():
+    session.clear()
+    return jsonify({"ok": True})
+
+@app.route("/api/auth/me")
+def me():
+    u = utente_corrente()
+    if not u:
+        return jsonify({"autenticato": False})
+    return jsonify({
+        "autenticato": True,
+        "nome":        u["nome"],
+        "email":       u["email"],
+        "biblioteca":  u["biblioteca"],
+    })
+
+@app.route("/api/auth/aggiorna", methods=["POST"])
+@login_richiesto
+def aggiorna_profilo():
+    u = utente_corrente()
+    d = request.get_json() or {}
+    biblioteca = (d.get("biblioteca") or "").strip()
+    nome       = (d.get("nome") or "").strip()
+    if not biblioteca or not nome:
+        return jsonify({"error": "Campi mancanti"}), 400
+    get_db().execute("UPDATE utenti SET nome=?, biblioteca=? WHERE id=?",
+                     (nome, biblioteca, u["id"]))
+    get_db().commit()
+    return jsonify({"ok": True, "nome": nome, "biblioteca": biblioteca})
+
+# ── API Ricerca ───────────────────────────────────────────────────────────────
+
 @app.route("/api/search")
 def api_search():
-    q         = request.args.get("q", "").strip()
-    biblioteca = request.args.get("biblioteca", "").strip().upper()
-    if not q:
-        return jsonify({"error": "Parametro q mancante"}), 400
-    if not biblioteca:
-        return jsonify({"error": "Parametro biblioteca mancante"}), 400
+    q          = request.args.get("q", "").strip()
+    biblioteca = request.args.get("biblioteca", "").strip()
+    if not q or not biblioteca:
+        return jsonify({"error": "Parametri mancanti"}), 400
 
     risultati_base = cerca_titolo(q)
-    if not risultati_base:
-        return jsonify({"query": q, "biblioteca": biblioteca, "risultati": []})
-
     output = []
     for libro in risultati_base:
         time.sleep(0.5)
@@ -97,17 +245,92 @@ def api_search():
         if autore_r in ("—","") and " - " in titolo_r:
             parti = titolo_r.rsplit(" - ", 1)
             titolo_r, autore_r = parti[0].strip(), parti[1].strip()
+        copie = det["copie"]
         output.append({
             "titolo":        titolo_r,
             "autore":        autore_r,
             "url":           libro["url"],
-            "copie_rezzato": det["copie"],
+            "copie_rezzato": copie,
             "disponibile":   any(
                 "scaffale" in c["stato"].lower() or "disponib" in c["stato"].lower()
-                for c in det["copie"]
-            ),
+                for c in copie),
         })
+
+    # Salva ricerca se loggato
+    u = utente_corrente()
+    if u and output:
+        a_bib = sum(1 for r in output if r["copie_rezzato"])
+        get_db().execute(
+            "INSERT INTO ricerche (utente_id,query,biblioteca,trovati,a_bib) VALUES (?,?,?,?,?)",
+            (u["id"], q, biblioteca, len(output), a_bib))
+        get_db().commit()
+
     return jsonify({"query": q, "biblioteca": biblioteca, "risultati": output})
+
+# ── API Salvati ───────────────────────────────────────────────────────────────
+
+@app.route("/api/salvati", methods=["GET"])
+@login_richiesto
+def get_salvati():
+    u = utente_corrente()
+    rows = get_db().execute(
+        "SELECT * FROM salvati WHERE utente_id=? ORDER BY salvato_il DESC",
+        (u["id"],)).fetchall()
+    return jsonify([dict(r) for r in rows])
+
+@app.route("/api/salvati", methods=["POST"])
+@login_richiesto
+def aggiungi_salvato():
+    u = utente_corrente()
+    d = request.get_json() or {}
+    try:
+        get_db().execute(
+            """INSERT OR REPLACE INTO salvati
+               (utente_id,titolo,autore,url_opac,biblioteca,disponibile)
+               VALUES (?,?,?,?,?,?)""",
+            (u["id"], d.get("titolo",""), d.get("autore",""),
+             d.get("url_opac",""), d.get("biblioteca",""),
+             1 if d.get("disponibile") else 0))
+        get_db().commit()
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route("/api/salvati/<int:sid>", methods=["DELETE"])
+@login_richiesto
+def rimuovi_salvato(sid):
+    u = utente_corrente()
+    get_db().execute(
+        "DELETE FROM salvati WHERE id=? AND utente_id=?", (sid, u["id"]))
+    get_db().commit()
+    return jsonify({"ok": True})
+
+# ── API Storico e statistiche personali ──────────────────────────────────────
+
+@app.route("/api/storico")
+@login_richiesto
+def get_storico():
+    u   = utente_corrente()
+    db  = get_db()
+    # Ultime 30 ricerche
+    ricerche = db.execute(
+        "SELECT * FROM ricerche WHERE utente_id=? ORDER BY cercato_il DESC LIMIT 30",
+        (u["id"],)).fetchall()
+    # Query più frequenti (top 10)
+    top_query = db.execute(
+        """SELECT query, COUNT(*) as n FROM ricerche
+           WHERE utente_id=? GROUP BY lower(query) ORDER BY n DESC LIMIT 10""",
+        (u["id"],)).fetchall()
+    # Totali
+    totali = db.execute(
+        "SELECT COUNT(*) as tot, SUM(trovati) as libri FROM ricerche WHERE utente_id=?",
+        (u["id"],)).fetchone()
+    return jsonify({
+        "ricerche":   [dict(r) for r in ricerche],
+        "top_query":  [dict(r) for r in top_query],
+        "tot_ricerche": totali["tot"] or 0,
+        "tot_libri":    totali["libri"] or 0,
+    })
 
 @app.route("/")
 def index():

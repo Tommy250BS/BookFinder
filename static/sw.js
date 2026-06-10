@@ -1,53 +1,14 @@
-const CACHE_NAME = "rbbc-runtime-cache";
+const CACHE = "rbbc-v1";
+const ASSETS = ["/", "/index.html"];
 
-// INSTALL
-self.addEventListener("install", (event) => {
-  self.skipWaiting();
-});
+self.addEventListener("install", e =>
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)))
+);
 
-// ACTIVATE → pulisce TUTTE le cache vecchie
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys.map((key) => caches.delete(key))
-      )
-    )
-  );
-
-  self.clients.claim();
-});
-
-// FETCH
-self.addEventListener("fetch", (event) => {
-  const request = event.request;
-
-  // API sempre live
-  if (request.url.includes("/api/")) {
-    return;
-  }
-
-  // HTML → sempre dal network (mai cache bloccante)
-  if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request).catch(() => caches.match("/index.html"))
-    );
-    return;
-  }
-
-  // STATIC → stale-while-revalidate (strategia migliore)
-  event.respondWith(
-    caches.open(CACHE_NAME).then(async (cache) => {
-      const cached = await cache.match(request);
-
-      const fetchPromise = fetch(request)
-        .then((networkResponse) => {
-          cache.put(request, networkResponse.clone());
-          return networkResponse;
-        })
-        .catch(() => cached);
-
-      return cached || fetchPromise;
-    })
+self.addEventListener("fetch", e => {
+  // Per le API non usiamo cache
+  if (e.request.url.includes("/api/")) return;
+  e.respondWith(
+    caches.match(e.request).then(r => r || fetch(e.request))
   );
 });
