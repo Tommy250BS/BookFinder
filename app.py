@@ -213,8 +213,8 @@ def registra():
     except Exception as e:
         db.rollback()
 
-    if "duplicate key" in str(e).lower():
-        return jsonify({"error": "Email già registrata"}), 409
+        if "duplicate key" in str(e).lower():
+            return jsonify({"error": "Email già registrata"}), 409
         return jsonify({"error": str(e)}), 500
 
     except Exception as e:
