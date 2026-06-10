@@ -5,16 +5,13 @@ DB: SQLite (file rbbc.db nella stessa cartella)
 Auth: bcrypt + flask-login, cookie di sessione firmato
 """
 
-import subprocess, re, time, os, hashlib
+import subprocess, re, time, os, sqlite3, hashlib
 from datetime import datetime
 from urllib.parse import quote_plus
 from flask import (Flask, request, jsonify, g,
                    session, redirect, url_for)
 from flask_cors import CORS
-from psycopg.rows import dict_row
-from psycopg import errors
 import bcrypt
-import psycopg
 
 app = Flask(__name__, static_folder="static", static_url_path="")
 app.secret_key = os.environ.get("SECRET_KEY", "cambia-questa-chiave-in-produzione")
@@ -22,6 +19,7 @@ CORS(app, supports_credentials=True)
 
 BASE_URL    = "https://opac.provincia.brescia.it"
 CURL_COOKIE = "/tmp/rbbc_opac.txt"
+DB_PATH     = os.path.join(os.path.dirname(__file__), "rbbc.db")
 
 HEADERS = [
     "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -35,10 +33,8 @@ HEADERS = [
 
 def get_db():
     if "db" not in g:
-        g.db = psycopg.connect(
-            os.environ["DATABASE_URL"],
-            row_factory=dict_row
-        )
+        g.db = sqlite3.connect(DB_PATH)
+        g.db.row_factory = sqlite3.Row
     return g.db
 
 @app.teardown_appcontext
@@ -48,45 +44,41 @@ def close_db(e=None):
         db.close()
 
 def init_db():
-    with psycopg.connect(os.environ["DATABASE_URL"]) as db:
-        with db.cursor() as cur:
+    db = sqlite3.connect(DB_PATH)
+    db.executescript("""
+        CREATE TABLE IF NOT EXISTS utenti (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            email       TEXT    UNIQUE NOT NULL,
+            nome        TEXT    NOT NULL,
+            password    TEXT    NOT NULL,
+            biblioteca  TEXT    NOT NULL DEFAULT '',
+            creato_il   TEXT    NOT NULL DEFAULT (datetime('now'))
+        );
 
-            cur.execute("""
-                CREATE TABLE IF NOT EXISTS utenti (
-                    id SERIAL PRIMARY KEY,
-                    email VARCHAR(255) UNIQUE NOT NULL,
-                    nome VARCHAR(255) NOT NULL,
-                    password VARCHAR(255) NOT NULL,
-                    biblioteca VARCHAR(255) NOT NULL DEFAULT '',
-                    creato_il TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-                );
-            """)
+        CREATE TABLE IF NOT EXISTS ricerche (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            utente_id   INTEGER NOT NULL REFERENCES utenti(id),
+            query       TEXT    NOT NULL,
+            biblioteca  TEXT    NOT NULL,
+            trovati     INTEGER NOT NULL DEFAULT 0,
+            a_bib       INTEGER NOT NULL DEFAULT 0,
+            cercato_il  TEXT    NOT NULL DEFAULT (datetime('now'))
+        );
 
-            cur.execute("""
-                CREATE TABLE IF NOT EXISTS ricerche (
-                    id SERIAL PRIMARY KEY,
-                    utente_id INTEGER NOT NULL REFERENCES utenti(id),
-                    query TEXT NOT NULL,
-                    biblioteca TEXT NOT NULL,
-                    trovati INTEGER NOT NULL DEFAULT 0,
-                    a_bib INTEGER NOT NULL DEFAULT 0,
-                    cercato_il TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-                );
-            """)
-
-            cur.execute("""
-                CREATE TABLE IF NOT EXISTS salvati (
-                    id SERIAL PRIMARY KEY,
-                    utente_id INTEGER NOT NULL REFERENCES utenti(id),
-                    titolo TEXT NOT NULL,
-                    autore TEXT NOT NULL DEFAULT '',
-                    url_opac TEXT NOT NULL,
-                    biblioteca TEXT NOT NULL,
-                    disponibile INTEGER NOT NULL DEFAULT 0,
-                    salvato_il TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    UNIQUE (utente_id, url_opac)
-                );
-            """)
+        CREATE TABLE IF NOT EXISTS salvati (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            utente_id   INTEGER NOT NULL REFERENCES utenti(id),
+            titolo      TEXT    NOT NULL,
+            autore      TEXT    NOT NULL DEFAULT '',
+            url_opac    TEXT    NOT NULL,
+            biblioteca  TEXT    NOT NULL,
+            disponibile INTEGER NOT NULL DEFAULT 0,
+            salvato_il  TEXT    NOT NULL DEFAULT (datetime('now')),
+            UNIQUE(utente_id, url_opac)
+        );
+    """)
+    db.commit()
+    db.close()
 
 init_db()
 
@@ -96,7 +88,7 @@ def utente_corrente():
     uid = session.get("uid")
     if not uid:
         return None
-    return get_db().execute("SELECT * FROM utenti WHERE id=%s", (uid,)).fetchone()
+    return get_db().execute("SELECT * FROM utenti WHERE id=?", (uid,)).fetchone()
 
 def login_richiesto(fn):
     from functools import wraps
@@ -180,14 +172,14 @@ def registra():
     try:
         db = get_db()
         cur = db.execute(
-            "INSERT INTO utenti (email, nome, password, biblioteca) VALUES (%s, %s, %s, %s)",
+            "INSERT INTO utenti (email, nome, password, biblioteca) VALUES (?,?,?,?)",
             (email, nome, pw_hash, biblioteca))
         db.commit()
-        uid = cur.fetchone()["id"]
+        uid = cur.lastrowid
         session["uid"] = uid
         session.permanent = True
         return jsonify({"ok": True, "nome": nome, "biblioteca": biblioteca})
-    except errors.UniqueViolation:
+    except sqlite3.IntegrityError:
         return jsonify({"error": "Email già registrata"}), 409
 
 @app.route("/api/auth/login", methods=["POST"])
@@ -196,7 +188,7 @@ def login():
     email    = (d.get("email") or "").strip().lower()
     password = (d.get("password") or "")
     db = get_db()
-    u = db.execute("SELECT * FROM utenti WHERE email=%s", (email,)).fetchone()
+    u = db.execute("SELECT * FROM utenti WHERE email=?", (email,)).fetchone()
     if not u or not bcrypt.checkpw(password.encode(), u["password"].encode()):
         return jsonify({"error": "Email o password errati"}), 401
     session["uid"] = u["id"]
@@ -229,7 +221,7 @@ def aggiorna_profilo():
     nome       = (d.get("nome") or "").strip()
     if not biblioteca or not nome:
         return jsonify({"error": "Campi mancanti"}), 400
-    get_db().execute("UPDATE utenti SET nome=%s, biblioteca=%s WHERE id=%s",
+    get_db().execute("UPDATE utenti SET nome=?, biblioteca=? WHERE id=?",
                      (nome, biblioteca, u["id"]))
     get_db().commit()
     return jsonify({"ok": True, "nome": nome, "biblioteca": biblioteca})
@@ -269,7 +261,7 @@ def api_search():
     if u and output:
         a_bib = sum(1 for r in output if r["copie_rezzato"])
         get_db().execute(
-            "INSERT INTO ricerche (utente_id,query,biblioteca,trovati,a_bib) VALUES (%s,%s,%s,%s,%s)",
+            "INSERT INTO ricerche (utente_id,query,biblioteca,trovati,a_bib) VALUES (?,?,?,?,?)",
             (u["id"], q, biblioteca, len(output), a_bib))
         get_db().commit()
 
@@ -282,7 +274,7 @@ def api_search():
 def get_salvati():
     u = utente_corrente()
     rows = get_db().execute(
-        "SELECT * FROM salvati WHERE utente_id=%s ORDER BY salvato_il DESC",
+        "SELECT * FROM salvati WHERE utente_id=? ORDER BY salvato_il DESC",
         (u["id"],)).fetchall()
     return jsonify([dict(r) for r in rows])
 
@@ -293,9 +285,9 @@ def aggiungi_salvato():
     d = request.get_json() or {}
     try:
         get_db().execute(
-            """INSERT INTO salvati
+            """INSERT OR REPLACE INTO salvati
                (utente_id,titolo,autore,url_opac,biblioteca,disponibile)
-               VALUES (%s,%s,%s,%s,%s,%s)""",
+               VALUES (?,?,?,?,?,?)""",
             (u["id"], d.get("titolo",""), d.get("autore",""),
              d.get("url_opac",""), d.get("biblioteca",""),
              1 if d.get("disponibile") else 0))
@@ -309,7 +301,7 @@ def aggiungi_salvato():
 def rimuovi_salvato(sid):
     u = utente_corrente()
     get_db().execute(
-        "DELETE FROM salvati WHERE id=%s AND utente_id=%s", (sid, u["id"]))
+        "DELETE FROM salvati WHERE id=? AND utente_id=?", (sid, u["id"]))
     get_db().commit()
     return jsonify({"ok": True})
 
@@ -322,16 +314,16 @@ def get_storico():
     db  = get_db()
     # Ultime 30 ricerche
     ricerche = db.execute(
-        "SELECT * FROM ricerche WHERE utente_id=%s ORDER BY cercato_il DESC LIMIT 30",
+        "SELECT * FROM ricerche WHERE utente_id=? ORDER BY cercato_il DESC LIMIT 30",
         (u["id"],)).fetchall()
     # Query più frequenti (top 10)
     top_query = db.execute(
         """SELECT query, COUNT(*) as n FROM ricerche
-           WHERE utente_id=%s GROUP BY lower(query) ORDER BY n DESC LIMIT 10""",
+           WHERE utente_id=? GROUP BY lower(query) ORDER BY n DESC LIMIT 10""",
         (u["id"],)).fetchall()
     # Totali
     totali = db.execute(
-        "SELECT COUNT(*) as tot, SUM(trovati) as libri FROM ricerche WHERE utente_id=%s",
+        "SELECT COUNT(*) as tot, SUM(trovati) as libri FROM ricerche WHERE utente_id=?",
         (u["id"],)).fetchone()
     return jsonify({
         "ricerche":   [dict(r) for r in ricerche],
