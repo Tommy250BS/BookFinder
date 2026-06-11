@@ -113,6 +113,9 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
 .wbtns .bp{background:var(--oro);color:var(--bosco-3)}
 .wbtns .bs{border-color:rgba(255,255,255,.22);color:rgba(255,255,255,.75)}
 .wbtns .bg{color:rgba(255,255,255,.32);text-align:center}
+.wret{display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 0 4px;animation:up .4s ease both}
+.wretsp{width:30px;height:30px;border:2px solid rgba(201,168,76,.2);border-top-color:var(--oro);border-radius:50%;animation:gira .8s linear infinite}
+.wret p{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-style:italic;color:rgba(255,255,255,.65)}
 
 /* AUTH */
 #sa{background:var(--bosco-3);align-items:stretch}
@@ -212,10 +215,12 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
 .cth{padding:13px 14px 10px}
 .ctt{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;line-height:1.3;color:var(--ink);margin-bottom:3px}
 .cta{font-family:'Cormorant Garamond',serif;font-size:.88rem;color:#888;font-style:italic}
-.ctact{display:flex;gap:6px;padding:0 14px 10px}
+.ctact{display:flex;gap:6px;padding:0 14px 10px;flex-wrap:wrap}
 .bsalv{font-size:.7rem;font-weight:600;letter-spacing:.04em;padding:4px 10px;border-radius:20px;border:1.5px solid var(--av3);background:transparent;color:#999;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
 .bsalv:hover{border-color:var(--bosco);color:var(--bosco)}
 .bsalv.on{border-color:var(--bosco);background:var(--bosco);color:var(--oro)}
+.bletto{border-color:var(--av3)}
+.bletto.on{border-color:var(--oro);background:var(--oro-s);color:var(--bosco)}
 .ctcop{background:var(--av);border-top:1px solid var(--av2);padding:8px 14px}
 .assl{font-size:.73rem;color:#ccc;font-style:italic}
 .copr{display:flex;align-items:flex-start;gap:9px;padding:5px 0;border-bottom:1px solid var(--av2)}
@@ -324,6 +329,8 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
 .bopac{font-size:.73rem;font-weight:600;padding:7px 14px;border-radius:20px;background:var(--bosco);color:var(--oro);text-decoration:none;white-space:nowrap}
 .besalv{font-size:.73rem;font-weight:600;padding:6px 13px;border-radius:20px;background:transparent;color:var(--bosco);border:1.5px solid var(--bosco);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
 .besalv.on{background:var(--bosco);color:var(--oro);border-color:var(--bosco)}
+.besalv.bletto{border-color:var(--av3);color:#aaa}
+.besalv.bletto.on{border-color:var(--oro);background:var(--oro-s);color:var(--bosco)}
 .bric{display:inline-flex;align-items:center;gap:6px;background:none;border:1.5px solid var(--av3);border-radius:20px;color:#aaa;font-size:.73rem;font-weight:600;padding:6px 14px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;margin-bottom:16px}
 .bric:hover{border-color:var(--bosco);color:var(--bosco)}
 .bric:disabled{opacity:.5;cursor:default}
@@ -362,10 +369,14 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
     <h1 class="wt">La biblioteca<strong>di Babele</strong></h1>
     <p class="wsub">Rete Bibliotecaria Bresciana e Cremonese</p>
     <div class="wsep"><div class="wsl"></div><div class="wss">✦</div><div class="wsl"></div></div>
-    <div class="wbtns">
+    <div class="wbtns" id="wbtns">
       <button class="bp" onclick="vai('sa','login')">Accedi</button>
       <button class="bs" onclick="vai('sa','registra')">Crea account</button>
       <button class="bg" onclick="usaSenza()">Continua senza account</button>
+    </div>
+    <div class="wret" id="wret" style="display:none">
+      <div class="wretsp"></div>
+      <p id="wrett">Bentornato</p>
     </div>
   </div>
 </div>
@@ -616,16 +627,13 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
   <div class="pbody">
     <div class="psez">
       <div class="sh3">La mia biblioteca</div>
-      <div id="p-mialib"><div class="vp">Nessun libro salvato ancora.</div></div>
-    </div>
-    <div class="psez">
-      <div class="sh3">Lista dei desideri</div>
-      <div id="p-desid"><div class="vp">Nessun libro nella lista dei desideri.</div></div>
+      <p style="font-size:.74rem;color:#aaa;margin-bottom:10px;font-style:italic">I libri che hai letto</p>
+      <div id="p-mialib"><div class="vp">Nessun libro segnato come letto.</div></div>
     </div>
     <div class="psez">
       <div class="sh3">Ad imperitura memoria</div>
-      <p style="font-size:.74rem;color:#aaa;margin-bottom:10px;font-style:italic">I tuoi preferiti intramontabili</p>
-      <div id="p-imper"><div class="vp">Nessun preferito ancora.</div></div>
+      <p style="font-size:.74rem;color:#aaa;margin-bottom:10px;font-style:italic">I tuoi salvati intramontabili</p>
+      <div id="p-imper"><div class="vp">Nessun libro salvato ancora.</div></div>
     </div>
     <div class="psez">
       <div class="sh3">Pantheon</div>
@@ -685,7 +693,7 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
 <script>
 if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
-let G={u:null,bib:'',salv:new Set()};
+let G={u:null,bib:'',salv:new Set(),letti:new Set()};
 
 const BIBS=["Acquafredda","Adro","Agnadello","Agnosine","Anfo","Angolo Terme","Annicco","Artogne","Azzano Mella","Bagnolo Cremasco","Bagnolo Mella","Bagolino","Barbariga","Barghe","Bassano Bresciano","Bedizzole","Berlingo","Berzo Demo","Berzo Inferiore","Bienno","Bione","Bonemerse","Borgo San Giacomo","Borgosatollo","Borno","Botticino","Bovegno","Bovezzo","Brandico","Braone","Breno","Brescia - Abba-Ballini","Brescia - Archivio Storico","Brescia - Arnaldo","Brescia - Bibliobus","Brescia - Buffalora","Brescia - Canton Mombello","Brescia - Casazza","Brescia - Centro Casa Severino","Brescia - Emeroteca Queriniana","Brescia - Fondazione Trebeschi","Brescia - Gambara","Brescia - Ghetti","Brescia - Golgi","Brescia - La Vetrina","Brescia - Largo Torrelunga","Brescia - Mediateca Queriniana","Brescia - Museo Scienze Naturali","Brescia - Parco Gallo","Brescia - Prealpino","Brescia - Queriniana","Brescia - San Polo","Brescia - SBU","Brescia - Sereno","Brescia - UAU","Brione","Caino","Calcinato","Calvagese D-R","Calvatone","Calvisano","Camisano","Capergnanica","Capo Di Ponte","Capovalle","Capralba","Capriano Del Colle","Capriolo","Carpenedolo","Casalbuttano","Casale Cremasco Vidolasco","Casaletto Ceredano","Casaletto Vaprio","Casalmaggiore","Casalpusterlengo","Castegnato","Castel Mella","Castelcovati","Castelleone","Castello Di Padernello","Castelverde","Castenedolo","Casto","Castrezzato","Cazzago SM","Cedegolo","Cellatica","Centro Fumetto A. Pazienza","Centro Studi RSI Salò","Cerveno","Ceto","Cevo","Chiari","Chieve","Cigole","Cimbergo","Cingia De' Botti","Cividate Camuno","Clusane","Coccaglio","Collebeato","Collio","Cologne","Comezzano - Cizzago","Concesio","Corte De' Frati","Corte Franca","Corteno Golgi","Corzano","Credera Rubbiano","Crema","Crema - Museo","Cremona - Anguissola","Cremona - CDA","Cremona - Manin","Darfo Boario Terme","Dello","Desenzano","Dovera","Edolo","Elnos","Erbusco","Esine","Fiesco","Fiesse","Flero","Gadesco Pieve Delmona","Gambara","Gardone Riviera","Gardone Val Trompia","Gargnano","Gavardo","Genivolta","Ghedi","Gianico","Gottolengo","Grontardo","Grumello Cremonese","Gussago","Gussola","Idro","Incudine","Irma","Iseo","Isola Dovarese","Isorella","Izano","Lavenone","Leno","Limone Sul Garda","Lodrino","Lograto","Lonato Del Garda","Longhena","Losine","Lozio","Lumezzane","Maclodio","Madignano","Magasa","Mairano","Malegno","Malonno","Manerba Del Garda","Manerbio","Marcheno","Marmentino","Marone","Martignana Di Po","Mazzano","Milzano","Moniga Del Garda","Monno","Monte Cremasco","Monte Isola","Monticelli Brusati","Montichiari","Montirone","Montodine","Mura","Muscoline","Nave","Niardo","Nuvolento","Nuvolera","Odolo","Offanengo","Offlaga","Ome","Ono San Pietro","Orzinuovi","Orzivecchi","Ospitaletto","Ostiano","Padenghe Sul Garda","Paderno FC","Paderno Ponchielli","Paitone","Palazzo Pignano","Palazzolo Sull'Oglio","Pandino","Paratico","Passirano","Pavone Del Mella","Persico Dosimo","Pertica Alta","Pertica Bassa","Pescarolo Ed Uniti","Pezzaze","Piadena Drizzona","Pian Camuno","Piancogno","Pianengo","Pisogne","Pizzighettone","Polaveno","Polpenazze Del Garda","Pompiano","Poncarale","Ponte Di Legno","Pontevico","Pontoglio","Pozzolengo","Pralboino","Preseglie","Prestine","Prevalle","Provaglio D'Iseo","Provaglio VS","Puegnago Del Garda","Quinzano D'Oglio","Remedello","Rezzato","Ricengo","Ripalta Cremasca","Rivarolo Del Re","Rivolta D'Adda","Roccafranca","Rodengo Saiano","Roè Volciano","Romanengo","Roncadelle","Rovato","Rudiano","Sabbio Chiese","Sale Marasino","Salò","San Bassano","San Daniele Po","San Felice Del Benaco","San Gervasio Bresciano","San Giovanni In Croce","San Paolo","San Zeno Naviglio","Sarezzo","Saviore Dell'Adamello","Sellero","Seniga","Sergnano","Serle","Sesto Ed Uniti","Sirmione","Soiano Del Lago","Solarolo Rainerio","Soncino","Sonico","Soresina","Sospiro","Spino D'Adda","Sulzano","Tavernole Sul Mella","Temù","Tignale","Torbole Casaglia","Tornata","Torre De' Picenardi","Torricella Del Pizzo","Toscolano Maderno","Travagliato","Tremosine","Trenzano","Trescore Balneario","Trescore Cremasco","Treviso Bresciano","Urago D'Oglio","Vallio Terme","Valvestino","Verolanuova","Verolavecchia","Vestone","Vezza D'Oglio","Villa Carcina","Villanuova Sul Clisi","Visano","Vobarno","Zone"];
 
@@ -711,10 +719,16 @@ function switchTab(id){document.querySelectorAll('.ntab').forEach(t=>t.classList
 costruisciScaffale();
 
 async function avvia(){
+  vai('sw');
   try{const r=await fetch('/api/auth/me');const d=await r.json();
-    if(d.autenticato){G.u=d;G.bib=d.biblioteca;await caricaSalv();attivaApp(d.biblioteca);}
-    else vai('sw');
-  }catch{vai('sw');}
+    if(d.autenticato){
+      G.u=d;G.bib=d.biblioteca;await caricaSalv();
+      document.getElementById('wbtns').style.display='none';
+      document.getElementById('wret').style.display='flex';
+      document.getElementById('wrett').textContent=`Bentornato, ${d.nome.split(' ')[0]}`;
+      setTimeout(()=>attivaApp(d.biblioteca),900);
+    }
+  }catch{}
 }
 avvia();
 
@@ -820,11 +834,27 @@ function chiudiSh(id,e){if(!e||e.target===document.getElementById(id))document.g
 const main=document.getElementById('main');
 function stC(c){if(!c?.length)return'';const ss=c.map(x=>x.stato.toLowerCase());if(ss.some(s=>s.includes('scaffale')||s.includes('disponib')))return'disp';if(ss.some(s=>s.includes('prestito')))return'prest';return'';}
 function dC(s){s=s.toLowerCase();if(s.includes('scaffale')||s.includes('disponib'))return'dv';if(s.includes('prestito'))return'dr';return'do';}
-async function caricaSalv(){if(!G.u)return;try{const r=await fetch('/api/salvati');if(r.ok){const d=await r.json();G.salv=new Set(d.map(s=>s.url_opac));}}catch{}}
+async function caricaSalv(){if(!G.u)return;try{const r=await fetch('/api/salvati');if(r.ok){const d=await r.json();G.salv=new Set(d.map(s=>s.url_opac));G.letti=new Set(d.filter(s=>s.letto).map(s=>s.url_opac));}}catch{}}
 async function togSalv(btn,libro){
   if(!G.u)return;const url=libro.url;
-  if(G.salv.has(url)){try{const r=await fetch('/api/salvati');const d=await r.json();const it=d.find(s=>s.url_opac===url);if(it){await fetch(`/api/salvati/${it.id}`,{method:'DELETE'});G.salv.delete(url);btn.textContent='♡ Salva';btn.classList.remove('on');}}catch{}}
+  if(G.salv.has(url)){try{const r=await fetch('/api/salvati');const d=await r.json();const it=d.find(s=>s.url_opac===url);if(it){await fetch(`/api/salvati/${it.id}`,{method:'DELETE'});G.salv.delete(url);G.letti.delete(url);btn.textContent='♡ Salva';btn.classList.remove('on');const lb=btn.parentElement?.querySelector('.bletto');if(lb){lb.textContent='✓ Letto';lb.classList.remove('on');}}}catch{}}
   else{try{await fetch('/api/salvati',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({titolo:libro.titolo,autore:libro.autore||'',url_opac:url,biblioteca:G.bib,disponibile:libro.disponibile?1:0})});G.salv.add(url);btn.textContent='♥ Salvato';btn.classList.add('on');}catch{}}
+}
+async function togLetto(btn,libro){
+  if(!G.u)return;const url=libro.url;
+  const nuovo=!G.letti.has(url);
+  try{
+    if(!G.salv.has(url)){
+      await fetch('/api/salvati',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({titolo:libro.titolo,autore:libro.autore||'',url_opac:url,biblioteca:G.bib,disponibile:libro.disponibile?1:0,letto:nuovo})});
+      G.salv.add(url);
+      const sb=btn.parentElement?.querySelector('.bsalv,.besalv');if(sb){sb.textContent='♥ Salvato';sb.classList.add('on');}
+    }else{
+      const r=await fetch('/api/salvati');const d=await r.json();const it=d.find(s=>s.url_opac===url);
+      if(it)await fetch(`/api/salvati/${it.id}/letto`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({letto:nuovo})});
+    }
+    if(nuovo){G.letti.add(url);btn.textContent='✓ Letto';btn.classList.add('on');}
+    else{G.letti.delete(url);btn.textContent='○ Segna come letto';btn.classList.remove('on');}
+  }catch{}
 }
 function renderRis(data){
   const{query,biblioteca,risultati}=data;
@@ -834,13 +864,17 @@ function renderRis(data){
   risultati.forEach((lib,i)=>{
     const cl=stC(lib.copie_rezzato),au=lib.autore&&lib.autore!=='—'?lib.autore:'';
     const sb=G.u?`<button class="bsalv${G.salv.has(lib.url)?' on':''}" data-i="${i}">${G.salv.has(lib.url)?'♥ Salvato':'♡ Salva'}</button>`:'';
+    const lt=G.u?`<button class="bsalv bletto${G.letti.has(lib.url)?' on':''}" data-i="${i}">${G.letti.has(lib.url)?'✓ Letto':'○ Segna come letto'}</button>`:'';
     let ch='';
     if(!lib.copie_rezzato?.length)ch=`<div class="ctcop"><span class="assl">Non presente a ${biblioteca}</span></div>`;
     else{const rr=lib.copie_rezzato.map(c=>`<div class="copr"><div class="cdot ${dC(c.stato)}"></div><div class="cb"><div><span class="cc">${c.collocazione}</span><span class="ci">${c.inventario}</span></div><div class="cs">${c.stato}</div>${c.rientra?`<div class="cri">Rientra: ${c.rientra}</div>`:''}</div></div>`).join('');ch=`<div class="ctcop">${rr}</div>`;}
-    h+=`<div class="card ${cl}" style="animation-delay:${i*.04}s" data-i="${i}"><div class="cth"><div class="ctt">${lib.titolo}</div>${au?`<div class="cta">${au}</div>`:''}</div>${sb?`<div class="ctact">${sb}</div>`:''}${ch}<a class="cln" href="${lib.url}" target="_blank" rel="noopener">Apri nel catalogo →</a></div>`;
+    h+=`<div class="card ${cl}" style="animation-delay:${i*.04}s" data-i="${i}"><div class="cth"><div class="ctt">${lib.titolo}</div>${au?`<div class="cta">${au}</div>`:''}</div>${sb||lt?`<div class="ctact">${sb}${lt}</div>`:''}${ch}<a class="cln" href="${lib.url}" target="_blank" rel="noopener">Apri nel catalogo →</a></div>`;
   });
   main.innerHTML=h;
-  if(G.u)main.querySelectorAll('.bsalv').forEach(btn=>{const i=parseInt(btn.dataset.i);btn.addEventListener('click',()=>togSalv(btn,risultati[i]));});
+  if(G.u){
+    main.querySelectorAll('.bsalv:not(.bletto)').forEach(btn=>{const i=parseInt(btn.dataset.i);btn.addEventListener('click',()=>togSalv(btn,risultati[i]));});
+    main.querySelectorAll('.bletto').forEach(btn=>{const i=parseInt(btn.dataset.i);btn.addEventListener('click',()=>togLetto(btn,risultati[i]));});
+  }
 }
 async function cerca(){
   const q=document.getElementById('it').value.trim();if(!q||!G.bib)return;
@@ -854,11 +888,15 @@ document.getElementById('it').addEventListener('keydown',e=>{if(e.key==='Enter')
 
 /* ATLANTE */
 function cardEC(libro,label){
-  const s=G.salv.has(libro.url);
+  const s=G.salv.has(libro.url),l=G.letti.has(libro.url);
   const sb=G.u?`<button class="besalv${s?' on':''}" data-url="${libro.url}" data-t="${(libro.titolo||'').replace(/"/g,'&quot;')}" data-a="${(libro.autore||'').replace(/"/g,'&quot;')}">${s?'♥ Salvato':'♡ Salva'}</button>`:'';
-  return`<div class="ec"><div class="ech"><div class="ecl">${label}</div><div class="ect">${libro.titolo}</div>${libro.autore?`<div class="eca">${libro.autore}</div>`:''}</div><div class="ecact"><a class="bopac" href="${libro.url}" target="_blank" rel="noopener">Apri nel catalogo →</a>${sb}</div></div>`;
+  const lt=G.u?`<button class="besalv bletto${l?' on':''}" data-url="${libro.url}" data-t="${(libro.titolo||'').replace(/"/g,'&quot;')}" data-a="${(libro.autore||'').replace(/"/g,'&quot;')}">${l?'✓ Letto':'○ Segna come letto'}</button>`:'';
+  return`<div class="ec"><div class="ech"><div class="ecl">${label}</div><div class="ect">${libro.titolo}</div>${libro.autore?`<div class="eca">${libro.autore}</div>`:''}</div><div class="ecact"><a class="bopac" href="${libro.url}" target="_blank" rel="noopener">Apri nel catalogo →</a>${sb}${lt}</div></div>`;
 }
-function attSalv(c){c.querySelectorAll('.besalv').forEach(b=>{if(G.salv.has(b.dataset.url)){b.textContent='♥ Salvato';b.classList.add('on');}b.addEventListener('click',async()=>togSalv(b,{url:b.dataset.url,titolo:b.dataset.t,autore:b.dataset.a}));});}
+function attSalv(c){
+  c.querySelectorAll('.besalv:not(.bletto)').forEach(b=>{if(G.salv.has(b.dataset.url)){b.textContent='♥ Salvato';b.classList.add('on');}b.addEventListener('click',async()=>togSalv(b,{url:b.dataset.url,titolo:b.dataset.t,autore:b.dataset.a}));});
+  c.querySelectorAll('.bletto').forEach(b=>{if(G.letti.has(b.dataset.url)){b.textContent='✓ Letto';b.classList.add('on');}b.addEventListener('click',async()=>togLetto(b,{url:b.dataset.url,titolo:b.dataset.t,autore:b.dataset.a}));});
+}
 async function caricaCas(){
   const el=document.getElementById('ecCas'),btn=document.getElementById('btnCas'),sp=document.getElementById('spCas');
   el.innerHTML='<div class="ld"><div class="sp"></div><p>Pesco dal catalogo…</p></div>';
@@ -915,11 +953,18 @@ async function caricaProf(){
   if(!G.u)return;aggiornaUIProf();
   try{
     const r=await fetch('/api/salvati');const sav=await r.json();
+    const letti=sav.filter(s=>s.letto),tutti=sav;
     const ml=document.getElementById('p-mialib');
-    ml.innerHTML=sav.length?sav.map(s=>`<div class="wi"><div class="wdot ${s.disponibile?'dv':'do'}"></div><div class="wbod"><div class="wtt">${s.titolo}</div>${s.autore?`<div class="wat">${s.autore}</div>`:''}<div class="wmt">${s.biblioteca}</div></div><button class="bdel" onclick="delSalv(${s.id},this)">✕</button></div>`).join(''):'<div class="vp">Nessun libro salvato ancora.</div>';
+    ml.innerHTML=letti.length?letti.map(s=>`<div class="wi"><div class="wdot ${s.disponibile?'dv':'do'}"></div><div class="wbod"><div class="wtt">${s.titolo}</div>${s.autore?`<div class="wat">${s.autore}</div>`:''}<div class="wmt">${s.biblioteca}</div></div><button class="bdel" title="Segna come non letto" onclick="toglLettoProf(${s.id},this)">↺</button></div>`).join(''):'<div class="vp">Nessun libro segnato come letto.</div>';
+    const mi=document.getElementById('p-imper');
+    mi.innerHTML=tutti.length?tutti.map(s=>`<div class="wi"><div class="wdot ${s.letto?'dv':'do'}"></div><div class="wbod"><div class="wtt">${s.titolo}</div>${s.autore?`<div class="wat">${s.autore}</div>`:''}<div class="wmt">${s.biblioteca}${s.letto?' · letto':''}</div></div><button class="bdel" onclick="delSalv(${s.id},this)">✕</button></div>`).join(''):'<div class="vp">Nessun libro salvato ancora.</div>';
   }catch{}
 }
-async function delSalv(id,btn){await fetch(`/api/salvati/${id}`,{method:'DELETE'});btn.closest('.wi').remove();await caricaSalv();}
+async function toglLettoProf(id,btn){
+  await fetch(`/api/salvati/${id}/letto`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({letto:false})});
+  await caricaSalv();await caricaProf();
+}
+async function delSalv(id,btn){await fetch(`/api/salvati/${id}`,{method:'DELETE'});btn.closest('.wi').remove();await caricaSalv();await caricaProf();}
 async function salvaProfilo(){
   const nome=document.getElementById('pni').value.trim();if(!nome)return;
   const r=await fetch('/api/auth/aggiorna',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,biblioteca:G.bib})});
