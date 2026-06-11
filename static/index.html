@@ -482,8 +482,8 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
   <div class="hm">
     <div class="cit" id="citbox">
       <div class="citsym">"</div>
-      <div class="cittxt" style="color:#ccc;font-style:italic">La citazione del giorno apparirà qui.</div>
-      <div class="citaut">— </div>
+      <div class="cittxt"></div>
+      <div class="citaut"></div>
     </div>
     <div class="cosae">
       <div class="cosaorn">?</div>
@@ -817,6 +817,58 @@ function aggHome(){
   const sal=h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera';
   const el=document.getElementById('hsal');
   if(el)el.textContent=G.u?`${sal}, ${G.u.nome.split(' ')[0]}`:sal;
+  mostraCitazione();
+}
+
+const CITAZIONI=[
+  {t:'La biblioteca è uno spazio magico dove si entra profani e si esce iniziati.',a:'Umberto Eco'},
+  {t:'Un libro deve essere un\'ascia per il mare ghiacciato che è dentro di noi.',a:'Franz Kafka'},
+  {t:'I libri sono specchi: si vede solo ciò che si ha già dentro.',a:'Carlos Ruiz Zafón'},
+  {t:'Non c\'è amico più fedele di un libro.',a:'Ernest Hemingway'},
+  {t:'Il paradiso, per me, ha la forma di una biblioteca.',a:'Jorge Luis Borges'},
+  {t:'Una stanza senza libri è come un corpo senza anima.',a:'Marco Tullio Cicerone'},
+  {t:'I libri sono la prova visibile che gli esseri umani sono capaci di fare magie.',a:'Neil Gaiman'},
+  {t:'Leggere significa incontrare l\'altro e scoprirsi.',a:'Italo Calvino'},
+  {t:'Non si finisce mai di leggere i grandi libri; si finisce solo di rilegerli.',a:'Gustave Flaubert'},
+  {t:'I libri ci insegnano ad amare la vita anche quando è difficile amarla.',a:'Toni Morrison'},
+  {t:'Ogni libro è un\'altra vita che puoi vivere.',a:'Julio Cortázar'},
+  {t:'La lettura è un sogno che facciamo con gli occhi aperti.',a:'Anatole France'},
+  {t:'I libri sono i custodi del tempo passato e le guide del tempo futuro.',a:'Albert Einstein'},
+  {t:'Leggere è il solo modo di vivere più vite in una.',a:'Gore Vidal'},
+  {t:'Nelle biblioteche si conserva l\'intera storia del pensiero umano.',a:'Giovanni Papini'},
+  {t:'Un libro aperto è un cervello che parla; chiuso, un amico che aspetta.',a:'Carlos María Domínguez'},
+  {t:'La fantasia è necessaria per immaginare ciò che non c\'è ancora.',a:'Gianni Rodari'},
+  {t:'Ogni pagina che si volta è un piccolo coraggio.',a:'Marcel Proust'},
+  {t:'I libri sono il mezzo con cui civilizziamo il mondo.',a:'Carl Sagan'},
+  {t:'Non importa quanti libri hai, importa quanti ne hai letti.',a:'Seneca'},
+  {t:'Le biblioteche sono i templi della nostra civiltà.',a:'Vargas Llosa'},
+  {t:'I classici sono i libri che non si finisce mai di leggere per la prima volta.',a:'Italo Calvino'},
+  {t:'Chi legge vive mille vite. Chi non legge ne vive una sola.',a:'George R.R. Martin'},
+  {t:'Dare un libro a qualcuno è dargli un giardino intero.',a:'Antoine de Saint-Exupéry'},
+  {t:'La lettura è per la mente quello che l\'esercizio è per il corpo.',a:'Richard Steele'},
+  {t:'Un libro è un sogno che tieni in mano.',a:'Neil Gaiman'},
+  {t:'Leggere è respirare con l\'anima.',a:'Gustavo Adolfo Bécquer'},
+  {t:'Il tempo dato ai libri non è mai sprecato.',a:'Voltaire'},
+  {t:'Ogni lettore, leggendo, legge se stesso.',a:'Marcel Proust'},
+  {t:'I libri sono barche che solcano il mare del tempo.',a:'Francis Bacon'},
+  {t:'Una biblioteca è un ospedale per la mente.',a:'Norman Cousins'},
+];
+
+function mostraCitazione(){
+  const box=document.getElementById('citbox');if(!box)return;
+  const oggi=new Date();
+  const seed=oggi.getFullYear()*10000+(oggi.getMonth()+1)*100+oggi.getDate();
+  const c=CITAZIONI[seed%CITAZIONI.length];
+  const txt=box.querySelector('.cittxt'),aut=box.querySelector('.citaut');
+  if(!txt||!aut)return;
+  txt.style.color='';txt.style.fontStyle='';
+  txt.style.opacity='0';txt.style.transform='translateY(6px)';
+  txt.style.transition='opacity .5s ease, transform .5s ease';
+  txt.textContent=c.t;
+  aut.textContent='— '+c.a;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    txt.style.opacity='1';txt.style.transform='none';
+  }));
 }
 
 function costruisciScaffale(){
