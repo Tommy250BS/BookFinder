@@ -29,10 +29,10 @@ html{height:100%}
 body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden}
 .S{display:none;flex-direction:column;flex:1;min-height:100dvh}
 .S.on{display:flex}
-.S.entra{animation:scEnt .18s cubic-bezier(.22,.68,0,1) both}
-.S.esce{animation:scEsc .15s cubic-bezier(.4,0,1,1) both;pointer-events:none}
-@keyframes scEnt{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
-@keyframes scEsc{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-5px)}}
+.S.entra{animation:scEnt .32s cubic-bezier(.16,.84,.44,1) both}
+.S.esce{animation:scEsc .22s cubic-bezier(.4,0,.6,1) both;pointer-events:none}
+@keyframes scEnt{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes scEsc{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-8px) scale(.99)}}
 .cnav{padding-bottom:calc(var(--nh) + var(--sb))}
 
 /* NAV */
@@ -775,9 +775,9 @@ function vai(id,sub){
   if(!prossima)return;
   if(prev&&prev!==prossima){
     prev.classList.add('esce');
-    setTimeout(()=>{prev.classList.remove('on','esce');},150);
+    setTimeout(()=>{prev.classList.remove('on','esce');},220);
     prossima.classList.add('on','entra');
-    setTimeout(()=>prossima.classList.remove('entra'),200);
+    setTimeout(()=>prossima.classList.remove('entra'),340);
   } else {
     document.querySelectorAll('.S').forEach(s=>s.classList.remove('on','esce','entra'));
     prossima.classList.add('on');
