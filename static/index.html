@@ -3,338 +3,1364 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#1a3a1c">
+  <meta name="theme-color" content="#0f2210">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="RBBC">
+  <meta name="apple-mobile-web-app-title" content="Babele">
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/icon-192.png">
   <title>La Biblioteca di Babele</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
+    /* ══════════════════════════════════════
+       TOKEN SYSTEM
+    ══════════════════════════════════════ */
     :root {
-      --bosco:   #1a3a1c; --bosco-2: #254d28; --bosco-3: #0f2210;
-      --oro:     #c9a84c; --oro-2:   #e8c96a;
-      --avorio:  #f8f4ec; --av2:     #ede7d9; --av3: #e0d8c8;
-      --inchio:  #0f0d0a; --in2:     #2a2520;
-      --rosso:   #7a2020;
-      --ombra:   rgba(15,13,10,.14); --ombra2: rgba(15,13,10,.07);
+      /* Palette */
+      --bosco:    #1a3a1c;
+      --bosco-2:  #254d28;
+      --bosco-3:  #0f2210;
+      --bosco-4:  #132d15;
+      --oro:      #c9a84c;
+      --oro-2:    #e8c96a;
+      --oro-soft: rgba(201,168,76,.15);
+      --avorio:   #f7f3eb;
+      --av2:      #ece6d9;
+      --av3:      #ddd6c6;
+      --av4:      #cfc7b4;
+      --inchio:   #0f0d0a;
+      --in2:      #2a2520;
+      --in3:      #4a4540;
+      --rosso:    #7a2020;
+      --verde-ok: #1a5c1e;
+
+      /* Ombre */
+      --sh-s: 0 1px 4px rgba(15,13,10,.08);
+      --sh-m: 0 2px 12px rgba(15,13,10,.12);
+      --sh-l: 0 8px 32px rgba(15,13,10,.16);
+
+      /* Radius */
+      --r-s: 6px;
+      --r-m: 10px;
+      --r-l: 16px;
+
+      /* Spaziatura safe area */
+      --safe-top:    env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --nav-h:       60px;
     }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Inter',sans-serif;background:var(--avorio);color:var(--inchio);min-height:100dvh;display:flex;flex-direction:column}
 
-    /* ── Schermate ── */
-    .schermata{display:none;flex-direction:column;flex:1}
-    .schermata.attiva{display:flex}
+    /* ══════════════════════════════════════
+       RESET & BASE
+    ══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--avorio);
+      color: var(--inchio);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
 
-    /* ── Header generico ── */
-    header{background:var(--bosco-3);color:#fff;padding:14px 16px 12px;padding-top:calc(14px + env(safe-area-inset-top));position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.35)}
-    .hd-top{display:flex;align-items:center;gap:10px;margin-bottom:11px}
-    .btn-icon{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:rgba(255,255,255,.85);font-size:.85rem;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .15s;font-family:'Inter',sans-serif}
-    .btn-icon:active{background:rgba(255,255,255,.2)}
-    .hd-testi{flex:1;min-width:0}
-    .hd-testi h1{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff;letter-spacing:.01em}
-    .hd-testi p{font-size:.63rem;color:var(--oro);letter-spacing:.1em;text-transform:uppercase;margin-top:1px;font-weight:500}
+    /* ══════════════════════════════════════
+       SISTEMA SCHERMATE
+    ══════════════════════════════════════ */
+    .schermata {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      min-height: 100dvh;
+    }
+    .schermata.attiva { display: flex; }
 
-    /* ── Barra ricerca ── */
-    .sb{display:flex;gap:8px}
-    .sb input{flex:1;padding:10px 13px;border:none;border-radius:7px;font-family:'Inter',sans-serif;font-size:.9rem;background:rgba(255,255,255,.12);color:#fff;outline:none;transition:background .2s;border:1px solid rgba(255,255,255,.12)}
-    .sb input:focus{background:rgba(255,255,255,.18);border-color:var(--oro)}
-    .sb input::placeholder{color:rgba(255,255,255,.4)}
-    .btn-cerca{padding:10px 16px;background:var(--oro);color:var(--bosco-3);border:none;border-radius:7px;font-family:'Inter',sans-serif;font-weight:600;font-size:.85rem;letter-spacing:.03em;cursor:pointer;transition:background .2s,transform .1s;white-space:nowrap}
-    .btn-cerca:active{transform:scale(.96)}
-    .btn-cerca:disabled{opacity:.5;cursor:default}
+    /* Schermate con bottom nav: padding inferiore */
+    .con-nav {
+      padding-bottom: calc(var(--nav-h) + var(--safe-bottom));
+    }
 
-    /* ── Main ── */
-    main{flex:1;padding:20px 16px;max-width:600px;width:100%;margin:0 auto}
-    footer{text-align:center;padding:14px 16px;padding-bottom:calc(14px + env(safe-area-inset-bottom));font-size:.65rem;color:#ccc;letter-spacing:.04em;text-transform:uppercase}
+    /* ══════════════════════════════════════
+       BOTTOM NAVIGATION
+    ══════════════════════════════════════ */
+    #bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      background: var(--bosco-3);
+      border-top: 1px solid rgba(201,168,76,.2);
+      display: none; /* mostrato da JS */
+      height: calc(var(--nav-h) + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      box-shadow: 0 -4px 20px rgba(0,0,0,.3);
+    }
+    .nav-inner {
+      display: flex;
+      height: var(--nav-h);
+    }
+    .nav-tab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(255,255,255,.38);
+      font-family: 'Inter', sans-serif;
+      font-size: .6rem;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      transition: color .2s;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+    }
+    .nav-tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 2px;
+      background: var(--oro);
+      border-radius: 0 0 2px 2px;
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .nav-tab.attivo {
+      color: var(--oro);
+    }
+    .nav-tab.attivo::before { opacity: 1; }
+    .nav-icon {
+      font-size: 1.15rem;
+      line-height: 1;
+    }
 
-    /* ── Stato vuoto ── */
-    .vuoto{text-align:center;padding:56px 20px}
-    .vuoto svg{opacity:.2;margin-bottom:20px}
-    .vuoto h2{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-style:italic;color:var(--in2);margin-bottom:8px}
-    .vuoto p{font-size:.84rem;color:#aaa;line-height:1.6}
+    /* ══════════════════════════════════════
+       HEADER UNIFICATO
+    ══════════════════════════════════════ */
+    .app-header {
+      background: var(--bosco-3);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding-top: var(--safe-top);
+      box-shadow: 0 2px 20px rgba(0,0,0,.4);
+    }
+    .hd-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+    }
+    .hd-brand {
+      flex: 1;
+      min-width: 0;
+    }
+    .hd-brand h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: .01em;
+      line-height: 1.2;
+    }
+    .hd-brand p {
+      font-size: .6rem;
+      color: var(--oro);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-top: 1px;
+      font-weight: 500;
+    }
+    .hd-btn {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--r-s);
+      color: rgba(255,255,255,.8);
+      font-size: .85rem;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background .15s;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .hd-btn:active { background: rgba(255,255,255,.18); }
+    .hd-btn.accent {
+      background: var(--oro-soft);
+      border-color: rgba(201,168,76,.35);
+      color: var(--oro);
+    }
 
-    /* ── Loading ── */
-    .loading{text-align:center;padding:56px 20px}
-    .spinner{width:32px;height:32px;border:2.5px solid var(--av3);border-top-color:var(--bosco);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .loading p{font-size:.82rem;color:#aaa;font-style:italic}
+    /* Search bar nell'header */
+    .hd-search {
+      padding: 0 16px 12px;
+      display: flex;
+      gap: 8px;
+    }
+    .hd-search input {
+      flex: 1;
+      padding: 10px 14px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: var(--r-s);
+      font-family: 'Inter', sans-serif;
+      font-size: .9rem;
+      color: #fff;
+      outline: none;
+      transition: background .2s, border-color .2s;
+    }
+    .hd-search input:focus {
+      background: rgba(255,255,255,.16);
+      border-color: var(--oro);
+    }
+    .hd-search input::placeholder { color: rgba(255,255,255,.35); }
+    .btn-cerca {
+      padding: 10px 18px;
+      background: var(--oro);
+      color: var(--bosco-3);
+      border: none;
+      border-radius: var(--r-s);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: .82rem;
+      letter-spacing: .04em;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-cerca:active { transform: scale(.96); }
+    .btn-cerca:disabled { opacity: .5; cursor: default; }
 
-    /* ── Info query ── */
-    .info-q{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--av3);display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-    .info-q h2{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:var(--in2)}
-    .info-q h2 strong{font-style:normal;font-weight:600;color:var(--inchio)}
-    .badge{font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--bosco);color:var(--oro);padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+    /* ══════════════════════════════════════
+       MAIN SCROLL AREA
+    ══════════════════════════════════════ */
+    .page-main {
+      flex: 1;
+      padding: 20px 16px;
+      max-width: 600px;
+      width: 100%;
+      margin: 0 auto;
+    }
 
-    /* ── Card libro ── */
-    .card{background:#fff;border-radius:0 8px 8px 0;margin-bottom:10px;box-shadow:0 1px 6px var(--ombra2);overflow:hidden;animation:su .22s ease both;border-left:4px solid var(--av3)}
-    @keyframes su{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-    .card.disponibile{border-left-color:var(--bosco)}
-    .card.in-prestito{border-left-color:var(--oro)}
-    .card-head{padding:13px 15px 10px}
-    .card-titolo{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;line-height:1.3;color:var(--inchio);margin-bottom:3px}
-    .card-autore{font-family:'Cormorant Garamond',serif;font-size:.9rem;color:#888;font-style:italic}
-    .card-actions{display:flex;gap:6px;padding:0 15px 10px}
-    .btn-salva{font-size:.72rem;font-weight:600;letter-spacing:.04em;padding:4px 10px;border-radius:20px;border:1.5px solid var(--av3);background:transparent;color:#888;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
-    .btn-salva:hover{border-color:var(--bosco);color:var(--bosco)}
-    .btn-salva.salvato{border-color:var(--bosco);background:var(--bosco);color:var(--oro)}
-    .card-copie{background:var(--avorio);border-top:1px solid var(--av2);padding:8px 15px}
-    .assente-label{font-size:.76rem;color:#bbb;font-style:italic}
-    .copia-riga{display:flex;align-items:flex-start;gap:9px;padding:5px 0;border-bottom:1px solid var(--av2)}
-    .copia-riga:last-child{border-bottom:none}
-    .cdot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
-    .dv{background:var(--bosco)}.dr{background:var(--rosso)}.do{background:var(--oro)}
-    .cb{flex:1}
-    .cc{font-size:.78rem;font-weight:600;color:var(--in2);letter-spacing:.02em}
-    .ci{font-size:.7rem;color:#bbb;margin-left:5px;font-weight:400}
-    .cs{font-size:.78rem;color:#666}
-    .cr{font-size:.7rem;color:#bbb}
-    .card-link{display:block;text-align:right;padding:6px 15px 8px;font-size:.7rem;color:var(--bosco-2);text-decoration:none;background:var(--avorio);border-top:1px solid var(--av2);letter-spacing:.03em}
-    .card-link:hover{color:var(--bosco);text-decoration:underline}
+    /* ══════════════════════════════════════
+       BOTTONI GLOBALI
+    ══════════════════════════════════════ */
+    .btn-prim {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: var(--bosco);
+      color: var(--oro);
+      border: none;
+      border-radius: var(--r-m);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: .9rem;
+      letter-spacing: .04em;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-prim:active { transform: scale(.97); }
+    .btn-prim:disabled { opacity: .5; }
+    .btn-sec {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: transparent;
+      color: var(--bosco);
+      border: 1.5px solid var(--bosco);
+      border-radius: var(--r-m);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: .9rem;
+      letter-spacing: .04em;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-sec:active { transform: scale(.97); }
+    .btn-ghost {
+      background: none;
+      border: none;
+      color: var(--in3);
+      font-size: .82rem;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      padding: 8px 4px;
+    }
+    .btn-sm {
+      padding: 9px 16px;
+      font-size: .8rem;
+      font-weight: 600;
+      border-radius: var(--r-s);
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: .03em;
+      border: none;
+      transition: background .15s, transform .1s;
+    }
+    .btn-sm:active { transform: scale(.97); }
+    .btn-sm-prim  { background: var(--bosco); color: var(--oro); }
+    .btn-sm-ghost { background: transparent; border: 1.5px solid var(--av3); color: var(--in3); }
+    .btn-sm-ghost:hover { border-color: var(--rosso); color: var(--rosso); }
 
-    /* ── Errore ── */
-    .errore{background:#fff5f5;border-left:4px solid var(--rosso);border-radius:0 8px 8px 0;padding:14px 16px;font-size:.84rem;color:var(--rosso)}
+    /* ══════════════════════════════════════
+       FORM FIELDS
+    ══════════════════════════════════════ */
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: .68rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--in3);
+      margin-bottom: 5px;
+    }
+    .field input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--av3);
+      border-radius: var(--r-m);
+      font-family: 'Inter', sans-serif;
+      font-size: .9rem;
+      background: #fff;
+      color: var(--inchio);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .field input:focus {
+      border-color: var(--bosco);
+      box-shadow: 0 0 0 3px rgba(26,58,28,.1);
+    }
+    .field input::placeholder { color: #ccc; }
 
-    /* ════════════════════════════════════
-       SCHERMATA BENVENUTO (S-WELCOME)
-    ════════════════════════════════════ */
-    #s-welcome{align-items:center;justify-content:center;padding:40px 24px;padding-top:calc(40px + env(safe-area-inset-top))}
-    .brand{display:flex;flex-direction:column;align-items:center;margin-bottom:32px;gap:14px}
-    .brand h1{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:600;color:var(--bosco);letter-spacing:.01em;text-align:center;line-height:1.1}
-    .brand h1 span{display:block;font-weight:400;font-size:1rem;font-style:italic;color:#999;margin-top:3px}
-    .ornament{display:flex;align-items:center;gap:10px;margin-bottom:28px;width:100%;max-width:360px}
-    .oline{flex:1;height:1px;background:var(--av3)}
-    .odot{width:5px;height:5px;border-radius:50%;background:var(--oro)}
-    .welcome-btns{width:100%;max-width:360px;display:flex;flex-direction:column;gap:10px}
-    .btn-prim{padding:13px;background:var(--bosco);color:var(--oro);border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:.92rem;letter-spacing:.04em;cursor:pointer;transition:background .2s,transform .1s}
-    .btn-prim:active{transform:scale(.97)}
-    .btn-sec{padding:13px;background:transparent;color:var(--bosco);border:1.5px solid var(--bosco);border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:.92rem;letter-spacing:.04em;cursor:pointer;transition:all .2s}
-    .btn-sec:active{transform:scale(.97)}
-    .btn-ghost{background:none;border:none;color:#aaa;font-size:.82rem;cursor:pointer;padding:8px;font-family:'Inter',sans-serif;text-decoration:underline}
+    /* Autocomplete */
+    .ac-wrap { position: relative; }
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: #fff;
+      border: 1.5px solid var(--bosco);
+      border-radius: var(--r-m);
+      box-shadow: var(--sh-l);
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 300;
+      display: none;
+    }
+    .dropdown.open { display: block; }
+    .dd-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: .88rem;
+      border-bottom: 1px solid var(--av2);
+      color: var(--in2);
+      transition: background .1s, color .1s;
+    }
+    .dd-item:last-child { border-bottom: none; }
+    .dd-item:hover, .dd-item.hl { background: var(--bosco); color: #fff; }
+    .dd-item em { font-style: normal; font-weight: 600; }
+    .dd-empty {
+      padding: 11px 14px;
+      font-size: .84rem;
+      color: #bbb;
+      font-style: italic;
+    }
 
-    /* ════════════════════════════════════
-       SCHERMATA AUTH (S-AUTH)
-    ════════════════════════════════════ */
-    #s-auth{align-items:center;justify-content:center;padding:40px 24px;padding-top:calc(40px + env(safe-area-inset-top));background:var(--avorio)}
-    .auth-box{width:100%;max-width:360px}
-    .auth-box h2{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;color:var(--bosco);margin-bottom:6px}
-    .auth-box .sub{font-size:.82rem;color:#999;margin-bottom:24px}
-    .field{margin-bottom:14px}
-    .field label{display:block;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:5px}
-    .field input{width:100%;padding:12px 14px;border:1.5px solid var(--av3);border-radius:8px;font-family:'Inter',sans-serif;font-size:.92rem;background:#fff;color:var(--inchio);outline:none;transition:border-color .2s,box-shadow .2s}
-    .field input:focus{border-color:var(--bosco);box-shadow:0 0 0 3px rgba(26,58,28,.1)}
-    .field input::placeholder{color:#ccc}
-    .auth-err{background:#fff5f5;border-left:3px solid var(--rosso);padding:10px 12px;border-radius:0 6px 6px 0;font-size:.82rem;color:var(--rosso);margin-bottom:14px;display:none}
-    .auth-switch{text-align:center;margin-top:16px;font-size:.82rem;color:#999}
-    .auth-switch a{color:var(--bosco);cursor:pointer;font-weight:600;text-decoration:none}
-    .auth-switch a:hover{text-decoration:underline}
+    /* ══════════════════════════════════════
+       STATI: VUOTO / LOADING / ERRORE
+    ══════════════════════════════════════ */
+    .vuoto {
+      text-align: center;
+      padding: 56px 20px;
+    }
+    .vuoto svg { opacity: .2; margin-bottom: 18px; }
+    .vuoto h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-style: italic;
+      color: var(--in2);
+      margin-bottom: 6px;
+    }
+    .vuoto p { font-size: .82rem; color: #aaa; line-height: 1.6; }
 
-    /* Autocomplete nella form */
-    .ac-wrap{position:relative}
-    .ac-wrap input::placeholder{color:#ccc}
-    .dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid var(--bosco);border-radius:8px;box-shadow:0 8px 24px var(--ombra);max-height:220px;overflow-y:auto;z-index:300;display:none}
-    .dropdown.open{display:block}
-    .dd-item{padding:10px 14px;cursor:pointer;font-size:.88rem;border-bottom:1px solid var(--av2);color:var(--in2);transition:background .1s,color .1s}
-    .dd-item:last-child{border-bottom:none}
-    .dd-item:hover,.dd-item.hl{background:var(--bosco);color:#fff}
-    .dd-item em{font-style:normal;font-weight:600}
-    .dd-empty{padding:11px 14px;font-size:.84rem;color:#bbb;font-style:italic}
+    .loading {
+      text-align: center;
+      padding: 56px 20px;
+    }
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 2px solid var(--av3);
+      border-top-color: var(--bosco);
+      border-radius: 50%;
+      animation: gira .8s linear infinite;
+      margin: 0 auto 14px;
+    }
+    @keyframes gira { to { transform: rotate(360deg); } }
+    .loading p { font-size: .8rem; color: #aaa; font-style: italic; }
 
-    /* ════════════════════════════════════
-       SCHERMATA BIBLIOTECA (S-BIB)
-    ════════════════════════════════════ */
-    #s-bib{align-items:center;justify-content:center;padding:40px 24px;padding-top:calc(40px + env(safe-area-inset-top))}
-    .bib-box{width:100%;max-width:360px}
-    .bib-box h2{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--bosco);margin-bottom:4px}
-    .bib-box .sub{font-size:.82rem;color:#999;margin-bottom:22px}
-    .sel-label{display:block;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:6px}
+    .errore {
+      background: #fff5f5;
+      border-left: 3px solid var(--rosso);
+      border-radius: 0 var(--r-s) var(--r-s) 0;
+      padding: 12px 14px;
+      font-size: .83rem;
+      color: var(--rosso);
+      margin-bottom: 12px;
+    }
 
-    /* ════════════════════════════════════
-       SCHERMATA PROFILO (S-PROFILO)
-    ════════════════════════════════════ */
-    #s-profilo header .hd-testi p{color:var(--oro)}
-    .profilo-sezione{margin-bottom:28px}
-    .profilo-sezione h3{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--bosco);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--av3)}
-    .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px}
-    .stat-card{background:#fff;border-radius:8px;padding:14px;box-shadow:0 1px 4px var(--ombra2);text-align:center}
-    .stat-n{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:var(--bosco);line-height:1}
-    .stat-l{font-size:.7rem;color:#aaa;margin-top:3px;letter-spacing:.04em;text-transform:uppercase}
-    .ricerca-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--av2)}
-    .ricerca-item:last-child{border-bottom:none}
-    .ri-query{font-size:.88rem;font-weight:500;flex:1}
-    .ri-meta{font-size:.72rem;color:#bbb;text-align:right;white-space:nowrap}
-    .ri-bib{font-size:.72rem;color:#aaa}
-    .salvato-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--av2)}
-    .salvato-item:last-child{border-bottom:none}
-    .si-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
-    .si-body{flex:1}
-    .si-titolo{font-family:'Cormorant Garamond',serif;font-size:.97rem;font-weight:600}
-    .si-autore{font-size:.78rem;color:#888;font-style:italic;font-family:'Cormorant Garamond',serif}
-    .si-meta{font-size:.7rem;color:#bbb;margin-top:1px}
-    .btn-del{background:none;border:none;color:#ddd;cursor:pointer;font-size:.85rem;padding:2px 4px;transition:color .15s;flex-shrink:0}
-    .btn-del:hover{color:var(--rosso)}
-    .profilo-form .field{margin-bottom:12px}
-    .btn-sm{padding:9px 16px;font-size:.82rem;font-weight:600;border-radius:7px;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.03em;border:none;transition:background .15s,transform .1s}
-    .btn-sm:active{transform:scale(.97)}
-    .btn-sm-prim{background:var(--bosco);color:var(--oro)}
-    .btn-sm-danger{background:transparent;border:1.5px solid #ddd;color:#bbb}
-    .btn-sm-danger:hover{border-color:var(--rosso);color:var(--rosso)}
-    .vuoto-piccolo{text-align:center;padding:20px;color:#bbb;font-size:.82rem;font-style:italic}
-    .top-query-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--av2)}
-    .top-query-item:last-child{border-bottom:none}
-    .tq-rank{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--av3);width:20px;text-align:center;flex-shrink:0}
-    .tq-q{font-size:.88rem;flex:1}
-    .tq-n{font-size:.75rem;color:#bbb;white-space:nowrap}
+    /* ══════════════════════════════════════
+       S-WELCOME
+    ══════════════════════════════════════ */
+    #s-welcome {
+      background: var(--bosco-3);
+      justify-content: flex-end;
+      min-height: 100dvh;
+      position: relative;
+      overflow: hidden;
+    }
 
-    /* ════════════════════════════════════
-       SCHERMATA ESPLORA (S-ESPLORA)
-    ════════════════════════════════════ */
+    /* Sfondo: scaffale stilizzato */
+    .welcome-bg {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .shelf-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: rgba(201,168,76,.12);
+    }
+    .book-spine {
+      position: absolute;
+      bottom: 0;
+      border-radius: 1px 1px 0 0;
+      opacity: 0;
+      animation: sorgi .6s ease both;
+    }
+    @keyframes sorgi {
+      from { transform: translateY(20px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
 
-    /* Tab bar */
-    .e-tabs{display:flex;border-bottom:2px solid var(--av3);margin-bottom:20px}
-    .e-tab{flex:1;padding:11px 4px;text-align:center;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#bbb;background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;font-family:'Inter',sans-serif}
-    .e-tab.attivo{color:var(--bosco);border-bottom-color:var(--bosco)}
-    .e-panel{display:none}
-    .e-panel.attivo{display:block}
+    .welcome-content {
+      position: relative;
+      z-index: 10;
+      padding: 0 28px;
+      padding-bottom: calc(48px + var(--safe-bottom));
+    }
+
+    /* Logo mark */
+    .w-logo {
+      margin-bottom: 28px;
+    }
+    .w-logo svg {
+      display: block;
+    }
+
+    /* Titolo */
+    .w-titolo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.6rem;
+      font-weight: 300;
+      color: #fff;
+      line-height: 1.08;
+      letter-spacing: -.01em;
+      margin-bottom: 8px;
+    }
+    .w-titolo strong {
+      font-weight: 600;
+      color: var(--oro);
+      display: block;
+    }
+    .w-sottotitolo {
+      font-size: .72rem;
+      color: rgba(255,255,255,.4);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+      font-weight: 400;
+    }
+
+    /* Separatore ornamentale */
+    .w-sep {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      opacity: .4;
+    }
+    .w-sep-line { flex: 1; height: 1px; background: var(--oro); }
+    .w-sep-sym {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: .8rem;
+      color: var(--oro);
+      letter-spacing: .1em;
+    }
+
+    .w-btns { display: flex; flex-direction: column; gap: 10px; }
+    .w-btns .btn-prim {
+      background: var(--oro);
+      color: var(--bosco-3);
+    }
+    .w-btns .btn-sec {
+      border-color: rgba(255,255,255,.25);
+      color: rgba(255,255,255,.8);
+    }
+    .w-btns .btn-ghost { color: rgba(255,255,255,.35); text-align: center; }
+
+    /* ══════════════════════════════════════
+       S-AUTH
+    ══════════════════════════════════════ */
+    #s-auth {
+      background: var(--bosco-3);
+      align-items: stretch;
+    }
+    .auth-header {
+      padding: calc(20px + var(--safe-top)) 24px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .auth-back {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--r-s);
+      color: rgba(255,255,255,.7);
+      font-size: 1rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .auth-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .auth-heading strong { font-weight: 600; }
+
+    .auth-body {
+      flex: 1;
+      background: var(--avorio);
+      border-radius: var(--r-l) var(--r-l) 0 0;
+      padding: 28px 24px;
+      padding-bottom: calc(28px + var(--safe-bottom));
+      overflow-y: auto;
+    }
+    .auth-err {
+      background: #fff5f5;
+      border-left: 3px solid var(--rosso);
+      padding: 10px 12px;
+      border-radius: 0 var(--r-s) var(--r-s) 0;
+      font-size: .82rem;
+      color: var(--rosso);
+      margin-bottom: 16px;
+      display: none;
+    }
+    .auth-switch {
+      text-align: center;
+      margin-top: 18px;
+      font-size: .82rem;
+      color: var(--in3);
+    }
+    .auth-switch a {
+      color: var(--bosco);
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .auth-switch a:hover { text-decoration: underline; }
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .auth-divider span {
+      font-size: .7rem;
+      color: #bbb;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--av3);
+    }
+
+    /* ══════════════════════════════════════
+       S-BIB (selezione biblioteca ospite)
+    ══════════════════════════════════════ */
+    #s-bib {
+      background: var(--bosco-3);
+      align-items: stretch;
+    }
+    .bib-header {
+      padding: calc(20px + var(--safe-top)) 24px 28px;
+    }
+    .bib-header p {
+      font-size: .68rem;
+      color: var(--oro);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .bib-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.7rem;
+      font-weight: 300;
+      color: #fff;
+      line-height: 1.15;
+    }
+    .bib-header h2 strong { font-weight: 600; }
+    .bib-body {
+      flex: 1;
+      background: var(--avorio);
+      border-radius: var(--r-l) var(--r-l) 0 0;
+      padding: 28px 24px;
+      padding-bottom: calc(28px + var(--safe-bottom));
+    }
+    .bib-hint {
+      font-size: .82rem;
+      color: var(--in3);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* ══════════════════════════════════════
+       S-RICERCA
+    ══════════════════════════════════════ */
+    #s-ricerca { }
+
+    /* Chip biblioteca nell'header */
+    .bib-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--oro-soft);
+      border: 1px solid rgba(201,168,76,.25);
+      border-radius: 20px;
+      padding: 3px 10px 3px 6px;
+      font-size: .68rem;
+      color: var(--oro);
+      font-weight: 500;
+      letter-spacing: .04em;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .bib-chip:hover { background: rgba(201,168,76,.22); }
+    .bib-chip-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--oro);
+      flex-shrink: 0;
+    }
+
+    /* Badge risultati */
+    .info-q {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--av3);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .info-q h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--in2);
+    }
+    .info-q h2 strong { font-style: normal; font-weight: 600; color: var(--inchio); }
+    .badge {
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      background: var(--bosco);
+      color: var(--oro);
+      padding: 3px 9px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Card libro */
+    .card {
+      background: #fff;
+      border-radius: 0 var(--r-m) var(--r-m) 0;
+      margin-bottom: 10px;
+      box-shadow: var(--sh-s);
+      overflow: hidden;
+      border-left: 3px solid var(--av3);
+      animation: fadeUp .22s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .card.disponibile  { border-left-color: var(--bosco); }
+    .card.in-prestito  { border-left-color: var(--oro); }
+    .card-head { padding: 13px 14px 10px; }
+    .card-titolo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--inchio);
+      margin-bottom: 3px;
+    }
+    .card-autore {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: .88rem;
+      color: #888;
+      font-style: italic;
+    }
+    .card-actions { display: flex; gap: 6px; padding: 0 14px 10px; }
+    .btn-salva {
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1.5px solid var(--av3);
+      background: transparent;
+      color: #999;
+      cursor: pointer;
+      transition: all .15s;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-salva:hover  { border-color: var(--bosco); color: var(--bosco); }
+    .btn-salva.salvato { border-color: var(--bosco); background: var(--bosco); color: var(--oro); }
+    .card-copie {
+      background: var(--avorio);
+      border-top: 1px solid var(--av2);
+      padding: 8px 14px;
+    }
+    .assente-label { font-size: .74rem; color: #ccc; font-style: italic; }
+    .copia-riga {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--av2);
+    }
+    .copia-riga:last-child { border-bottom: none; }
+    .cdot { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+    .dv { background: var(--bosco); }
+    .dr { background: var(--rosso); }
+    .do { background: var(--oro); }
+    .cb { flex: 1; }
+    .cc { font-size: .76rem; font-weight: 600; color: var(--in2); letter-spacing: .02em; }
+    .ci { font-size: .68rem; color: #bbb; margin-left: 5px; }
+    .cs { font-size: .76rem; color: #666; }
+    .cr { font-size: .68rem; color: #bbb; }
+    .card-link {
+      display: block;
+      text-align: right;
+      padding: 6px 14px 8px;
+      font-size: .68rem;
+      color: var(--bosco-2);
+      text-decoration: none;
+      background: var(--avorio);
+      border-top: 1px solid var(--av2);
+      letter-spacing: .03em;
+    }
+    .card-link:hover { color: var(--bosco); text-decoration: underline; }
+
+    /* ══════════════════════════════════════
+       S-ESPLORA
+    ══════════════════════════════════════ */
+    .e-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--av3);
+      margin-bottom: 20px;
+      gap: 0;
+    }
+    .e-tab {
+      flex: 1;
+      padding: 10px 4px;
+      text-align: center;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: #bbb;
+      background: none;
+      border: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color .15s, border-color .15s;
+      font-family: 'Inter', sans-serif;
+    }
+    .e-tab.attivo { color: var(--bosco); border-bottom-color: var(--bosco); }
+    .e-panel { display: none; }
+    .e-panel.attivo { display: block; }
 
     /* Card esplora */
-    .ec{background:#fff;border-radius:0 10px 10px 0;border-left:4px solid var(--oro);box-shadow:0 2px 10px var(--ombra2);overflow:hidden;margin-bottom:16px;animation:su .3s ease both}
-    .ec-head{padding:16px 16px 12px}
-    .ec-label{font-size:.63rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--oro);margin-bottom:8px}
-    .ec-titolo{font-family:'Cormorant Garamond',serif;font-size:1.22rem;font-weight:700;line-height:1.3;color:var(--inchio);margin-bottom:5px}
-    .ec-autore{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-style:italic;color:#777}
-    .ec-abstract{padding:12px 16px 14px;font-size:.82rem;line-height:1.7;color:#555;border-top:1px solid var(--av2)}
-    .ec-actions{display:flex;gap:8px;padding:0 16px 14px;flex-wrap:wrap;align-items:center}
-    .btn-opac{font-size:.76rem;font-weight:600;padding:7px 14px;border-radius:20px;background:var(--bosco);color:var(--oro);text-decoration:none;white-space:nowrap;transition:background .15s}
-    .btn-opac:active{background:var(--bosco-2)}
-    .btn-esalva{font-size:.76rem;font-weight:600;padding:6px 13px;border-radius:20px;background:transparent;color:var(--bosco);border:1.5px solid var(--bosco);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
-    .btn-esalva.salvato{background:var(--bosco);color:var(--oro);border-color:var(--bosco)}
-    .btn-esalva:active{transform:scale(.96)}
+    .ec {
+      background: #fff;
+      border-radius: 0 var(--r-m) var(--r-m) 0;
+      border-left: 3px solid var(--oro);
+      box-shadow: var(--sh-m);
+      overflow: hidden;
+      margin-bottom: 16px;
+      animation: fadeUp .3s ease both;
+    }
+    .ec-head { padding: 16px 16px 12px; }
+    .ec-label {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--oro);
+      margin-bottom: 7px;
+    }
+    .ec-titolo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--inchio);
+      margin-bottom: 4px;
+    }
+    .ec-autore {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: .92rem;
+      font-style: italic;
+      color: #777;
+    }
+    .ec-actions {
+      display: flex;
+      gap: 8px;
+      padding: 0 16px 14px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .btn-opac {
+      font-size: .74rem;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 20px;
+      background: var(--bosco);
+      color: var(--oro);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background .15s;
+    }
+    .btn-esalva {
+      font-size: .74rem;
+      font-weight: 600;
+      padding: 6px 13px;
+      border-radius: 20px;
+      background: transparent;
+      color: var(--bosco);
+      border: 1.5px solid var(--bosco);
+      cursor: pointer;
+      transition: all .15s;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-esalva.salvato { background: var(--bosco); color: var(--oro); border-color: var(--bosco); }
+    .btn-ricarica {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 1.5px solid var(--av3);
+      border-radius: 20px;
+      color: #aaa;
+      font-size: .74rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all .15s;
+      font-family: 'Inter', sans-serif;
+      margin-bottom: 16px;
+    }
+    .btn-ricarica:hover { border-color: var(--bosco); color: var(--bosco); }
+    .btn-ricarica:disabled { opacity: .5; cursor: default; }
+    .spin-i { display: inline-block; animation: gira .7s linear infinite; }
+    .ec-data {
+      font-size: .66rem;
+      color: #bbb;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .autore-nome {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--bosco);
+      line-height: 1.2;
+      margin-bottom: 2px;
+    }
+    .autore-sub { font-size: .74rem; color: #aaa; }
+    .opere-list { padding: 4px 16px 14px; }
+    .opera-item {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--av2);
+    }
+    .opera-item:last-child { border-bottom: none; }
+    .opera-n {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--av4);
+      width: 20px;
+      flex-shrink: 0;
+      text-align: center;
+    }
+    .opera-body { flex: 1; min-width: 0; }
+    .opera-titolo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--inchio);
+      line-height: 1.3;
+    }
+    .opera-link {
+      font-size: .68rem;
+      color: var(--bosco-2);
+      text-decoration: none;
+      letter-spacing: .03em;
+    }
+    .opera-link:hover { text-decoration: underline; }
 
-    /* Pulsante ricarica */
-    .btn-ricarica{display:inline-flex;align-items:center;gap:6px;background:none;border:1.5px solid var(--av3);border-radius:20px;color:#aaa;font-size:.76rem;font-weight:600;padding:6px 13px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;margin-bottom:16px}
-    .btn-ricarica:hover{border-color:var(--bosco);color:var(--bosco)}
-    .btn-ricarica:disabled{opacity:.5;cursor:default}
-    .spin-i{display:inline-block;animation:spin .7s linear infinite}
+    /* ══════════════════════════════════════
+       S-SALVATI
+    ══════════════════════════════════════ */
+    .salvato-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--av2);
+    }
+    .salvato-item:last-child { border-bottom: none; }
+    .si-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+    .si-body { flex: 1; }
+    .si-titolo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--inchio);
+      line-height: 1.3;
+    }
+    .si-autore {
+      font-size: .78rem;
+      color: #888;
+      font-style: italic;
+      font-family: 'Cormorant Garamond', serif;
+    }
+    .si-meta { font-size: .68rem; color: #bbb; margin-top: 1px; }
+    .btn-del {
+      background: none;
+      border: none;
+      color: #ddd;
+      cursor: pointer;
+      font-size: .8rem;
+      padding: 3px 5px;
+      transition: color .15s;
+      flex-shrink: 0;
+    }
+    .btn-del:hover { color: var(--rosso); }
 
-    /* Libro del giorno: data */
-    .ec-data{font-size:.68rem;color:#bbb;letter-spacing:.07em;text-transform:uppercase;margin-bottom:14px}
+    /* ══════════════════════════════════════
+       S-PROFILO
+    ══════════════════════════════════════ */
+    .profilo-sezione { margin-bottom: 28px; }
+    .profilo-sezione h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--bosco);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--av3);
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: var(--r-m);
+      padding: 16px;
+      box-shadow: var(--sh-s);
+      text-align: center;
+    }
+    .stat-n {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: var(--bosco);
+      line-height: 1;
+    }
+    .stat-l {
+      font-size: .68rem;
+      color: #aaa;
+      margin-top: 3px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .ricerca-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--av2);
+    }
+    .ricerca-item:last-child { border-bottom: none; }
+    .ri-query { font-size: .88rem; font-weight: 500; flex: 1; }
+    .ri-meta  { font-size: .7rem; color: #bbb; text-align: right; white-space: nowrap; }
+    .ri-bib   { font-size: .7rem; color: #aaa; }
+    .top-query-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--av2);
+    }
+    .top-query-item:last-child { border-bottom: none; }
+    .tq-rank {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--av4);
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .tq-q   { font-size: .88rem; flex: 1; }
+    .tq-n   { font-size: .72rem; color: #bbb; white-space: nowrap; }
+    .vuoto-piccolo {
+      text-align: center;
+      padding: 18px;
+      color: #bbb;
+      font-size: .8rem;
+      font-style: italic;
+    }
 
-    /* Autore */
-    .autore-nome{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;color:var(--bosco);line-height:1.2;margin-bottom:3px}
-    .autore-sub{font-size:.76rem;color:#aaa;margin-bottom:0}
-    .opere-list{padding:4px 16px 14px}
-    .opera-item{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px solid var(--av2)}
-    .opera-item:last-child{border-bottom:none}
-    .opera-n{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--av3);width:22px;flex-shrink:0;text-align:center}
-    .opera-body{flex:1;min-width:0}
-    .opera-titolo{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-weight:600;color:var(--inchio);line-height:1.3}
-    .opera-link{font-size:.7rem;color:var(--bosco-2);text-decoration:none;letter-spacing:.03em}
-    .opera-link:hover{text-decoration:underline}
+    /* Intestazione profilo utente */
+    .profilo-hero {
+      background: var(--bosco-3);
+      padding: 20px 16px 24px;
+      padding-top: calc(20px + var(--safe-top));
+      margin-bottom: 0;
+    }
+    .profilo-avatar {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: var(--bosco-2);
+      border: 2px solid rgba(201,168,76,.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--oro);
+      margin-bottom: 10px;
+    }
+    .profilo-nome {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .profilo-email {
+      font-size: .72rem;
+      color: rgba(255,255,255,.4);
+      margin-top: 2px;
+    }
+    .profilo-bib-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--oro-soft);
+      border: 1px solid rgba(201,168,76,.25);
+      border-radius: 20px;
+      padding: 3px 10px 3px 7px;
+      font-size: .68rem;
+      color: var(--oro);
+      margin-top: 8px;
+    }
+    .profilo-main {
+      background: var(--avorio);
+      border-radius: var(--r-l) var(--r-l) 0 0;
+      margin-top: -12px;
+      flex: 1;
+      padding: 24px 16px;
+    }
+
+    /* Sezione impostazioni */
+    .impost-card {
+      background: #fff;
+      border-radius: var(--r-m);
+      box-shadow: var(--sh-s);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .impost-row {
+      display: flex;
+      align-items: center;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--av2);
+      gap: 12px;
+      cursor: pointer;
+    }
+    .impost-row:last-child { border-bottom: none; }
+    .impost-icon {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--avorio);
+      border-radius: var(--r-s);
+      font-size: .95rem;
+      flex-shrink: 0;
+    }
+    .impost-label { flex: 1; font-size: .88rem; font-weight: 500; }
+    .impost-val { font-size: .78rem; color: #aaa; }
+    .impost-arrow { font-size: .75rem; color: #ccc; }
+
+    /* Sheet modale per impostazioni */
+    .sheet-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 400;
+      display: none;
+      align-items: flex-end;
+    }
+    .sheet-overlay.aperto { display: flex; }
+    .sheet {
+      background: var(--avorio);
+      border-radius: var(--r-l) var(--r-l) 0 0;
+      padding: 0 20px calc(24px + var(--safe-bottom));
+      width: 100%;
+      max-height: 85dvh;
+      overflow-y: auto;
+      animation: slideUp .25s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to   { transform: none; opacity: 1; }
+    }
+    .sheet-handle {
+      width: 36px; height: 4px;
+      background: var(--av3);
+      border-radius: 2px;
+      margin: 14px auto 20px;
+    }
+    .sheet-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--bosco);
+      margin-bottom: 18px;
+    }
+
+    /* ══════════════════════════════════════
+       RESPONSIVE — tabella/desktop hint
+    ══════════════════════════════════════ */
+    @media (min-width: 640px) {
+      .page-main { padding: 28px 24px; }
+      .w-titolo  { font-size: 3rem; }
+    }
   </style>
 </head>
 <body>
 
-<!-- ════ S-WELCOME ════ -->
+<!-- ════════════════════════════════════════
+     S-WELCOME
+════════════════════════════════════════ -->
 <div id="s-welcome" class="schermata">
-  <div class="brand">
-    <svg width="68" height="68" viewBox="0 0 192 192" fill="none">
-      <rect width="192" height="192" rx="38" fill="#1a3a1c"/>
-      <path d="M22 52 C22 48 26 46 30 47 L92 58 L92 148 L30 136 C26 135 22 132 22 128 Z" fill="#254d28" stroke="#c9a84c" stroke-width="2.5"/>
-      <path d="M170 52 C170 48 166 46 162 47 L100 58 L100 148 L162 136 C166 135 170 132 170 128 Z" fill="#254d28" stroke="#c9a84c" stroke-width="2.5"/>
-      <line x1="96" y1="56" x2="96" y2="149" stroke="#c9a84c" stroke-width="3.5"/>
-      <line x1="34" y1="74"  x2="85" y2="80"  stroke="#c9a84c" stroke-width="2.2" stroke-linecap="round" opacity=".75"/>
-      <line x1="34" y1="88"  x2="85" y2="94"  stroke="#c9a84c" stroke-width="2.2" stroke-linecap="round" opacity=".75"/>
-      <line x1="34" y1="102" x2="85" y2="108" stroke="#c9a84c" stroke-width="2.2" stroke-linecap="round" opacity=".75"/>
-      <line x1="158" y1="74"  x2="107" y2="80"  stroke="#c9a84c" stroke-width="2.2" stroke-linecap="round" opacity=".75"/>
-      <line x1="158" y1="88"  x2="107" y2="94"  stroke="#c9a84c" stroke-width="2.2" stroke-linecap="round" opacity=".75"/>
-      <line x1="158" y1="102" x2="107" y2="108" stroke="#c9a84c" stroke-width="2.2" stroke-linecap="round" opacity=".75"/>
-    </svg>
-    <h1>La biblioteca di Babele<span>Rete Bibliotecaria Bresciana e Cremonese</span></h1>
-  </div>
-  <div class="ornament"><div class="oline"></div><div class="odot"></div><div class="oline"></div></div>
-  <div class="welcome-btns">
-    <button class="btn-prim" onclick="vai('s-auth','login')">Accedi</button>
-    <button class="btn-sec"  onclick="vai('s-auth','registra')">Crea account</button>
-    <button class="btn-ghost" onclick="usaSenzaAccount()">Continua senza account →</button>
+
+  <!-- Sfondo decorativo: dorsi di libri stilizzati -->
+  <div class="welcome-bg" id="welcome-bg"></div>
+
+  <div class="welcome-content">
+    <div class="w-logo">
+      <svg width="56" height="56" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="192" height="192" rx="38" fill="#254d28"/>
+        <path d="M22 52 C22 48 26 46 30 47 L92 58 L92 148 L30 136 C26 135 22 132 22 128 Z" fill="#1a3a1c" stroke="#c9a84c" stroke-width="2"/>
+        <path d="M170 52 C170 48 166 46 162 47 L100 58 L100 148 L162 136 C166 135 170 132 170 128 Z" fill="#1a3a1c" stroke="#c9a84c" stroke-width="2"/>
+        <line x1="96" y1="56" x2="96" y2="149" stroke="#c9a84c" stroke-width="3"/>
+        <line x1="34" y1="74"  x2="85" y2="80"  stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
+        <line x1="34" y1="89"  x2="85" y2="95"  stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
+        <line x1="34" y1="104" x2="85" y2="110" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
+        <line x1="158" y1="74"  x2="107" y2="80"  stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
+        <line x1="158" y1="89"  x2="107" y2="95"  stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
+        <line x1="158" y1="104" x2="107" y2="110" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
+      </svg>
+    </div>
+
+    <h1 class="w-titolo">La biblioteca<strong>di Babele</strong></h1>
+    <p class="w-sottotitolo">Rete Bibliotecaria Bresciana e Cremonese</p>
+
+    <div class="w-sep">
+      <div class="w-sep-line"></div>
+      <div class="w-sep-sym">✦</div>
+      <div class="w-sep-line"></div>
+    </div>
+
+    <div class="w-btns">
+      <button class="btn-prim" onclick="vai('s-auth','login')">Accedi</button>
+      <button class="btn-sec"  onclick="vai('s-auth','registra')">Crea account</button>
+      <button class="btn-ghost" onclick="usaSenzaAccount()">Continua senza account</button>
+    </div>
   </div>
 </div>
 
-<!-- ════ S-AUTH ════ -->
+<!-- ════════════════════════════════════════
+     S-AUTH
+════════════════════════════════════════ -->
 <div id="s-auth" class="schermata">
-  <div class="auth-box">
-    <h2 id="auth-titolo">Accedi</h2>
-    <p class="sub" id="auth-sub">Bentornato nel catalogo.</p>
+  <div class="auth-header">
+    <button class="auth-back" onclick="vai('s-welcome')">←</button>
+    <div>
+      <div class="auth-heading" id="auth-heading"><strong>Accedi</strong></div>
+      <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:2px;letter-spacing:.06em" id="auth-sub-hd">Bentornato nel catalogo</div>
+    </div>
+  </div>
+
+  <div class="auth-body">
     <div class="auth-err" id="auth-err"></div>
 
+    <!-- Form login -->
     <div id="auth-form-login">
-      <div class="field"><label>Email</label>
-        <input type="email" id="l-email" placeholder="la@tua.email" autocomplete="email"></div>
-      <div class="field"><label>Password</label>
-        <input type="password" id="l-pw" placeholder="••••••" autocomplete="current-password"></div>
-      <button class="btn-prim" style="width:100%" onclick="doLogin()">Accedi</button>
-      <p class="auth-switch">Non hai un account? <a onclick="vai('s-auth','registra')">Registrati</a></p>
-      <p class="auth-switch" style="margin-top:6px"><a onclick="usaSenzaAccount()" style="color:#aaa">Continua senza account</a></p>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="l-email" placeholder="la@tua.email" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="l-pw" placeholder="••••••" autocomplete="current-password">
+      </div>
+      <button class="btn-prim" onclick="doLogin()">Accedi</button>
+      <p class="auth-switch" style="margin-top:16px">
+        Non hai un account? <a onclick="vai('s-auth','registra')">Registrati</a>
+      </p>
+      <div class="auth-divider"><span>oppure</span></div>
+      <button class="btn-ghost" style="display:block;width:100%;text-align:center" onclick="usaSenzaAccount()">
+        Continua senza account
+      </button>
     </div>
 
+    <!-- Form registrazione -->
     <div id="auth-form-registra" style="display:none">
-      <div class="field"><label>Nome</label>
-        <input type="text" id="r-nome" placeholder="Il tuo nome" autocomplete="name"></div>
-      <div class="field"><label>Email</label>
-        <input type="email" id="r-email" placeholder="la@tua.email" autocomplete="email"></div>
-      <div class="field"><label>Password</label>
-        <input type="password" id="r-pw" placeholder="Almeno 6 caratteri" autocomplete="new-password"></div>
+      <div class="field">
+        <label>Nome</label>
+        <input type="text" id="r-nome" placeholder="Il tuo nome" autocomplete="name">
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="r-email" placeholder="la@tua.email" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="r-pw" placeholder="Almeno 6 caratteri" autocomplete="new-password">
+      </div>
       <div class="field">
         <label>Biblioteca di riferimento</label>
         <div class="ac-wrap">
-          <input type="text" id="r-bib" placeholder="Es. Rezzato…" autocomplete="off" autocorrect="off">
+          <input type="text" id="r-bib" placeholder="Es. Rezzato, Chiari…" autocomplete="off" autocorrect="off">
           <div class="dropdown" id="dd-r"></div>
         </div>
       </div>
-      <button class="btn-prim" style="width:100%;margin-top:4px" onclick="doRegistra()">Crea account</button>
-      <p class="auth-switch">Hai già un account? <a onclick="vai('s-auth','login')">Accedi</a></p>
+      <button class="btn-prim" style="margin-top:4px" onclick="doRegistra()">Crea account</button>
+      <p class="auth-switch" style="margin-top:16px">
+        Hai già un account? <a onclick="vai('s-auth','login')">Accedi</a>
+      </p>
     </div>
   </div>
 </div>
 
-<!-- ════ S-BIB (selezione biblioteca per ospiti) ════ -->
+<!-- ════════════════════════════════════════
+     S-BIB (selezione biblioteca ospite)
+════════════════════════════════════════ -->
 <div id="s-bib" class="schermata">
-  <div class="bib-box">
-    <h2>Scegli la biblioteca</h2>
-    <p class="sub">Cerca libri nella tua biblioteca preferita.</p>
-    <span class="sel-label">Biblioteca</span>
+  <div class="bib-header">
+    <p>Catalogo RBBC</p>
+    <h2>Scegli la tua<strong><br> biblioteca</strong></h2>
+  </div>
+  <div class="bib-body">
+    <p class="bib-hint">Seleziona la biblioteca in cui vuoi verificare la disponibilità dei libri.</p>
     <div class="ac-wrap">
-      <input type="text" id="g-bib" placeholder="Es. Rezzato, Brescia, Chiari…"
+      <input type="text" id="g-bib"
+             placeholder="Es. Rezzato, Brescia, Chiari…"
              autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false">
       <div class="dropdown" id="dd-g"></div>
     </div>
-    <button class="btn-prim" style="width:100%;margin-top:12px" id="btn-bib-ok" disabled onclick="confermaBib()">
+    <button class="btn-prim" style="margin-top:14px" id="btn-bib-ok" disabled onclick="confermaBib()">
       Inizia a cercare →
     </button>
+    <div style="margin-top:12px;text-align:center">
+      <button class="btn-ghost" onclick="vai('s-welcome')">← Torna indietro</button>
+    </div>
   </div>
 </div>
 
-<!-- ════ S-RICERCA ════ -->
-<div id="s-ricerca" class="schermata">
-  <header>
-    <div class="hd-top">
-      <button class="btn-icon" id="btn-back-ric" title="Cambia biblioteca">←</button>
-      <div class="hd-testi">
-        <h1 id="hd-bib-nome">Biblioteca</h1>
+<!-- ════════════════════════════════════════
+     S-RICERCA
+════════════════════════════════════════ -->
+<div id="s-ricerca" class="schermata con-nav">
+  <header class="app-header">
+    <div class="hd-bar">
+      <div class="hd-brand">
+        <h1>La biblioteca di Babele</h1>
         <p>RBBC · Catalogo</p>
       </div>
-      <button class="btn-icon" id="btn-esplora-ric" title="Esplora" style="font-size:.9rem">✦</button>
-      <button class="btn-icon" id="btn-profilo-ric" title="Profilo" style="font-size:1rem">👤</button>
+      <div class="bib-chip" id="bib-chip" onclick="apriCambiaBib()">
+        <span class="bib-chip-dot"></span>
+        <span id="chip-nome">—</span>
+      </div>
     </div>
-    <div class="sb">
+    <div class="hd-search">
       <input type="search" id="it" placeholder="Cerca un titolo…"
              autocomplete="off" autocorrect="off" enterkeyhint="search">
       <button class="btn-cerca" id="btn-cerca">Cerca</button>
     </div>
   </header>
-  <main id="main">
+  <div class="page-main" id="main">
     <div class="vuoto">
       <svg width="52" height="52" viewBox="0 0 192 192" fill="none">
         <path d="M22 52 C22 48 26 46 30 47 L92 58 L92 148 L30 136 C26 135 22 132 22 128 Z" fill="#1a3a1c"/>
@@ -344,29 +1370,95 @@
       <h2>Cerca un libro</h2>
       <p id="vuoto-hint">Digita il titolo per verificare la disponibilità.</p>
     </div>
-  </main>
-  <footer>opac.provincia.brescia.it</footer>
+  </div>
 </div>
 
-<!-- ════ S-PROFILO ════ -->
-<div id="s-profilo" class="schermata">
-  <header>
-    <div class="hd-top">
-      <button class="btn-icon" onclick="vai('s-ricerca')">←</button>
-      <div class="hd-testi">
-        <h1 id="prof-nome">Profilo</h1>
-        <p>Il tuo account</p>
+<!-- ════════════════════════════════════════
+     S-ESPLORA
+════════════════════════════════════════ -->
+<div id="s-esplora" class="schermata con-nav">
+  <header class="app-header">
+    <div class="hd-bar">
+      <div class="hd-brand">
+        <h1>Esplora</h1>
+        <p>Scopri qualcosa di nuovo</p>
       </div>
     </div>
   </header>
-  <main>
+  <div class="page-main">
+    <div class="e-tabs">
+      <button class="e-tab attivo" data-tab="giorno"  onclick="cambiaTabE('giorno')">Del giorno</button>
+      <button class="e-tab"        data-tab="casuale" onclick="cambiaTabE('casuale')">A caso</button>
+      <button class="e-tab"        data-tab="autore"  onclick="cambiaTabE('autore')">Autore</button>
+    </div>
 
-    <!-- Statistiche -->
+    <div class="e-panel attivo" id="ep-giorno">
+      <div id="ec-giorno">
+        <div class="loading"><div class="spinner"></div><p>Scelgo il libro del giorno…</p></div>
+      </div>
+    </div>
+    <div class="e-panel" id="ep-casuale">
+      <button class="btn-ricarica" id="btn-nuovo-casuale" onclick="caricaCasuale()">
+        <span id="spin-casuale">↻</span> Altro libro
+      </button>
+      <div id="ec-casuale">
+        <div class="loading"><div class="spinner"></div><p>Pesco dal catalogo…</p></div>
+      </div>
+    </div>
+    <div class="e-panel" id="ep-autore">
+      <button class="btn-ricarica" id="btn-nuovo-autore" onclick="caricaAutore()">
+        <span id="spin-autore">↻</span> Altro autore
+      </button>
+      <div id="ec-autore">
+        <div class="loading"><div class="spinner"></div><p>Cerco un autore…</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     S-SALVATI
+════════════════════════════════════════ -->
+<div id="s-salvati" class="schermata con-nav">
+  <header class="app-header">
+    <div class="hd-bar">
+      <div class="hd-brand">
+        <h1>Salvati</h1>
+        <p>I tuoi libri</p>
+      </div>
+    </div>
+  </header>
+  <div class="page-main" id="salvati-main">
+    <div class="loading"><div class="spinner"></div><p>Carico i tuoi libri…</p></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     S-PROFILO
+════════════════════════════════════════ -->
+<div id="s-profilo" class="schermata con-nav">
+  <div class="profilo-hero">
+    <div class="profilo-avatar" id="profilo-avatar">?</div>
+    <div class="profilo-nome" id="profilo-nome">Profilo</div>
+    <div class="profilo-email" id="profilo-email"></div>
+    <div class="profilo-bib-tag" id="profilo-bib-tag">
+      <span>📍</span> <span id="profilo-bib-label">—</span>
+    </div>
+  </div>
+  <div class="profilo-main">
+
+    <!-- Stats -->
     <div class="profilo-sezione">
-      <h3>Le tue statistiche</h3>
+      <h3>Statistiche</h3>
       <div class="stat-grid">
-        <div class="stat-card"><div class="stat-n" id="st-ricerche">—</div><div class="stat-l">Ricerche</div></div>
-        <div class="stat-card"><div class="stat-n" id="st-salvati">—</div><div class="stat-l">Salvati</div></div>
+        <div class="stat-card">
+          <div class="stat-n" id="st-ricerche">—</div>
+          <div class="stat-l">Ricerche</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-n" id="st-salvati">—</div>
+          <div class="stat-l">Salvati</div>
+        </div>
       </div>
     </div>
 
@@ -376,87 +1468,130 @@
       <div id="top-query"><div class="vuoto-piccolo">Nessuna ricerca ancora.</div></div>
     </div>
 
-    <!-- Libri salvati -->
-    <div class="profilo-sezione">
-      <h3>Libri salvati</h3>
-      <div id="lista-salvati"><div class="vuoto-piccolo">Nessun libro salvato ancora.</div></div>
-    </div>
-
-    <!-- Storico -->
+    <!-- Storico ricerche -->
     <div class="profilo-sezione">
       <h3>Ultime ricerche</h3>
       <div id="lista-storico"><div class="vuoto-piccolo">Nessuna ricerca ancora.</div></div>
     </div>
 
     <!-- Impostazioni -->
-    <div class="profilo-sezione profilo-form">
-      <h3>Impostazioni</h3>
-      <div class="field"><label>Nome</label>
-        <input type="text" id="p-nome" placeholder="Il tuo nome"></div>
-      <div class="field">
-        <label>Biblioteca di riferimento</label>
-        <div class="ac-wrap">
-          <input type="text" id="p-bib" placeholder="Es. Rezzato…" autocomplete="off">
-          <div class="dropdown" id="dd-p"></div>
+    <div class="profilo-sezione">
+      <h3>Impostazioni account</h3>
+      <div class="impost-card">
+        <div class="impost-row" onclick="apriSheet('sheet-profilo')">
+          <div class="impost-icon">✏️</div>
+          <div class="impost-label">Modifica profilo</div>
+          <div class="impost-arrow">›</div>
+        </div>
+        <div class="impost-row" onclick="apriSheet('sheet-bib')">
+          <div class="impost-icon">📍</div>
+          <div class="impost-label">Cambia biblioteca</div>
+          <div class="impost-val" id="im-bib-val"></div>
+          <div class="impost-arrow">›</div>
         </div>
       </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn-sm btn-sm-prim" onclick="salvaProfilo()">Salva modifiche</button>
-        <button class="btn-sm btn-sm-danger" onclick="doLogout()">Esci dall'account</button>
+      <div class="impost-card">
+        <div class="impost-row" onclick="doLogout()" style="color:var(--rosso)">
+          <div class="impost-icon">🚪</div>
+          <div class="impost-label" style="color:var(--rosso)">Esci dall'account</div>
+        </div>
       </div>
     </div>
 
-  </main>
+  </div>
 </div>
 
-<!-- ════ S-ESPLORA ════ -->
-<div id="s-esplora" class="schermata">
-  <header>
-    <div class="hd-top">
-      <button class="btn-icon" onclick="vai('s-ricerca')">←</button>
-      <div class="hd-testi">
-        <h1>Esplora</h1>
-        <p>Scopri qualcosa di nuovo</p>
+<!-- ════════════════════════════════════════
+     BOTTOM NAV
+════════════════════════════════════════ -->
+<nav id="bottom-nav">
+  <div class="nav-inner">
+    <button class="nav-tab attivo" data-tab="s-ricerca" onclick="switchTab('s-ricerca')">
+      <span class="nav-icon">🔍</span>
+      <span>Cerca</span>
+    </button>
+    <button class="nav-tab" data-tab="s-esplora" onclick="switchTab('s-esplora')">
+      <span class="nav-icon">✦</span>
+      <span>Esplora</span>
+    </button>
+    <button class="nav-tab" data-tab="s-salvati" onclick="switchTab('s-salvati')" id="nav-salvati" style="display:none">
+      <span class="nav-icon">♥</span>
+      <span>Salvati</span>
+    </button>
+    <button class="nav-tab" data-tab="s-profilo" onclick="switchTab('s-profilo')" id="nav-profilo" style="display:none">
+      <span class="nav-icon">👤</span>
+      <span>Profilo</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════
+     SHEETS MODALI
+════════════════════════════════════════ -->
+
+<!-- Sheet: modifica profilo -->
+<div class="sheet-overlay" id="sheet-profilo" onclick="chiudiSheet('sheet-profilo', event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Modifica profilo</div>
+    <div class="field"><label>Nome</label>
+      <input type="text" id="p-nome" placeholder="Il tuo nome">
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-sm btn-sm-prim" onclick="salvaProfilo()">Salva modifiche</button>
+      <button class="btn-sm btn-sm-ghost" onclick="chiudiSheet('sheet-profilo')">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sheet: cambia biblioteca -->
+<div class="sheet-overlay" id="sheet-bib" onclick="chiudiSheet('sheet-bib', event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Cambia biblioteca</div>
+    <div class="field">
+      <label>Biblioteca di riferimento</label>
+      <div class="ac-wrap">
+        <input type="text" id="p-bib" placeholder="Es. Rezzato…" autocomplete="off">
+        <div class="dropdown" id="dd-p"></div>
       </div>
     </div>
-  </header>
-  <main>
-    <div class="e-tabs">
-      <button class="e-tab attivo" data-tab="giorno" onclick="cambiaTabE('giorno')">📅 Del giorno</button>
-      <button class="e-tab"        data-tab="casuale" onclick="cambiaTabE('casuale')">🎲 A caso</button>
-      <button class="e-tab"        data-tab="autore"  onclick="cambiaTabE('autore')">✍️ Autore</button>
+    <div style="display:flex;gap:10px">
+      <button class="btn-sm btn-sm-prim" onclick="salvaLibreria()">Salva</button>
+      <button class="btn-sm btn-sm-ghost" onclick="chiudiSheet('sheet-bib')">Annulla</button>
     </div>
+  </div>
+</div>
 
-    <!-- Tab: Libro del giorno -->
-    <div class="e-panel attivo" id="ep-giorno">
-      <div id="ec-giorno"><div class="loading"><div class="spinner"></div><p>Scelgo il libro del giorno…</p></div></div>
+<!-- Sheet: cambia biblioteca (ospite, dalla ricerca) -->
+<div class="sheet-overlay" id="sheet-cambia-bib" onclick="chiudiSheet('sheet-cambia-bib', event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Cambia biblioteca</div>
+    <div class="field">
+      <div class="ac-wrap">
+        <input type="text" id="cb-bib" placeholder="Es. Rezzato, Brescia…" autocomplete="off">
+        <div class="dropdown" id="dd-cb"></div>
+      </div>
     </div>
-
-    <!-- Tab: Libro a caso -->
-    <div class="e-panel" id="ep-casuale">
-      <button class="btn-ricarica" id="btn-nuovo-casuale" onclick="caricaCasuale()">
-        <span id="spin-casuale">↻</span> Altro libro
-      </button>
-      <div id="ec-casuale"><div class="loading"><div class="spinner"></div><p>Pesco dal catalogo…</p></div></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-sm btn-sm-prim" onclick="confermaChip()">Cambia</button>
+      <button class="btn-sm btn-sm-ghost" onclick="chiudiSheet('sheet-cambia-bib')">Annulla</button>
     </div>
-
-    <!-- Tab: Autore a caso -->
-    <div class="e-panel" id="ep-autore">
-      <button class="btn-ricarica" id="btn-nuovo-autore" onclick="caricaAutore()">
-        <span id="spin-autore">↻</span> Altro autore
-      </button>
-      <div id="ec-autore"><div class="loading"><div class="spinner"></div><p>Cerco un autore…</p></div></div>
-    </div>
-  </main>
+  </div>
 </div>
 
 <script>
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
-/* ── Stato globale ── */
+/* ══════════════════════════════════════
+   STATO GLOBALE
+══════════════════════════════════════ */
 let stato = { utente: null, biblioteca: '', salvatiSet: new Set() };
 
-/* ── Lista biblioteche ── */
+/* ══════════════════════════════════════
+   LISTA BIBLIOTECHE
+══════════════════════════════════════ */
 const BIBS = [
   "Acquafredda","Adro","Agnadello","Agnosine","Anfo","Angolo Terme","Annicco",
   "Artogne","Azzano Mella","Bagnolo Cremasco","Bagnolo Mella","Bagolino",
@@ -520,16 +1655,44 @@ const BIBS = [
   "Visano","Vobarno","Zone"
 ];
 
-/* ── Navigazione ── */
+/* ══════════════════════════════════════
+   NAVIGAZIONE
+══════════════════════════════════════ */
+const SCHERMATE_CON_NAV = ['s-ricerca','s-esplora','s-salvati','s-profilo'];
+
 function vai(id, sub) {
   document.querySelectorAll('.schermata').forEach(s => s.classList.remove('attiva'));
   document.getElementById(id).classList.add('attiva');
+
+  // Bottom nav visibile solo nelle schermate operative
+  const nav = document.getElementById('bottom-nav');
+  if (SCHERMATE_CON_NAV.includes(id)) {
+    nav.style.display = 'block';
+    // Aggiorna tab attivo
+    document.querySelectorAll('.nav-tab').forEach(t =>
+      t.classList.toggle('attivo', t.dataset.tab === id));
+  } else {
+    nav.style.display = 'none';
+  }
+
   if (id === 's-auth') mostraFormAuth(sub || 'login');
   if (id === 's-profilo') caricaProfilo();
   if (id === 's-esplora') iniziaEsplora();
+  if (id === 's-salvati') caricaSalvatiPagina();
+
+  // Scrolla in cima
+  window.scrollTo(0, 0);
 }
 
-/* ── Avvio: controlla sessione ── */
+function switchTab(id) {
+  vai(id);
+}
+
+/* ══════════════════════════════════════
+   AVVIO
+══════════════════════════════════════ */
+costruisciScaffale();
+
 async function avvia() {
   try {
     const r = await fetch('/api/auth/me');
@@ -538,7 +1701,7 @@ async function avvia() {
       stato.utente = d;
       stato.biblioteca = d.biblioteca;
       await caricaSalvati();
-      attivaRicerca(d.biblioteca);
+      attivaRicerca(d.biblioteca, true);
     } else {
       vai('s-welcome');
     }
@@ -546,19 +1709,64 @@ async function avvia() {
 }
 avvia();
 
-/* ── Auth forms ── */
+/* ══════════════════════════════════════
+   SFONDO WELCOME: SCAFFALE
+══════════════════════════════════════ */
+function costruisciScaffale() {
+  const bg = document.getElementById('welcome-bg');
+  const colori = [
+    '#1e4d22','#2d6b32','#3a5f3c','#4a7a4e','#1a3a1c',
+    '#c9a84c','#254d28','#0f2210','#3d6b40','#2a5430'
+  ];
+  // Linee dello scaffale
+  [30, 42, 54, 66, 78].forEach(pct => {
+    const l = document.createElement('div');
+    l.className = 'shelf-line';
+    l.style.top = pct + '%';
+    bg.appendChild(l);
+  });
+  // Dorsi di libri
+  const n = 28;
+  for (let i = 0; i < n; i++) {
+    const b = document.createElement('div');
+    b.className = 'book-spine';
+    const w = 8 + Math.random() * 18;
+    const h = 60 + Math.random() * 80;
+    const shelf = Math.floor(Math.random() * 5); // 5 scaffali
+    const shelfPct = [30, 42, 54, 66, 78][shelf];
+    b.style.cssText = `
+      width:${w}px;height:${h}px;
+      left:${(i/n)*100+Math.random()*2}%;
+      bottom:calc(${100-shelfPct}% + 1px);
+      background:${colori[Math.floor(Math.random()*colori.length)]};
+      opacity:.18;
+      animation-delay:${i*0.04}s;
+    `;
+    bg.appendChild(b);
+  }
+}
+
+/* ══════════════════════════════════════
+   AUTH
+══════════════════════════════════════ */
 function mostraFormAuth(tipo) {
-  document.getElementById('auth-form-login').style.display    = tipo==='login'    ? '' : 'none';
-  document.getElementById('auth-form-registra').style.display = tipo==='registra' ? '' : 'none';
-  document.getElementById('auth-titolo').textContent = tipo==='login' ? 'Accedi' : 'Crea account';
-  document.getElementById('auth-sub').textContent    = tipo==='login'
-    ? 'Bentornato nel catalogo.' : 'Inizia a tracciare le tue letture.';
+  document.getElementById('auth-form-login').style.display    = tipo === 'login'    ? '' : 'none';
+  document.getElementById('auth-form-registra').style.display = tipo === 'registra' ? '' : 'none';
+  const heading = document.getElementById('auth-heading');
+  const sub     = document.getElementById('auth-sub-hd');
+  heading.innerHTML = tipo === 'login'
+    ? '<strong>Accedi</strong>'
+    : '<strong>Crea account</strong>';
+  sub.textContent = tipo === 'login'
+    ? 'Bentornato nel catalogo'
+    : 'Inizia a tracciare le tue letture';
   document.getElementById('auth-err').style.display = 'none';
 }
 
 function mostraErrAuth(msg) {
   const el = document.getElementById('auth-err');
-  el.textContent = msg; el.style.display = 'block';
+  el.textContent = msg;
+  el.style.display = 'block';
 }
 
 async function doLogin() {
@@ -567,14 +1775,14 @@ async function doLogin() {
   if (!email || !pw) return mostraErrAuth('Inserisci email e password.');
   try {
     const r = await fetch('/api/auth/login', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({email, password: pw})
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password: pw })
     });
     const d = await r.json();
     if (!r.ok) return mostraErrAuth(d.error || 'Errore login.');
     stato.utente = d; stato.biblioteca = d.biblioteca;
     await caricaSalvati();
-    attivaRicerca(d.biblioteca);
+    attivaRicerca(d.biblioteca, true);
   } catch { mostraErrAuth('Errore di rete.'); }
 }
 
@@ -583,25 +1791,26 @@ async function doRegistra() {
   const email = document.getElementById('r-email').value.trim();
   const pw    = document.getElementById('r-pw').value;
   const bib   = document.getElementById('r-bib').value.trim();
-  if (!nome || !email || !pw || !bib)
-    return mostraErrAuth('Compila tutti i campi.');
+  if (!nome || !email || !pw || !bib) return mostraErrAuth('Compila tutti i campi.');
   if (!BIBS.some(b => b.toLowerCase() === bib.toLowerCase()))
-    return mostraErrAuth('Seleziona una biblioteca dall\'elenco.');
+    return mostraErrAuth("Seleziona una biblioteca dall'elenco.");
   try {
     const r = await fetch('/api/auth/registra', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({nome, email, password: pw, biblioteca: bib})
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ nome, email, password: pw, biblioteca: bib })
     });
     const d = await r.json();
     if (!r.ok) return mostraErrAuth(d.error || 'Errore registrazione.');
     stato.utente = d; stato.biblioteca = d.biblioteca;
-    attivaRicerca(d.biblioteca);
+    await caricaSalvati();
+    attivaRicerca(d.biblioteca, true);
   } catch { mostraErrAuth('Errore di rete.'); }
 }
 
 async function doLogout() {
-  await fetch('/api/auth/logout', {method:'POST'});
+  await fetch('/api/auth/logout', { method: 'POST' });
   stato.utente = null; stato.biblioteca = '';
+  stato.salvatiSet = new Set();
   vai('s-welcome');
 }
 
@@ -610,51 +1819,91 @@ function usaSenzaAccount() {
   vai('s-bib');
 }
 
-/* ── Selezione biblioteca ospite ── */
+/* ══════════════════════════════════════
+   SELEZIONE BIBLIOTECA
+══════════════════════════════════════ */
 setupAutocomplete('g-bib', 'dd-g', nome => {
-  stato.biblioteca = nome;
-  document.getElementById('btn-bib-ok').disabled = false;
+  stato.biblioteca = nome || '';
+  document.getElementById('btn-bib-ok').disabled = !nome;
 });
 
 function confermaBib() {
   if (!stato.biblioteca) return;
-  attivaRicerca(stato.biblioteca);
+  attivaRicerca(stato.biblioteca, false);
 }
 
-/* ── Attiva schermata ricerca ── */
-function attivaRicerca(bib) {
+/* ══════════════════════════════════════
+   ATTIVA SCHERMATA RICERCA
+══════════════════════════════════════ */
+function attivaRicerca(bib, loggato) {
   stato.biblioteca = bib;
-  document.getElementById('hd-bib-nome').textContent = bib;
+  document.getElementById('chip-nome').textContent = bib;
   document.getElementById('vuoto-hint').textContent =
     `Digita il titolo per verificare la disponibilità a ${bib}.`;
-  // Mostra o nascondi pulsante profilo
-  document.getElementById('btn-profilo-ric').style.display =
-    stato.utente ? '' : 'none';
+
+  // Mostra/nascondi tab profilo e salvati
+  const haAcc = !!stato.utente;
+  document.getElementById('nav-salvati').style.display = haAcc ? '' : 'none';
+  document.getElementById('nav-profilo').style.display = haAcc ? '' : 'none';
+
   vai('s-ricerca');
 }
 
-document.getElementById('btn-back-ric').addEventListener('click', () => {
+/* ══════════════════════════════════════
+   CHIP BIBLIOTECA (header ricerca)
+══════════════════════════════════════ */
+function apriCambiaBib() {
+  document.getElementById('cb-bib').value = stato.biblioteca;
+  apriSheet('sheet-cambia-bib');
+}
+
+let _chipBibTemp = '';
+setupAutocomplete('cb-bib', 'dd-cb', nome => { _chipBibTemp = nome || ''; });
+
+function confermaChip() {
+  const val = document.getElementById('cb-bib').value.trim();
+  if (!val || !BIBS.some(b => b.toLowerCase() === val.toLowerCase())) return;
+  stato.biblioteca = val;
+  document.getElementById('chip-nome').textContent = val;
+  document.getElementById('vuoto-hint').textContent =
+    `Digita il titolo per verificare la disponibilità a ${val}.`;
+  // Se loggato aggiorna anche il profilo
   if (stato.utente) {
-    // Utente loggato: torna a welcome o rimane (cambia biblioteca dal profilo)
-    vai('s-bib');
-  } else {
-    vai('s-bib');
+    fetch('/api/auth/aggiorna', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ nome: stato.utente.nome, biblioteca: val })
+    }).then(r => r.json()).then(d => {
+      if (d.ok) { stato.utente.biblioteca = val; aggiornaUIProfilo(); }
+    }).catch(() => {});
   }
-});
+  chiudiSheet('sheet-cambia-bib');
+}
 
-document.getElementById('btn-profilo-ric').addEventListener('click', () => vai('s-profilo'));
+/* ══════════════════════════════════════
+   SHEETS
+══════════════════════════════════════ */
+function apriSheet(id) {
+  document.getElementById(id).classList.add('aperto');
+}
+function chiudiSheet(id, e) {
+  if (!e || e.target === document.getElementById(id))
+    document.getElementById(id).classList.remove('aperto');
+}
 
-/* ── Autocomplete generico ── */
+/* ══════════════════════════════════════
+   AUTOCOMPLETE
+══════════════════════════════════════ */
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[''`]/g,"'");
 function hl(nome, q) {
   const i = norm(nome).indexOf(norm(q));
-  if (i<0||!q) return nome;
-  return nome.slice(0,i)+'<em>'+nome.slice(i,i+q.length)+'</em>'+nome.slice(i+q.length);
+  if (i < 0 || !q) return nome;
+  return nome.slice(0,i) + '<em>' + nome.slice(i,i+q.length) + '</em>' + nome.slice(i+q.length);
 }
 
 function setupAutocomplete(inputId, ddId, onSelect) {
   const inp = document.getElementById(inputId);
   const dd  = document.getElementById(ddId);
+  if (!inp || !dd) return;
   let iHov = -1;
 
   inp.addEventListener('input', () => {
@@ -662,12 +1911,12 @@ function setupAutocomplete(inputId, ddId, onSelect) {
     onSelect(null);
     iHov = -1;
     if (!q) { dd.classList.remove('open'); return; }
-    const nq = norm(q);
-    const ini = BIBS.filter(n => norm(n).startsWith(nq));
-    const con = BIBS.filter(n => !norm(n).startsWith(nq) && norm(n).includes(nq));
-    const lista = [...ini,...con].slice(0,12);
-    dd.innerHTML = lista.length
-      ? lista.map(n=>`<div class="dd-item">${hl(n,q)}</div>`).join('')
+    const nq   = norm(q);
+    const ini  = BIBS.filter(n => norm(n).startsWith(nq));
+    const con  = BIBS.filter(n => !norm(n).startsWith(nq) && norm(n).includes(nq));
+    const list = [...ini, ...con].slice(0, 12);
+    dd.innerHTML = list.length
+      ? list.map(n => `<div class="dd-item">${hl(n,q)}</div>`).join('')
       : '<div class="dd-empty">Nessuna biblioteca trovata</div>';
     dd.classList.add('open');
     dd.querySelectorAll('.dd-item').forEach(el => {
@@ -683,44 +1932,44 @@ function setupAutocomplete(inputId, ddId, onSelect) {
   inp.addEventListener('keydown', e => {
     const items = dd.querySelectorAll('.dd-item');
     if (!dd.classList.contains('open')) return;
-    if (e.key==='ArrowDown'){e.preventDefault();iHov=Math.min(iHov+1,items.length-1);}
-    else if (e.key==='ArrowUp'){e.preventDefault();iHov=Math.max(iHov-1,0);}
-    else if (e.key==='Enter'&&iHov>=0){
+    if (e.key === 'ArrowDown') { e.preventDefault(); iHov = Math.min(iHov+1, items.length-1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); iHov = Math.max(iHov-1, 0); }
+    else if (e.key === 'Enter' && iHov >= 0) {
       e.preventDefault();
-      inp.value=items[iHov].textContent;
+      inp.value = items[iHov].textContent;
       onSelect(items[iHov].textContent);
       dd.classList.remove('open'); return;
-    } else if (e.key==='Escape'){dd.classList.remove('open');return;}
-    items.forEach((el,i)=>el.classList.toggle('hl',i===iHov));
+    } else if (e.key === 'Escape') { dd.classList.remove('open'); return; }
+    items.forEach((el,i) => el.classList.toggle('hl', i === iHov));
   });
 
-  document.addEventListener('click', e=>{
-    if (!e.target.closest(`#${ddId}`) && !e.target.closest(`#${inputId}`))
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#'+ddId) && !e.target.closest('#'+inputId))
       dd.classList.remove('open');
   });
 }
 
-// Setup autocomplete per registrazione e profilo
-setupAutocomplete('r-bib', 'dd-r', ()=>{});
-setupAutocomplete('p-bib', 'dd-p', ()=>{});
+setupAutocomplete('r-bib', 'dd-r', () => {});
+setupAutocomplete('p-bib', 'dd-p', () => {});
 
-/* ── Ricerca ── */
+/* ══════════════════════════════════════
+   RICERCA
+══════════════════════════════════════ */
 const main = document.getElementById('main');
 
 function statoC(copie) {
   if (!copie?.length) return 'assente';
-  const ss = copie.map(c=>c.stato.toLowerCase());
-  if (ss.some(s=>s.includes('scaffale')||s.includes('disponib'))) return 'disponibile';
-  if (ss.some(s=>s.includes('prestito'))) return 'in-prestito';
+  const ss = copie.map(c => c.stato.toLowerCase());
+  if (ss.some(s => s.includes('scaffale') || s.includes('disponib'))) return 'disponibile';
+  if (ss.some(s => s.includes('prestito'))) return 'in-prestito';
   return 'assente';
 }
 function dotC(s) {
-  s=s.toLowerCase();
-  if (s.includes('scaffale')||s.includes('disponib')) return 'dv';
+  s = s.toLowerCase();
+  if (s.includes('scaffale') || s.includes('disponib')) return 'dv';
   if (s.includes('prestito')) return 'dr';
   return 'do';
 }
-
 function isSalvato(url) { return stato.salvatiSet.has(url); }
 
 async function caricaSalvati() {
@@ -729,7 +1978,7 @@ async function caricaSalvati() {
     const r = await fetch('/api/salvati');
     if (r.ok) {
       const d = await r.json();
-      stato.salvatiSet = new Set(d.map(s=>s.url_opac));
+      stato.salvatiSet = new Set(d.map(s => s.url_opac));
     }
   } catch {}
 }
@@ -738,202 +1987,248 @@ async function toggleSalva(btn, libro) {
   if (!stato.utente) return;
   const url = libro.url;
   if (isSalvato(url)) {
-    // cerca id
     try {
       const r = await fetch('/api/salvati');
       const d = await r.json();
-      const item = d.find(s=>s.url_opac===url);
+      const item = d.find(s => s.url_opac === url);
       if (item) {
-        await fetch(`/api/salvati/${item.id}`,{method:'DELETE'});
+        await fetch(`/api/salvati/${item.id}`, { method: 'DELETE' });
         stato.salvatiSet.delete(url);
-        btn.textContent='♡ Salva'; btn.classList.remove('salvato');
+        btn.textContent = '♡ Salva'; btn.classList.remove('salvato');
       }
     } catch {}
   } else {
     try {
-      await fetch('/api/salvati',{
-        method:'POST', headers:{'Content-Type':'application/json'},
+      await fetch('/api/salvati', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
         body: JSON.stringify({
-          titolo: libro.titolo, autore: libro.autore||'',
+          titolo: libro.titolo, autore: libro.autore || '',
           url_opac: url, biblioteca: stato.biblioteca,
           disponibile: libro.disponibile ? 1 : 0
         })
       });
       stato.salvatiSet.add(url);
-      btn.textContent='♥ Salvato'; btn.classList.add('salvato');
+      btn.textContent = '♥ Salvato'; btn.classList.add('salvato');
     } catch {}
   }
 }
 
 function renderRis(data) {
-  const {query, biblioteca, risultati} = data;
+  const { query, biblioteca, risultati } = data;
   if (!risultati?.length) {
-    main.innerHTML=`<div class="vuoto">
+    main.innerHTML = `<div class="vuoto">
       <svg width="52" height="52" viewBox="0 0 192 192" fill="none">
         <path d="M22 52 C22 48 26 46 30 47 L92 58 L92 148 L30 136 C26 135 22 132 22 128 Z" fill="#1a3a1c"/>
         <path d="M170 52 C170 48 166 46 162 47 L100 58 L100 148 L162 136 C166 135 170 132 170 128 Z" fill="#1a3a1c"/>
         <line x1="96" y1="56" x2="96" y2="149" stroke="#c9a84c" stroke-width="3.5"/>
       </svg>
-      <h2>Nessun risultato</h2><p>Nessun libro trovato per <em>"${query}"</em>.</p></div>`;
+      <h2>Nessun risultato</h2>
+      <p>Nessun libro trovato per <em>"${query}"</em>.</p>
+    </div>`;
     return;
   }
-  const nBib = risultati.filter(r=>r.copie_rezzato?.length).length;
-  let html=`<div class="info-q">
-    <h2>«<strong>${query}</strong>»</h2>
-    <span class="badge">${nBib}/${risultati.length} a ${biblioteca}</span></div>`;
 
-  risultati.forEach((libro,idx)=>{
-    const cl=statoC(libro.copie_rezzato);
-    const au=libro.autore&&libro.autore!=='—'?libro.autore:'';
+  const nBib = risultati.filter(r => r.copie_rezzato?.length).length;
+  let html = `<div class="info-q">
+    <h2>«<strong>${query}</strong>»</h2>
+    <span class="badge">${nBib}/${risultati.length} a ${biblioteca}</span>
+  </div>`;
+
+  risultati.forEach((libro, idx) => {
+    const cl = statoC(libro.copie_rezzato);
+    const au = libro.autore && libro.autore !== '—' ? libro.autore : '';
     const salvBtn = stato.utente
-      ? `<button class="btn-salva${isSalvato(libro.url)?' salvato':''}" data-url="${libro.url}" data-idx="${idx}">
-          ${isSalvato(libro.url)?'♥ Salvato':'♡ Salva'}</button>` : '';
-    let copieH='';
+      ? `<button class="btn-salva${isSalvato(libro.url)?' salvato':''}" data-idx="${idx}">
+           ${isSalvato(libro.url) ? '♥ Salvato' : '♡ Salva'}
+         </button>` : '';
+    let copieH = '';
     if (!libro.copie_rezzato?.length) {
-      copieH=`<div class="card-copie"><span class="assente-label">Non presente a ${biblioteca}</span></div>`;
+      copieH = `<div class="card-copie"><span class="assente-label">Non presente a ${biblioteca}</span></div>`;
     } else {
-      const righe=libro.copie_rezzato.map(c=>`
+      const righe = libro.copie_rezzato.map(c => `
         <div class="copia-riga">
           <div class="cdot ${dotC(c.stato)}"></div>
           <div class="cb">
             <div><span class="cc">${c.collocazione}</span><span class="ci">${c.inventario}</span></div>
             <div class="cs">${c.stato}</div>
-            ${c.rientra?`<div class="cr">Rientra: ${c.rientra}</div>`:''}
+            ${c.rientra ? `<div class="cr">Rientra: ${c.rientra}</div>` : ''}
           </div>
         </div>`).join('');
-      copieH=`<div class="card-copie">${righe}</div>`;
+      copieH = `<div class="card-copie">${righe}</div>`;
     }
-    html+=`<div class="card ${cl}" style="animation-delay:${idx*.04}s" data-idx="${idx}">
+    html += `<div class="card ${cl}" style="animation-delay:${idx*.04}s" data-idx="${idx}">
       <div class="card-head">
         <div class="card-titolo">${libro.titolo}</div>
-        ${au?`<div class="card-autore">${au}</div>`:''}
+        ${au ? `<div class="card-autore">${au}</div>` : ''}
       </div>
-      ${salvBtn?`<div class="card-actions">${salvBtn}</div>`:''}
+      ${salvBtn ? `<div class="card-actions">${salvBtn}</div>` : ''}
       ${copieH}
       <a class="card-link" href="${libro.url}" target="_blank" rel="noopener">Apri nel catalogo →</a>
     </div>`;
   });
-  main.innerHTML=html;
+  main.innerHTML = html;
 
-  // Attach eventi salva
   if (stato.utente) {
-    main.querySelectorAll('.btn-salva').forEach(btn=>{
-      const idx=parseInt(btn.dataset.idx);
-      btn.addEventListener('click',()=>toggleSalva(btn, risultati[idx]));
+    main.querySelectorAll('.btn-salva').forEach(btn => {
+      const idx = parseInt(btn.dataset.idx);
+      btn.addEventListener('click', () => toggleSalva(btn, risultati[idx]));
     });
   }
 }
 
 async function cerca() {
-  const q=document.getElementById('it').value.trim();
-  if (!q||!stato.biblioteca) return;
-  main.innerHTML=`<div class="loading"><div class="spinner"></div><p>Cerco nell'OPAC…</p></div>`;
-  const bc=document.getElementById('btn-cerca');
-  bc.disabled=true; bc.textContent='…';
+  const q = document.getElementById('it').value.trim();
+  if (!q || !stato.biblioteca) return;
+  main.innerHTML = `<div class="loading"><div class="spinner"></div><p>Cerco nell'OPAC…</p></div>`;
+  const bc = document.getElementById('btn-cerca');
+  bc.disabled = true; bc.textContent = '…';
   try {
-    const r=await fetch(`/api/search?q=${encodeURIComponent(q)}&biblioteca=${encodeURIComponent(stato.biblioteca)}`);
+    const r = await fetch(`/api/search?q=${encodeURIComponent(q)}&biblioteca=${encodeURIComponent(stato.biblioteca)}`);
     if (!r.ok) throw new Error(`Errore ${r.status}`);
     renderRis(await r.json());
   } catch(err) {
-    main.innerHTML=`<div class="errore">⚠ ${err.message} — riprova tra qualche secondo.</div>`;
-  } finally { bc.disabled=false; bc.textContent='Cerca'; }
+    main.innerHTML = `<div class="errore">⚠ ${err.message} — riprova tra qualche secondo.</div>`;
+  } finally { bc.disabled = false; bc.textContent = 'Cerca'; }
 }
-document.getElementById('btn-cerca').addEventListener('click',cerca);
-document.getElementById('it').addEventListener('keydown',e=>{if(e.key==='Enter')cerca();});
-document.getElementById('btn-profilo-ric').addEventListener('click',()=>vai('s-profilo'));
-document.getElementById('btn-esplora-ric').addEventListener('click',()=>vai('s-esplora'));
-document.getElementById('btn-back-ric').addEventListener('click',()=>vai('s-bib'));
 
-/* ── Profilo ── */
+document.getElementById('btn-cerca').addEventListener('click', cerca);
+document.getElementById('it').addEventListener('keydown', e => { if (e.key === 'Enter') cerca(); });
+
+/* ══════════════════════════════════════
+   SALVATI (pagina dedicata)
+══════════════════════════════════════ */
+async function caricaSalvatiPagina() {
+  const el = document.getElementById('salvati-main');
+  if (!stato.utente) {
+    el.innerHTML = `<div class="vuoto">
+      <svg width="52" height="52" viewBox="0 0 192 192" fill="none">
+        <path d="M22 52 C22 48 26 46 30 47 L92 58 L92 148 L30 136 C26 135 22 132 22 128 Z" fill="#1a3a1c"/>
+        <path d="M170 52 C170 48 166 46 162 47 L100 58 L100 148 L162 136 C166 135 170 132 170 128 Z" fill="#1a3a1c"/>
+        <line x1="96" y1="56" x2="96" y2="149" stroke="#c9a84c" stroke-width="3.5"/>
+      </svg>
+      <h2>Accedi per salvare</h2>
+      <p>Crea un account gratuito per salvare i libri che ti interessano.</p>
+    </div>`;
+    return;
+  }
+  el.innerHTML = '<div class="loading"><div class="spinner"></div><p>Carico i tuoi libri…</p></div>';
+  try {
+    const r = await fetch('/api/salvati');
+    const sav = await r.json();
+    if (!sav.length) {
+      el.innerHTML = `<div class="vuoto">
+        <svg width="52" height="52" viewBox="0 0 192 192" fill="none">
+          <path d="M22 52 C22 48 26 46 30 47 L92 58 L92 148 L30 136 C26 135 22 132 22 128 Z" fill="#1a3a1c"/>
+          <path d="M170 52 C170 48 166 46 162 47 L100 58 L100 148 L162 136 C166 135 170 132 170 128 Z" fill="#1a3a1c"/>
+          <line x1="96" y1="56" x2="96" y2="149" stroke="#c9a84c" stroke-width="3.5"/>
+        </svg>
+        <h2>Nessun libro salvato</h2>
+        <p>Cerca un titolo e premi ♡ per salvarlo qui.</p>
+      </div>`;
+      return;
+    }
+    el.innerHTML = sav.map(s => `
+      <div class="salvato-item" data-id="${s.id}">
+        <div class="si-dot ${s.disponibile ? 'dv' : 'do'}"></div>
+        <div class="si-body">
+          <div class="si-titolo">${s.titolo}</div>
+          ${s.autore ? `<div class="si-autore">${s.autore}</div>` : ''}
+          <div class="si-meta">${s.biblioteca}</div>
+        </div>
+        <button class="btn-del" onclick="eliminaSalvato(${s.id}, this)" title="Rimuovi">✕</button>
+      </div>`).join('');
+  } catch {
+    el.innerHTML = '<div class="errore">Non è stato possibile caricare i libri salvati.</div>';
+  }
+}
+
+async function eliminaSalvato(id, btn) {
+  await fetch(`/api/salvati/${id}`, { method: 'DELETE' });
+  btn.closest('.salvato-item').remove();
+  stato.salvatiSet.delete([...stato.salvatiSet].find(u => u)); // aggiornamento approssimativo
+  await caricaSalvati();
+}
+
+/* ══════════════════════════════════════
+   PROFILO
+══════════════════════════════════════ */
+function aggiornaUIProfilo() {
+  if (!stato.utente) return;
+  const u = stato.utente;
+  document.getElementById('profilo-avatar').textContent   = (u.nome||'?')[0].toUpperCase();
+  document.getElementById('profilo-nome').textContent     = u.nome;
+  document.getElementById('profilo-email').textContent    = u.email || '';
+  document.getElementById('profilo-bib-label').textContent= stato.biblioteca;
+  document.getElementById('im-bib-val').textContent       = stato.biblioteca;
+}
+
 async function caricaProfilo() {
   if (!stato.utente) return;
-  document.getElementById('prof-nome').textContent = stato.utente.nome;
+  aggiornaUIProfilo();
   document.getElementById('p-nome').value = stato.utente.nome || '';
   document.getElementById('p-bib').value  = stato.utente.biblioteca || '';
 
   try {
-    const [stR, savR] = await Promise.all([
-      fetch('/api/storico'), fetch('/api/salvati')
-    ]);
+    const [stR, savR] = await Promise.all([fetch('/api/storico'), fetch('/api/salvati')]);
     const st  = await stR.json();
     const sav = await savR.json();
 
-    // Statistiche
     document.getElementById('st-ricerche').textContent = st.tot_ricerche;
     document.getElementById('st-salvati').textContent  = sav.length;
 
-    // Top query
     const tqEl = document.getElementById('top-query');
-    if (!st.top_query?.length) {
-      tqEl.innerHTML='<div class="vuoto-piccolo">Nessuna ricerca ancora.</div>';
-    } else {
-      tqEl.innerHTML = st.top_query.map((q,i)=>`
-        <div class="top-query-item">
-          <span class="tq-rank">${i+1}</span>
-          <span class="tq-q">${q.query}</span>
-          <span class="tq-n">${q.n}×</span>
-        </div>`).join('');
-    }
+    tqEl.innerHTML = st.top_query?.length
+      ? st.top_query.map((q,i) => `
+          <div class="top-query-item">
+            <span class="tq-rank">${i+1}</span>
+            <span class="tq-q">${q.query}</span>
+            <span class="tq-n">${q.n}×</span>
+          </div>`).join('')
+      : '<div class="vuoto-piccolo">Nessuna ricerca ancora.</div>';
 
-    // Salvati
-    const savEl = document.getElementById('lista-salvati');
-    if (!sav.length) {
-      savEl.innerHTML='<div class="vuoto-piccolo">Nessun libro salvato ancora.</div>';
-    } else {
-      savEl.innerHTML = sav.map(s=>`
-        <div class="salvato-item">
-          <div class="si-dot ${s.disponibile?'dv':'do'}"></div>
-          <div class="si-body">
-            <div class="si-titolo">${s.titolo}</div>
-            ${s.autore?`<div class="si-autore">${s.autore}</div>`:''}
-            <div class="si-meta">${s.biblioteca}</div>
-          </div>
-          <button class="btn-del" onclick="eliminaSalvato(${s.id}, this)" title="Rimuovi">✕</button>
-        </div>`).join('');
-    }
-
-    // Storico
     const stEl = document.getElementById('lista-storico');
-    if (!st.ricerche?.length) {
-      stEl.innerHTML='<div class="vuoto-piccolo">Nessuna ricerca ancora.</div>';
-    } else {
-      stEl.innerHTML = st.ricerche.map(r=>`
-        <div class="ricerca-item">
-          <div>
-            <div class="ri-query">${r.query}</div>
-            <div class="ri-bib">${r.biblioteca}</div>
-          </div>
-          <div class="ri-meta">${r.a_bib}/${r.trovati}<br>${r.cercato_il.slice(0,10)}</div>
-        </div>`).join('');
-    }
+    stEl.innerHTML = st.ricerche?.length
+      ? st.ricerche.map(r => `
+          <div class="ricerca-item">
+            <div>
+              <div class="ri-query">${r.query}</div>
+              <div class="ri-bib">${r.biblioteca}</div>
+            </div>
+            <div class="ri-meta">${r.a_bib}/${r.trovati}<br>${r.cercato_il.slice(0,10)}</div>
+          </div>`).join('')
+      : '<div class="vuoto-piccolo">Nessuna ricerca ancora.</div>';
   } catch(e) { console.error(e); }
-}
-
-async function eliminaSalvato(id, btn) {
-  await fetch(`/api/salvati/${id}`,{method:'DELETE'});
-  btn.closest('.salvato-item').remove();
-  await caricaSalvati();
-  // aggiorna contatore
-  const n = parseInt(document.getElementById('st-salvati').textContent||'0');
-  document.getElementById('st-salvati').textContent = Math.max(0, n-1);
 }
 
 async function salvaProfilo() {
   const nome = document.getElementById('p-nome').value.trim();
-  const bib  = document.getElementById('p-bib').value.trim();
-  if (!nome || !bib) return alert('Compila nome e biblioteca.');
-  const r = await fetch('/api/auth/aggiorna',{
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({nome, biblioteca: bib})
+  if (!nome) return;
+  const r = await fetch('/api/auth/aggiorna', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ nome, biblioteca: stato.utente.biblioteca })
   });
   const d = await r.json();
   if (d.ok) {
     stato.utente.nome = d.nome;
+    aggiornaUIProfilo();
+    chiudiSheet('sheet-profilo');
+  }
+}
+
+async function salvaLibreria() {
+  const bib = document.getElementById('p-bib').value.trim();
+  if (!bib || !BIBS.some(b => b.toLowerCase() === bib.toLowerCase())) return;
+  const r = await fetch('/api/auth/aggiorna', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ nome: stato.utente.nome, biblioteca: bib })
+  });
+  const d = await r.json();
+  if (d.ok) {
     stato.utente.biblioteca = d.biblioteca;
     stato.biblioteca = d.biblioteca;
-    document.getElementById('prof-nome').textContent = d.nome;
-    document.getElementById('hd-bib-nome').textContent = d.biblioteca;
-    alert('Profilo aggiornato.');
+    document.getElementById('chip-nome').textContent = d.biblioteca;
+    aggiornaUIProfilo();
+    chiudiSheet('sheet-bib');
   }
 }
 
@@ -958,15 +2253,13 @@ function cambiaTabE(tab) {
 }
 
 function cardEC(libro, label) {
-  const salvato = stato.salvatiSet.has(libro.url);
-  const salvBtn = stato.utente
+  const salvato  = stato.salvatiSet.has(libro.url);
+  const salvBtn  = stato.utente
     ? `<button class="btn-esalva${salvato?' salvato':''}"
          data-url="${libro.url}"
          data-titolo="${(libro.titolo||'').replace(/"/g,'&quot;')}"
          data-autore="${(libro.autore||'').replace(/"/g,'&quot;')}"
        >${salvato ? '♥ Salvato' : '♡ Salva'}</button>` : '';
-  const abstract = libro.abstract
-    ? `<div class="ec-abstract">${libro.abstract}</div>` : '';
   return `
     <div class="ec">
       <div class="ec-head">
@@ -974,7 +2267,6 @@ function cardEC(libro, label) {
         <div class="ec-titolo">${libro.titolo}</div>
         ${libro.autore ? `<div class="ec-autore">${libro.autore}</div>` : ''}
       </div>
-      ${abstract}
       <div class="ec-actions">
         <a class="btn-opac" href="${libro.url}" target="_blank" rel="noopener">Apri nel catalogo →</a>
         ${salvBtn}
@@ -1001,8 +2293,8 @@ async function caricaGiorno() {
     if (!r.ok) throw new Error();
     const libro = await r.json();
     if (libro.error) throw new Error();
-    const oggi = new Date().toLocaleDateString('it-IT', {day:'numeric',month:'long',year:'numeric'});
-    el.innerHTML = `<div class="ec-data">📅 ${oggi}</div>` + cardEC(libro, 'Libro del giorno');
+    const oggi = new Date().toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
+    el.innerHTML = `<div class="ec-data">${oggi}</div>` + cardEC(libro, 'Libro del giorno');
     attachSalvaEC(el);
   } catch {
     el.innerHTML = '<div class="errore">Non è stato possibile caricare il libro del giorno.</div>';
@@ -1010,7 +2302,7 @@ async function caricaGiorno() {
 }
 
 async function caricaCasuale() {
-  const el = document.getElementById('ec-casuale');
+  const el  = document.getElementById('ec-casuale');
   const btn = document.getElementById('btn-nuovo-casuale');
   const sp  = document.getElementById('spin-casuale');
   el.innerHTML = '<div class="loading"><div class="spinner"></div><p>Pesco dal catalogo…</p></div>';
@@ -1030,7 +2322,7 @@ async function caricaCasuale() {
 }
 
 async function caricaAutore() {
-  const el = document.getElementById('ec-autore');
+  const el  = document.getElementById('ec-autore');
   const btn = document.getElementById('btn-nuovo-autore');
   const sp  = document.getElementById('spin-autore');
   el.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cerco un autore…</p></div>';
@@ -1041,7 +2333,7 @@ async function caricaAutore() {
     const d = await r.json();
     if (d.error) throw new Error();
     const nomeAutore = d.autore.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
-    const opereHtml = d.opere?.length
+    const opereHtml  = d.opere?.length
       ? d.opere.map((o,i) => `
           <div class="opera-item">
             <span class="opera-n">${i+1}</span>
