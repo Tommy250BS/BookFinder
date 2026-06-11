@@ -1,2362 +1,936 @@
+cat > /home/claude/index.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0f2210">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Babele">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="apple-touch-icon" href="/icon-192.png">
-  <title>La Biblioteca di Babele</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    /* ══════════════════════════════════════
-       TOKEN SYSTEM
-    ══════════════════════════════════════ */
-    :root {
-      /* Palette */
-      --bosco:    #1a3a1c;
-      --bosco-2:  #254d28;
-      --bosco-3:  #0f2210;
-      --bosco-4:  #132d15;
-      --oro:      #c9a84c;
-      --oro-2:    #e8c96a;
-      --oro-soft: rgba(201,168,76,.15);
-      --avorio:   #f7f3eb;
-      --av2:      #ece6d9;
-      --av3:      #ddd6c6;
-      --av4:      #cfc7b4;
-      --inchio:   #0f0d0a;
-      --in2:      #2a2520;
-      --in3:      #4a4540;
-      --rosso:    #7a2020;
-      --verde-ok: #1a5c1e;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f2210">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Babele">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<title>La Biblioteca di Babele</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bosco:#1a3a1c;--bosco-2:#254d28;--bosco-3:#0f2210;
+  --oro:#c9a84c;--oro-2:#e8c96a;--oro-s:rgba(201,168,76,.15);
+  --av:#f7f3eb;--av2:#ece6d9;--av3:#ddd6c6;--av4:#cfc7b4;
+  --ink:#0f0d0a;--ink2:#2a2520;--ink3:#4a4540;
+  --rosso:#7a2020;
+  --sh-s:0 1px 4px rgba(15,13,10,.08);--sh-m:0 2px 12px rgba(15,13,10,.12);--sh-l:0 8px 32px rgba(15,13,10,.18);
+  --r:10px;--rs:6px;--rl:18px;
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
+  --nh:60px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%}
+body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden}
+.S{display:none;flex-direction:column;flex:1;min-height:100dvh}
+.S.on{display:flex}
+.cnav{padding-bottom:calc(var(--nh) + var(--sb))}
 
-      /* Ombre */
-      --sh-s: 0 1px 4px rgba(15,13,10,.08);
-      --sh-m: 0 2px 12px rgba(15,13,10,.12);
-      --sh-l: 0 8px 32px rgba(15,13,10,.16);
+/* NAV */
+#bnav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--bosco-3);border-top:1px solid rgba(201,168,76,.18);display:none;height:calc(var(--nh) + var(--sb));padding-bottom:var(--sb);box-shadow:0 -4px 24px rgba(0,0,0,.32)}
+.navi{display:flex;height:var(--nh)}
+.ntab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.35);font-family:'Inter',sans-serif;font-size:.58rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;transition:color .2s;-webkit-tap-highlight-color:transparent;position:relative}
+.ntab::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:2px;background:var(--oro);border-radius:0 0 2px 2px;opacity:0;transition:opacity .2s}
+.ntab.on{color:var(--oro)}.ntab.on::before{opacity:1}
+.nico{font-size:1.1rem;line-height:1}
 
-      /* Radius */
-      --r-s: 6px;
-      --r-m: 10px;
-      --r-l: 16px;
+/* HEADER */
+.hdr{background:var(--bosco-3);color:#fff;position:sticky;top:0;z-index:100;padding-top:var(--st);box-shadow:0 2px 20px rgba(0,0,0,.4)}
+.hbar{display:flex;align-items:center;gap:10px;padding:12px 16px}
+.hbrand{flex:1;min-width:0}
+.hbrand h1{font-family:'Cormorant Garamond',serif;font-size:1.08rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em;line-height:1.2}
+.hbrand p{font-size:.58rem;color:var(--oro);letter-spacing:.12em;text-transform:uppercase;margin-top:1px}
+.hbtn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:var(--rs);color:rgba(255,255,255,.8);font-size:.85rem;cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s;flex-shrink:0}
+.hbtn:active{background:rgba(255,255,255,.18)}
+.hsearch{padding:0 16px 12px;display:flex;gap:8px}
+.hsearch input{flex:1;padding:10px 14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);border-radius:var(--rs);font-family:'Inter',sans-serif;font-size:.9rem;color:#fff;outline:none;transition:background .2s,border-color .2s}
+.hsearch input:focus{background:rgba(255,255,255,.16);border-color:var(--oro)}
+.hsearch input::placeholder{color:rgba(255,255,255,.3)}
+.bchip{display:inline-flex;align-items:center;gap:5px;background:var(--oro-s);border:1px solid rgba(201,168,76,.22);border-radius:20px;padding:3px 10px 3px 6px;font-size:.66rem;color:var(--oro);font-weight:500;letter-spacing:.04em;cursor:pointer;flex-shrink:0}
+.bchip-dot{width:6px;height:6px;border-radius:50%;background:var(--oro)}
 
-      /* Spaziatura safe area */
-      --safe-top:    env(safe-area-inset-top, 0px);
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
-      --nav-h:       60px;
-    }
+/* MAIN */
+.pm{flex:1;padding:20px 16px;max-width:600px;width:100%;margin:0 auto}
 
-    /* ══════════════════════════════════════
-       RESET & BASE
-    ══════════════════════════════════════ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { height: 100%; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--avorio);
-      color: var(--inchio);
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-    }
+/* BOTTONI */
+.bp{display:block;width:100%;padding:14px;background:var(--bosco);color:var(--oro);border:none;border-radius:var(--r);font-family:'Inter',sans-serif;font-weight:600;font-size:.9rem;letter-spacing:.04em;cursor:pointer;transition:background .2s,transform .1s}
+.bp:active{transform:scale(.97)}.bp:disabled{opacity:.5}
+.bs{display:block;width:100%;padding:14px;background:transparent;color:var(--bosco);border:1.5px solid var(--bosco);border-radius:var(--r);font-family:'Inter',sans-serif;font-weight:600;font-size:.9rem;letter-spacing:.04em;cursor:pointer;transition:all .2s}
+.bs:active{transform:scale(.97)}
+.bg{background:none;border:none;color:var(--ink3);font-size:.82rem;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:underline;text-underline-offset:3px;padding:8px 4px}
+.bsm{padding:9px 16px;font-size:.8rem;font-weight:600;border-radius:var(--rs);cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.03em;border:none;transition:background .15s,transform .1s}
+.bsm:active{transform:scale(.97)}
+.bsmp{background:var(--bosco);color:var(--oro)}
+.bsmg{background:transparent;border:1.5px solid var(--av3)!important;color:var(--ink3)}
+.bsmd{background:transparent;border:1.5px solid #ddd!important;color:#bbb}
+.bsmd:hover{border-color:var(--rosso)!important;color:var(--rosso)}
 
-    /* ══════════════════════════════════════
-       SISTEMA SCHERMATE
-    ══════════════════════════════════════ */
-    .schermata {
-      display: none;
-      flex-direction: column;
-      flex: 1;
-      min-height: 100dvh;
-    }
-    .schermata.attiva { display: flex; }
+/* FORM */
+.fi{margin-bottom:14px}
+.fi label{display:block;font-size:.67rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:5px}
+.fi input{width:100%;padding:12px 14px;border:1.5px solid var(--av3);border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.9rem;background:#fff;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+.fi input:focus{border-color:var(--bosco);box-shadow:0 0 0 3px rgba(26,58,28,.1)}
+.fi input::placeholder{color:#ccc}
+.acw{position:relative}
+.dd{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid var(--bosco);border-radius:var(--r);box-shadow:var(--sh-l);max-height:220px;overflow-y:auto;z-index:300;display:none}
+.dd.on{display:block}
+.ddi{padding:10px 14px;cursor:pointer;font-size:.87rem;border-bottom:1px solid var(--av2);color:var(--ink2);transition:background .1s,color .1s}
+.ddi:last-child{border-bottom:none}
+.ddi:hover,.ddi.hl{background:var(--bosco);color:#fff}
+.ddi em{font-style:normal;font-weight:600}
+.dde{padding:11px 14px;font-size:.83rem;color:#bbb;font-style:italic}
 
-    /* Schermate con bottom nav: padding inferiore */
-    .con-nav {
-      padding-bottom: calc(var(--nav-h) + var(--safe-bottom));
-    }
+/* STATI */
+.vuoto{text-align:center;padding:52px 20px}
+.vuoto svg{opacity:.18;margin-bottom:16px}
+.vuoto h2{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-style:italic;color:var(--ink2);margin-bottom:6px}
+.vuoto p{font-size:.82rem;color:#aaa;line-height:1.6}
+.ld{text-align:center;padding:52px 20px}
+.sp{width:28px;height:28px;border:2px solid var(--av3);border-top-color:var(--bosco);border-radius:50%;animation:gira .8s linear infinite;margin:0 auto 14px}
+@keyframes gira{to{transform:rotate(360deg)}}
+.ld p{font-size:.8rem;color:#aaa;font-style:italic}
+.er{background:#fff5f5;border-left:3px solid var(--rosso);border-radius:0 var(--rs) var(--rs) 0;padding:12px 14px;font-size:.83rem;color:var(--rosso);margin-bottom:12px}
+@keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-    /* ══════════════════════════════════════
-       BOTTOM NAVIGATION
-    ══════════════════════════════════════ */
-    #bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 200;
-      background: var(--bosco-3);
-      border-top: 1px solid rgba(201,168,76,.2);
-      display: none; /* mostrato da JS */
-      height: calc(var(--nav-h) + var(--safe-bottom));
-      padding-bottom: var(--safe-bottom);
-      box-shadow: 0 -4px 20px rgba(0,0,0,.3);
-    }
-    .nav-inner {
-      display: flex;
-      height: var(--nav-h);
-    }
-    .nav-tab {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: rgba(255,255,255,.38);
-      font-family: 'Inter', sans-serif;
-      font-size: .6rem;
-      font-weight: 500;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      transition: color .2s;
-      -webkit-tap-highlight-color: transparent;
-      position: relative;
-    }
-    .nav-tab::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 32px;
-      height: 2px;
-      background: var(--oro);
-      border-radius: 0 0 2px 2px;
-      opacity: 0;
-      transition: opacity .2s;
-    }
-    .nav-tab.attivo {
-      color: var(--oro);
-    }
-    .nav-tab.attivo::before { opacity: 1; }
-    .nav-icon {
-      font-size: 1.15rem;
-      line-height: 1;
-    }
+/* WELCOME */
+#sw{background:var(--bosco-3);justify-content:flex-end;position:relative;overflow:hidden}
+.wbg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.wbl{position:absolute;left:0;right:0;height:1px;background:rgba(201,168,76,.1)}
+.wbk{position:absolute;border-radius:1px 1px 0 0;opacity:0;animation:up .5s ease both}
+.wc{position:relative;z-index:10;padding:0 28px calc(52px + var(--sb))}
+.wt{font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:300;color:#fff;line-height:1.08;letter-spacing:-.01em;margin-bottom:7px;margin-top:26px}
+.wt strong{font-weight:600;color:var(--oro);display:block}
+.wsub{font-size:.7rem;color:rgba(255,255,255,.35);letter-spacing:.13em;text-transform:uppercase;margin-bottom:36px}
+.wsep{display:flex;align-items:center;gap:12px;margin-bottom:26px;opacity:.35}
+.wsl{flex:1;height:1px;background:var(--oro)}
+.wss{font-family:'Cormorant Garamond',serif;font-size:.8rem;color:var(--oro)}
+.wbtns{display:flex;flex-direction:column;gap:10px}
+.wbtns .bp{background:var(--oro);color:var(--bosco-3)}
+.wbtns .bs{border-color:rgba(255,255,255,.22);color:rgba(255,255,255,.75)}
+.wbtns .bg{color:rgba(255,255,255,.32);text-align:center}
 
-    /* ══════════════════════════════════════
-       HEADER UNIFICATO
-    ══════════════════════════════════════ */
-    .app-header {
-      background: var(--bosco-3);
-      color: #fff;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      padding-top: var(--safe-top);
-      box-shadow: 0 2px 20px rgba(0,0,0,.4);
-    }
-    .hd-bar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
-    }
-    .hd-brand {
-      flex: 1;
-      min-width: 0;
-    }
-    .hd-brand h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      letter-spacing: .01em;
-      line-height: 1.2;
-    }
-    .hd-brand p {
-      font-size: .6rem;
-      color: var(--oro);
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      margin-top: 1px;
-      font-weight: 500;
-    }
-    .hd-btn {
-      width: 34px;
-      height: 34px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: var(--r-s);
-      color: rgba(255,255,255,.8);
-      font-size: .85rem;
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      transition: background .15s;
-      flex-shrink: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .hd-btn:active { background: rgba(255,255,255,.18); }
-    .hd-btn.accent {
-      background: var(--oro-soft);
-      border-color: rgba(201,168,76,.35);
-      color: var(--oro);
-    }
+/* AUTH */
+#sa{background:var(--bosco-3);align-items:stretch}
+.ahd{padding:calc(18px + var(--st)) 24px 22px;display:flex;align-items:center;gap:14px}
+.abk{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:var(--rs);color:rgba(255,255,255,.7);font-size:1rem;cursor:pointer}
+.abt{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:#fff}
+.abt strong{font-weight:600}
+.abd{flex:1;background:var(--av);border-radius:var(--rl) var(--rl) 0 0;padding:26px 24px calc(26px + var(--sb));overflow-y:auto}
+.aerr{background:#fff5f5;border-left:3px solid var(--rosso);padding:10px 12px;border-radius:0 var(--rs) var(--rs) 0;font-size:.82rem;color:var(--rosso);margin-bottom:14px;display:none}
+.asw{text-align:center;margin-top:16px;font-size:.82rem;color:var(--ink3)}
+.asw a{color:var(--bosco);cursor:pointer;font-weight:600;text-decoration:none}
+.adv{display:flex;align-items:center;gap:12px;margin:16px 0}
+.adv span{font-size:.68rem;color:#bbb;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.adv::before,.adv::after{content:'';flex:1;height:1px;background:var(--av3)}
 
-    /* Search bar nell'header */
-    .hd-search {
-      padding: 0 16px 12px;
-      display: flex;
-      gap: 8px;
-    }
-    .hd-search input {
-      flex: 1;
-      padding: 10px 14px;
-      background: rgba(255,255,255,.1);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: var(--r-s);
-      font-family: 'Inter', sans-serif;
-      font-size: .9rem;
-      color: #fff;
-      outline: none;
-      transition: background .2s, border-color .2s;
-    }
-    .hd-search input:focus {
-      background: rgba(255,255,255,.16);
-      border-color: var(--oro);
-    }
-    .hd-search input::placeholder { color: rgba(255,255,255,.35); }
-    .btn-cerca {
-      padding: 10px 18px;
-      background: var(--oro);
-      color: var(--bosco-3);
-      border: none;
-      border-radius: var(--r-s);
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      font-size: .82rem;
-      letter-spacing: .04em;
-      cursor: pointer;
-      transition: background .2s, transform .1s;
-      white-space: nowrap;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .btn-cerca:active { transform: scale(.96); }
-    .btn-cerca:disabled { opacity: .5; cursor: default; }
+/* BIB */
+#sbib{background:var(--bosco-3);align-items:stretch}
+.bh{padding:calc(20px + var(--st)) 24px 26px}
+.bh p{font-size:.67rem;color:var(--oro);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
+.bh h2{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;color:#fff;line-height:1.15}
+.bh h2 strong{font-weight:600}
+.bb{flex:1;background:var(--av);border-radius:var(--rl) var(--rl) 0 0;padding:26px 24px calc(26px + var(--sb))}
+.bhint{font-size:.82rem;color:var(--ink3);line-height:1.6;margin-bottom:18px}
 
-    /* ══════════════════════════════════════
-       MAIN SCROLL AREA
-    ══════════════════════════════════════ */
-    .page-main {
-      flex: 1;
-      padding: 20px 16px;
-      max-width: 600px;
-      width: 100%;
-      margin: 0 auto;
-    }
+/* HOME */
+#shome{background:var(--av)}
+.hh{background:var(--bosco-3);padding:calc(16px + var(--st)) 20px 0;position:relative;overflow:hidden}
+.hhi{position:relative;z-index:1;padding-bottom:28px}
+.hsal{font-size:.67rem;color:var(--oro);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.htit{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:#fff;line-height:1.1;margin-bottom:4px}
+.htit strong{font-weight:600}
+.hsubt{font-size:.72rem;color:rgba(255,255,255,.4);letter-spacing:.06em}
+.horn{position:absolute;right:-20px;top:50%;transform:translateY(-50%);opacity:.06;font-size:8rem;font-family:'Cormorant Garamond',serif;color:#fff;line-height:1;pointer-events:none;user-select:none}
+.hm{background:var(--av);border-radius:var(--rl) var(--rl) 0 0;margin-top:-14px;position:relative;z-index:2;padding:24px 16px}
 
-    /* ══════════════════════════════════════
-       BOTTONI GLOBALI
-    ══════════════════════════════════════ */
-    .btn-prim {
-      display: block;
-      width: 100%;
-      padding: 14px;
-      background: var(--bosco);
-      color: var(--oro);
-      border: none;
-      border-radius: var(--r-m);
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      font-size: .9rem;
-      letter-spacing: .04em;
-      cursor: pointer;
-      transition: background .2s, transform .1s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .btn-prim:active { transform: scale(.97); }
-    .btn-prim:disabled { opacity: .5; }
-    .btn-sec {
-      display: block;
-      width: 100%;
-      padding: 14px;
-      background: transparent;
-      color: var(--bosco);
-      border: 1.5px solid var(--bosco);
-      border-radius: var(--r-m);
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      font-size: .9rem;
-      letter-spacing: .04em;
-      cursor: pointer;
-      transition: all .2s;
-    }
-    .btn-sec:active { transform: scale(.97); }
-    .btn-ghost {
-      background: none;
-      border: none;
-      color: var(--in3);
-      font-size: .82rem;
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      padding: 8px 4px;
-    }
-    .btn-sm {
-      padding: 9px 16px;
-      font-size: .8rem;
-      font-weight: 600;
-      border-radius: var(--r-s);
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      letter-spacing: .03em;
-      border: none;
-      transition: background .15s, transform .1s;
-    }
-    .btn-sm:active { transform: scale(.97); }
-    .btn-sm-prim  { background: var(--bosco); color: var(--oro); }
-    .btn-sm-ghost { background: transparent; border: 1.5px solid var(--av3); color: var(--in3); }
-    .btn-sm-ghost:hover { border-color: var(--rosso); color: var(--rosso); }
+/* CITAZIONE */
+.cit{background:#fff;border-radius:var(--r);box-shadow:var(--sh-s);padding:18px 20px 16px;margin-bottom:18px;border-left:3px solid var(--oro);position:relative}
+.citsym{font-family:'Cormorant Garamond',serif;font-size:2.8rem;color:var(--oro);line-height:.8;position:absolute;top:10px;left:12px;opacity:.25}
+.cittxt{font-family:'Cormorant Garamond',serif;font-size:1.04rem;font-style:italic;color:var(--ink2);line-height:1.6;padding-left:22px}
+.citaut{font-size:.7rem;color:#aaa;text-align:right;margin-top:7px;letter-spacing:.05em}
 
-    /* ══════════════════════════════════════
-       FORM FIELDS
-    ══════════════════════════════════════ */
-    .field { margin-bottom: 14px; }
-    .field label {
-      display: block;
-      font-size: .68rem;
-      font-weight: 600;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--in3);
-      margin-bottom: 5px;
-    }
-    .field input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1.5px solid var(--av3);
-      border-radius: var(--r-m);
-      font-family: 'Inter', sans-serif;
-      font-size: .9rem;
-      background: #fff;
-      color: var(--inchio);
-      outline: none;
-      transition: border-color .2s, box-shadow .2s;
-    }
-    .field input:focus {
-      border-color: var(--bosco);
-      box-shadow: 0 0 0 3px rgba(26,58,28,.1);
-    }
-    .field input::placeholder { color: #ccc; }
+/* GRID SEZIONI */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.sc{background:#fff;border-radius:var(--r);box-shadow:var(--sh-s);padding:16px 14px;cursor:pointer;transition:box-shadow .2s,transform .15s;-webkit-tap-highlight-color:transparent;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:7px}
+.sc:active{transform:scale(.97);box-shadow:var(--sh-m)}
+.sc.wide{grid-column:1/-1}
+.sc-ico{font-size:1.45rem;line-height:1}
+.sc-nome{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--ink);line-height:1.2}
+.sc-desc{font-size:.7rem;color:#aaa;line-height:1.5}
+.sc-orn{position:absolute;right:8px;bottom:2px;font-family:'Cormorant Garamond',serif;font-size:2.4rem;color:var(--bosco);opacity:.04;font-weight:700;line-height:1}
+.sc[data-c="v"]{border-top:2px solid var(--bosco)}
+.sc[data-c="o"]{border-top:2px solid var(--oro)}
+.sc[data-c="r"]{border-top:2px solid var(--rosso)}
+.sc[data-c="b"]{border-top:2px solid #3a5a8a}
 
-    /* Autocomplete */
-    .ac-wrap { position: relative; }
-    .dropdown {
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0; right: 0;
-      background: #fff;
-      border: 1.5px solid var(--bosco);
-      border-radius: var(--r-m);
-      box-shadow: var(--sh-l);
-      max-height: 220px;
-      overflow-y: auto;
-      z-index: 300;
-      display: none;
-    }
-    .dropdown.open { display: block; }
-    .dd-item {
-      padding: 10px 14px;
-      cursor: pointer;
-      font-size: .88rem;
-      border-bottom: 1px solid var(--av2);
-      color: var(--in2);
-      transition: background .1s, color .1s;
-    }
-    .dd-item:last-child { border-bottom: none; }
-    .dd-item:hover, .dd-item.hl { background: var(--bosco); color: #fff; }
-    .dd-item em { font-style: normal; font-weight: 600; }
-    .dd-empty {
-      padding: 11px 14px;
-      font-size: .84rem;
-      color: #bbb;
-      font-style: italic;
-    }
+/* COS'E' BOX */
+.cosae{background:var(--bosco);border-radius:var(--r);padding:18px;margin-bottom:18px;color:#fff;position:relative;overflow:hidden}
+.cosae h3{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--oro);margin-bottom:7px}
+.cosae p{font-size:.8rem;line-height:1.7;color:rgba(255,255,255,.6)}
+.cosaorn{position:absolute;right:-10px;bottom:-10px;font-size:5rem;opacity:.07;font-family:'Cormorant Garamond',serif;color:#fff}
 
-    /* ══════════════════════════════════════
-       STATI: VUOTO / LOADING / ERRORE
-    ══════════════════════════════════════ */
-    .vuoto {
-      text-align: center;
-      padding: 56px 20px;
-    }
-    .vuoto svg { opacity: .2; margin-bottom: 18px; }
-    .vuoto h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.35rem;
-      font-style: italic;
-      color: var(--in2);
-      margin-bottom: 6px;
-    }
-    .vuoto p { font-size: .82rem; color: #aaa; line-height: 1.6; }
+/* SEZIONE INTRO (Clio, Mnem, ecc.) */
+.sint{background:var(--bosco-3);padding:calc(16px + var(--st)) 20px 0;position:relative;overflow:hidden}
+.sinti{padding-bottom:26px;position:relative;z-index:1}
+.stag{font-size:.63rem;color:var(--oro);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;font-weight:600}
+.stitolo{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:#fff;line-height:1.1;margin-bottom:4px}
+.stitolo strong{font-weight:600}
+.ssub{font-size:.75rem;color:rgba(255,255,255,.4);font-style:italic;font-family:'Cormorant Garamond',serif;line-height:1.5}
+.sornbg{position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-family:'Cormorant Garamond',serif;font-size:6rem;color:#fff;opacity:.04;line-height:1;pointer-events:none}
+.sbody{background:var(--av);border-radius:var(--rl) var(--rl) 0 0;margin-top:-14px;position:relative;z-index:2;flex:1;padding:24px 16px}
 
-    .loading {
-      text-align: center;
-      padding: 56px 20px;
-    }
-    .spinner {
-      width: 28px;
-      height: 28px;
-      border: 2px solid var(--av3);
-      border-top-color: var(--bosco);
-      border-radius: 50%;
-      animation: gira .8s linear infinite;
-      margin: 0 auto 14px;
-    }
-    @keyframes gira { to { transform: rotate(360deg); } }
-    .loading p { font-size: .8rem; color: #aaa; font-style: italic; }
+/* ETIMO BOX */
+.etimo{background:#fff;border-radius:var(--r);box-shadow:var(--sh-s);padding:16px 18px;margin-bottom:20px;border-left:3px solid var(--oro)}
+.etn{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:var(--bosco);margin-bottom:2px}
+.eto{font-size:.7rem;color:#aaa;letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px}
+.etd{font-size:.83rem;color:var(--ink2);line-height:1.7}
+.etd.ph{color:#ccc;font-style:italic}
 
-    .errore {
-      background: #fff5f5;
-      border-left: 3px solid var(--rosso);
-      border-radius: 0 var(--r-s) var(--r-s) 0;
-      padding: 12px 14px;
-      font-size: .83rem;
-      color: var(--rosso);
-      margin-bottom: 12px;
-    }
+.inarr{background:var(--av2);border-radius:var(--r);padding:18px;text-align:center;margin-bottom:14px}
+.inarr p{font-size:.82rem;color:#bbb;font-style:italic}
 
-    /* ══════════════════════════════════════
-       S-WELCOME
-    ══════════════════════════════════════ */
-    #s-welcome {
-      background: var(--bosco-3);
-      justify-content: flex-end;
-      min-height: 100dvh;
-      position: relative;
-      overflow: hidden;
-    }
+/* SEZIONE h3 */
+.sh3{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;color:var(--bosco);margin-bottom:11px;padding-bottom:7px;border-bottom:1px solid var(--av3)}
 
-    /* Sfondo: scaffale stilizzato */
-    .welcome-bg {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
-    .shelf-line {
-      position: absolute;
-      left: 0; right: 0;
-      height: 1px;
-      background: rgba(201,168,76,.12);
-    }
-    .book-spine {
-      position: absolute;
-      bottom: 0;
-      border-radius: 1px 1px 0 0;
-      opacity: 0;
-      animation: sorgi .6s ease both;
-    }
-    @keyframes sorgi {
-      from { transform: translateY(20px); opacity: 0; }
-      to   { transform: translateY(0);    opacity: 1; }
-    }
+/* ACCADDE OGGI */
+.adata{font-size:.68rem;color:var(--oro);letter-spacing:.1em;text-transform:uppercase;margin-bottom:11px;font-weight:600}
 
-    .welcome-content {
-      position: relative;
-      z-index: 10;
-      padding: 0 28px;
-      padding-bottom: calc(48px + var(--safe-bottom));
-    }
+/* INFO QUERY */
+.iq{margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid var(--av3);display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.iq h2{font-family:'Cormorant Garamond',serif;font-size:1.04rem;font-style:italic;color:var(--ink2)}
+.iq h2 strong{font-style:normal;font-weight:600;color:var(--ink)}
+.bdg{font-size:.63rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--bosco);color:var(--oro);padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
 
-    /* Logo mark */
-    .w-logo {
-      margin-bottom: 28px;
-    }
-    .w-logo svg {
-      display: block;
-    }
+/* CARD LIBRO */
+.card{background:#fff;border-radius:0 var(--r) var(--r) 0;margin-bottom:10px;box-shadow:var(--sh-s);overflow:hidden;border-left:3px solid var(--av3);animation:up .22s ease both}
+.card.disp{border-left-color:var(--bosco)}.card.prest{border-left-color:var(--oro)}
+.cth{padding:13px 14px 10px}
+.ctt{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;line-height:1.3;color:var(--ink);margin-bottom:3px}
+.cta{font-family:'Cormorant Garamond',serif;font-size:.88rem;color:#888;font-style:italic}
+.ctact{display:flex;gap:6px;padding:0 14px 10px}
+.bsalv{font-size:.7rem;font-weight:600;letter-spacing:.04em;padding:4px 10px;border-radius:20px;border:1.5px solid var(--av3);background:transparent;color:#999;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
+.bsalv:hover{border-color:var(--bosco);color:var(--bosco)}
+.bsalv.on{border-color:var(--bosco);background:var(--bosco);color:var(--oro)}
+.ctcop{background:var(--av);border-top:1px solid var(--av2);padding:8px 14px}
+.assl{font-size:.73rem;color:#ccc;font-style:italic}
+.copr{display:flex;align-items:flex-start;gap:9px;padding:5px 0;border-bottom:1px solid var(--av2)}
+.copr:last-child{border-bottom:none}
+.cdot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.dv{background:var(--bosco)}.dr{background:var(--rosso)}.do{background:var(--oro)}
+.cb{flex:1}
+.cc{font-size:.75rem;font-weight:600;color:var(--ink2);letter-spacing:.02em}
+.ci{font-size:.67rem;color:#bbb;margin-left:5px}
+.cs{font-size:.75rem;color:#666}
+.cri{font-size:.67rem;color:#bbb}
+.cln{display:block;text-align:right;padding:6px 14px 8px;font-size:.67rem;color:var(--bosco-2);text-decoration:none;background:var(--av);border-top:1px solid var(--av2);letter-spacing:.03em}
+.cln:hover{text-decoration:underline}
 
-    /* Titolo */
-    .w-titolo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2.6rem;
-      font-weight: 300;
-      color: #fff;
-      line-height: 1.08;
-      letter-spacing: -.01em;
-      margin-bottom: 8px;
-    }
-    .w-titolo strong {
-      font-weight: 600;
-      color: var(--oro);
-      display: block;
-    }
-    .w-sottotitolo {
-      font-size: .72rem;
-      color: rgba(255,255,255,.4);
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      margin-bottom: 40px;
-      font-weight: 400;
-    }
+/* ATLANTE MAPPA */
+.mpla{height:200px;background:linear-gradient(135deg,var(--bosco-3),var(--bosco-2));display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:rgba(255,255,255,.4)}
+.mpla span{font-size:2rem}
+.mpla p{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
 
-    /* Separatore ornamentale */
-    .w-sep {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 28px;
-      opacity: .4;
-    }
-    .w-sep-line { flex: 1; height: 1px; background: var(--oro); }
-    .w-sep-sym {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: .8rem;
-      color: var(--oro);
-      letter-spacing: .1em;
-    }
+/* LAPIDES */
+.lapi{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--av2)}
+.lapi:last-child{border-bottom:none}
+.lapn{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;color:var(--av3);width:28px;flex-shrink:0;text-align:center;line-height:1.2}
+.lapb{flex:1}
+.lapt{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--ink);line-height:1.3}
+.lapa{font-family:'Cormorant Garamond',serif;font-size:.85rem;color:#888;font-style:italic}
+.lapan{font-size:.68rem;color:#bbb;margin-top:1px}
 
-    .w-btns { display: flex; flex-direction: column; gap: 10px; }
-    .w-btns .btn-prim {
-      background: var(--oro);
-      color: var(--bosco-3);
-    }
-    .w-btns .btn-sec {
-      border-color: rgba(255,255,255,.25);
-      color: rgba(255,255,255,.8);
-    }
-    .w-btns .btn-ghost { color: rgba(255,255,255,.35); text-align: center; }
+/* PROFILO */
+.ph{background:var(--bosco-3);padding:calc(16px + var(--st)) 20px 0;position:relative;overflow:hidden}
+.phi{padding-bottom:28px;position:relative;z-index:1}
+.pho{position:absolute;right:-15px;top:50%;transform:translateY(-50%);font-size:7rem;opacity:.05;font-family:'Cormorant Garamond',serif;color:#fff;line-height:1;pointer-events:none}
+.av{width:52px;height:52px;border-radius:50%;background:var(--bosco-2);border:2px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;color:var(--oro);margin-bottom:10px}
+.pn{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:#fff;line-height:1.2}
+.pe{font-size:.7rem;color:rgba(255,255,255,.38);margin-top:2px}
+.btag{display:inline-flex;align-items:center;gap:5px;background:var(--oro-s);border:1px solid rgba(201,168,76,.22);border-radius:20px;padding:3px 10px 3px 7px;font-size:.67rem;color:var(--oro);margin-top:8px}
+.pbody{background:var(--av);border-radius:var(--rl) var(--rl) 0 0;margin-top:-14px;position:relative;z-index:2;flex:1;padding:24px 16px}
+.psez{margin-bottom:24px}
 
-    /* ══════════════════════════════════════
-       S-AUTH
-    ══════════════════════════════════════ */
-    #s-auth {
-      background: var(--bosco-3);
-      align-items: stretch;
-    }
-    .auth-header {
-      padding: calc(20px + var(--safe-top)) 24px 24px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .auth-back {
-      width: 36px; height: 36px;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: var(--r-s);
-      color: rgba(255,255,255,.7);
-      font-size: 1rem;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    .auth-heading {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.5rem;
-      font-weight: 300;
-      color: #fff;
-      line-height: 1.2;
-    }
-    .auth-heading strong { font-weight: 600; }
+/* STATS */
+.stgr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stc{background:#fff;border-radius:var(--r);padding:16px;box-shadow:var(--sh-s);text-align:center}
+.stn{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:600;color:var(--bosco);line-height:1}
+.stl{font-size:.67rem;color:#aaa;margin-top:3px;letter-spacing:.06em;text-transform:uppercase}
 
-    .auth-body {
-      flex: 1;
-      background: var(--avorio);
-      border-radius: var(--r-l) var(--r-l) 0 0;
-      padding: 28px 24px;
-      padding-bottom: calc(28px + var(--safe-bottom));
-      overflow-y: auto;
-    }
-    .auth-err {
-      background: #fff5f5;
-      border-left: 3px solid var(--rosso);
-      padding: 10px 12px;
-      border-radius: 0 var(--r-s) var(--r-s) 0;
-      font-size: .82rem;
-      color: var(--rosso);
-      margin-bottom: 16px;
-      display: none;
-    }
-    .auth-switch {
-      text-align: center;
-      margin-top: 18px;
-      font-size: .82rem;
-      color: var(--in3);
-    }
-    .auth-switch a {
-      color: var(--bosco);
-      cursor: pointer;
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .auth-switch a:hover { text-decoration: underline; }
-    .auth-divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 18px 0;
-    }
-    .auth-divider span {
-      font-size: .7rem;
-      color: #bbb;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .auth-divider::before, .auth-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--av3);
-    }
+/* WISH ITEM */
+.wi{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--av2)}
+.wi:last-child{border-bottom:none}
+.wdot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.wbod{flex:1}
+.wtt{font-family:'Cormorant Garamond',serif;font-size:.98rem;font-weight:600;color:var(--ink);line-height:1.3}
+.wat{font-size:.77rem;color:#888;font-style:italic;font-family:'Cormorant Garamond',serif}
+.wmt{font-size:.67rem;color:#bbb;margin-top:1px}
+.bdel{background:none;border:none;color:#ddd;cursor:pointer;font-size:.78rem;padding:3px 5px;transition:color .15s;flex-shrink:0}
+.bdel:hover{color:var(--rosso)}
 
-    /* ══════════════════════════════════════
-       S-BIB (selezione biblioteca ospite)
-    ══════════════════════════════════════ */
-    #s-bib {
-      background: var(--bosco-3);
-      align-items: stretch;
-    }
-    .bib-header {
-      padding: calc(20px + var(--safe-top)) 24px 28px;
-    }
-    .bib-header p {
-      font-size: .68rem;
-      color: var(--oro);
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-    .bib-header h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.7rem;
-      font-weight: 300;
-      color: #fff;
-      line-height: 1.15;
-    }
-    .bib-header h2 strong { font-weight: 600; }
-    .bib-body {
-      flex: 1;
-      background: var(--avorio);
-      border-radius: var(--r-l) var(--r-l) 0 0;
-      padding: 28px 24px;
-      padding-bottom: calc(28px + var(--safe-bottom));
-    }
-    .bib-hint {
-      font-size: .82rem;
-      color: var(--in3);
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
+/* BADGE */
+.bgr{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.bc{background:#fff;border-radius:var(--r);padding:14px 10px;box-shadow:var(--sh-s);text-align:center}
+.bc.lk{opacity:.38;filter:grayscale(1)}
+.bbi{font-size:1.6rem;margin-bottom:5px;line-height:1}
+.bbn{font-size:.7rem;font-weight:600;letter-spacing:.04em;color:var(--ink2);line-height:1.3}
+.bbd{font-size:.62rem;color:#bbb;margin-top:2px;line-height:1.4}
 
-    /* ══════════════════════════════════════
-       S-RICERCA
-    ══════════════════════════════════════ */
-    #s-ricerca { }
+/* STORICO */
+.rci{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--av2)}
+.rci:last-child{border-bottom:none}
+.riq{font-size:.87rem;font-weight:500;flex:1}
+.rim{font-size:.7rem;color:#bbb;text-align:right;white-space:nowrap}
+.rib{font-size:.7rem;color:#aaa}
+.tqi{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--av2)}
+.tqi:last-child{border-bottom:none}
+.tqr{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--av4);width:20px;text-align:center;flex-shrink:0}
+.tqq{font-size:.87rem;flex:1}
+.tqn{font-size:.72rem;color:#bbb;white-space:nowrap}
+.vp{text-align:center;padding:16px;color:#bbb;font-size:.8rem;font-style:italic}
 
-    /* Chip biblioteca nell'header */
-    .bib-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: var(--oro-soft);
-      border: 1px solid rgba(201,168,76,.25);
-      border-radius: 20px;
-      padding: 3px 10px 3px 6px;
-      font-size: .68rem;
-      color: var(--oro);
-      font-weight: 500;
-      letter-spacing: .04em;
-      cursor: pointer;
-      transition: background .15s;
-    }
-    .bib-chip:hover { background: rgba(201,168,76,.22); }
-    .bib-chip-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--oro);
-      flex-shrink: 0;
-    }
+/* IMPOSTAZIONI */
+.imc{background:#fff;border-radius:var(--r);box-shadow:var(--sh-s);overflow:hidden;margin-bottom:10px}
+.imr{display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid var(--av2);gap:12px;cursor:pointer}
+.imr:last-child{border-bottom:none}
+.imico{width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:var(--av);border-radius:var(--rs);font-size:.9rem;flex-shrink:0}
+.imlab{flex:1;font-size:.87rem;font-weight:500}
+.imval{font-size:.77rem;color:#aaa}
+.imarr{font-size:.72rem;color:#ccc}
 
-    /* Badge risultati */
-    .info-q {
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--av3);
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 8px;
-    }
-    .info-q h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.05rem;
-      font-style: italic;
-      color: var(--in2);
-    }
-    .info-q h2 strong { font-style: normal; font-weight: 600; color: var(--inchio); }
-    .badge {
-      font-size: .65rem;
-      font-weight: 600;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      background: var(--bosco);
-      color: var(--oro);
-      padding: 3px 9px;
-      border-radius: 20px;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
+/* SHEET */
+.shovr{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;display:none;align-items:flex-end}
+.shovr.on{display:flex}
+.sh{background:var(--av);border-radius:var(--rl) var(--rl) 0 0;padding:0 20px calc(24px + var(--sb));width:100%;max-height:85dvh;overflow-y:auto;animation:shup .25s ease}
+@keyframes shup{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.shhnd{width:36px;height:4px;background:var(--av3);border-radius:2px;margin:14px auto 18px}
+.shtit{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;color:var(--bosco);margin-bottom:16px}
 
-    /* Card libro */
-    .card {
-      background: #fff;
-      border-radius: 0 var(--r-m) var(--r-m) 0;
-      margin-bottom: 10px;
-      box-shadow: var(--sh-s);
-      overflow: hidden;
-      border-left: 3px solid var(--av3);
-      animation: fadeUp .22s ease both;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: none; }
-    }
-    .card.disponibile  { border-left-color: var(--bosco); }
-    .card.in-prestito  { border-left-color: var(--oro); }
-    .card-head { padding: 13px 14px 10px; }
-    .card-titolo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.05rem;
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--inchio);
-      margin-bottom: 3px;
-    }
-    .card-autore {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: .88rem;
-      color: #888;
-      font-style: italic;
-    }
-    .card-actions { display: flex; gap: 6px; padding: 0 14px 10px; }
-    .btn-salva {
-      font-size: .7rem;
-      font-weight: 600;
-      letter-spacing: .04em;
-      padding: 4px 10px;
-      border-radius: 20px;
-      border: 1.5px solid var(--av3);
-      background: transparent;
-      color: #999;
-      cursor: pointer;
-      transition: all .15s;
-      font-family: 'Inter', sans-serif;
-    }
-    .btn-salva:hover  { border-color: var(--bosco); color: var(--bosco); }
-    .btn-salva.salvato { border-color: var(--bosco); background: var(--bosco); color: var(--oro); }
-    .card-copie {
-      background: var(--avorio);
-      border-top: 1px solid var(--av2);
-      padding: 8px 14px;
-    }
-    .assente-label { font-size: .74rem; color: #ccc; font-style: italic; }
-    .copia-riga {
-      display: flex;
-      align-items: flex-start;
-      gap: 9px;
-      padding: 5px 0;
-      border-bottom: 1px solid var(--av2);
-    }
-    .copia-riga:last-child { border-bottom: none; }
-    .cdot { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
-    .dv { background: var(--bosco); }
-    .dr { background: var(--rosso); }
-    .do { background: var(--oro); }
-    .cb { flex: 1; }
-    .cc { font-size: .76rem; font-weight: 600; color: var(--in2); letter-spacing: .02em; }
-    .ci { font-size: .68rem; color: #bbb; margin-left: 5px; }
-    .cs { font-size: .76rem; color: #666; }
-    .cr { font-size: .68rem; color: #bbb; }
-    .card-link {
-      display: block;
-      text-align: right;
-      padding: 6px 14px 8px;
-      font-size: .68rem;
-      color: var(--bosco-2);
-      text-decoration: none;
-      background: var(--avorio);
-      border-top: 1px solid var(--av2);
-      letter-spacing: .03em;
-    }
-    .card-link:hover { color: var(--bosco); text-decoration: underline; }
-
-    /* ══════════════════════════════════════
-       S-ESPLORA
-    ══════════════════════════════════════ */
-    .e-tabs {
-      display: flex;
-      border-bottom: 1px solid var(--av3);
-      margin-bottom: 20px;
-      gap: 0;
-    }
-    .e-tab {
-      flex: 1;
-      padding: 10px 4px;
-      text-align: center;
-      font-size: .72rem;
-      font-weight: 600;
-      letter-spacing: .05em;
-      text-transform: uppercase;
-      color: #bbb;
-      background: none;
-      border: none;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      transition: color .15s, border-color .15s;
-      font-family: 'Inter', sans-serif;
-    }
-    .e-tab.attivo { color: var(--bosco); border-bottom-color: var(--bosco); }
-    .e-panel { display: none; }
-    .e-panel.attivo { display: block; }
-
-    /* Card esplora */
-    .ec {
-      background: #fff;
-      border-radius: 0 var(--r-m) var(--r-m) 0;
-      border-left: 3px solid var(--oro);
-      box-shadow: var(--sh-m);
-      overflow: hidden;
-      margin-bottom: 16px;
-      animation: fadeUp .3s ease both;
-    }
-    .ec-head { padding: 16px 16px 12px; }
-    .ec-label {
-      font-size: .62rem;
-      font-weight: 700;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: var(--oro);
-      margin-bottom: 7px;
-    }
-    .ec-titolo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      line-height: 1.3;
-      color: var(--inchio);
-      margin-bottom: 4px;
-    }
-    .ec-autore {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: .92rem;
-      font-style: italic;
-      color: #777;
-    }
-    .ec-actions {
-      display: flex;
-      gap: 8px;
-      padding: 0 16px 14px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .btn-opac {
-      font-size: .74rem;
-      font-weight: 600;
-      padding: 7px 14px;
-      border-radius: 20px;
-      background: var(--bosco);
-      color: var(--oro);
-      text-decoration: none;
-      white-space: nowrap;
-      transition: background .15s;
-    }
-    .btn-esalva {
-      font-size: .74rem;
-      font-weight: 600;
-      padding: 6px 13px;
-      border-radius: 20px;
-      background: transparent;
-      color: var(--bosco);
-      border: 1.5px solid var(--bosco);
-      cursor: pointer;
-      transition: all .15s;
-      font-family: 'Inter', sans-serif;
-    }
-    .btn-esalva.salvato { background: var(--bosco); color: var(--oro); border-color: var(--bosco); }
-    .btn-ricarica {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: none;
-      border: 1.5px solid var(--av3);
-      border-radius: 20px;
-      color: #aaa;
-      font-size: .74rem;
-      font-weight: 600;
-      padding: 6px 14px;
-      cursor: pointer;
-      transition: all .15s;
-      font-family: 'Inter', sans-serif;
-      margin-bottom: 16px;
-    }
-    .btn-ricarica:hover { border-color: var(--bosco); color: var(--bosco); }
-    .btn-ricarica:disabled { opacity: .5; cursor: default; }
-    .spin-i { display: inline-block; animation: gira .7s linear infinite; }
-    .ec-data {
-      font-size: .66rem;
-      color: #bbb;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-    .autore-nome {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.4rem;
-      font-weight: 600;
-      color: var(--bosco);
-      line-height: 1.2;
-      margin-bottom: 2px;
-    }
-    .autore-sub { font-size: .74rem; color: #aaa; }
-    .opere-list { padding: 4px 16px 14px; }
-    .opera-item {
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      padding: 9px 0;
-      border-bottom: 1px solid var(--av2);
-    }
-    .opera-item:last-child { border-bottom: none; }
-    .opera-n {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--av4);
-      width: 20px;
-      flex-shrink: 0;
-      text-align: center;
-    }
-    .opera-body { flex: 1; min-width: 0; }
-    .opera-titolo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: .95rem;
-      font-weight: 600;
-      color: var(--inchio);
-      line-height: 1.3;
-    }
-    .opera-link {
-      font-size: .68rem;
-      color: var(--bosco-2);
-      text-decoration: none;
-      letter-spacing: .03em;
-    }
-    .opera-link:hover { text-decoration: underline; }
-
-    /* ══════════════════════════════════════
-       S-SALVATI
-    ══════════════════════════════════════ */
-    .salvato-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--av2);
-    }
-    .salvato-item:last-child { border-bottom: none; }
-    .si-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
-    .si-body { flex: 1; }
-    .si-titolo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--inchio);
-      line-height: 1.3;
-    }
-    .si-autore {
-      font-size: .78rem;
-      color: #888;
-      font-style: italic;
-      font-family: 'Cormorant Garamond', serif;
-    }
-    .si-meta { font-size: .68rem; color: #bbb; margin-top: 1px; }
-    .btn-del {
-      background: none;
-      border: none;
-      color: #ddd;
-      cursor: pointer;
-      font-size: .8rem;
-      padding: 3px 5px;
-      transition: color .15s;
-      flex-shrink: 0;
-    }
-    .btn-del:hover { color: var(--rosso); }
-
-    /* ══════════════════════════════════════
-       S-PROFILO
-    ══════════════════════════════════════ */
-    .profilo-sezione { margin-bottom: 28px; }
-    .profilo-sezione h3 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: var(--bosco);
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--av3);
-    }
-    .stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .stat-card {
-      background: #fff;
-      border-radius: var(--r-m);
-      padding: 16px;
-      box-shadow: var(--sh-s);
-      text-align: center;
-    }
-    .stat-n {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2.2rem;
-      font-weight: 600;
-      color: var(--bosco);
-      line-height: 1;
-    }
-    .stat-l {
-      font-size: .68rem;
-      color: #aaa;
-      margin-top: 3px;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-    }
-    .ricerca-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 0;
-      border-bottom: 1px solid var(--av2);
-    }
-    .ricerca-item:last-child { border-bottom: none; }
-    .ri-query { font-size: .88rem; font-weight: 500; flex: 1; }
-    .ri-meta  { font-size: .7rem; color: #bbb; text-align: right; white-space: nowrap; }
-    .ri-bib   { font-size: .7rem; color: #aaa; }
-    .top-query-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 0;
-      border-bottom: 1px solid var(--av2);
-    }
-    .top-query-item:last-child { border-bottom: none; }
-    .tq-rank {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--av4);
-      width: 20px;
-      text-align: center;
-      flex-shrink: 0;
-    }
-    .tq-q   { font-size: .88rem; flex: 1; }
-    .tq-n   { font-size: .72rem; color: #bbb; white-space: nowrap; }
-    .vuoto-piccolo {
-      text-align: center;
-      padding: 18px;
-      color: #bbb;
-      font-size: .8rem;
-      font-style: italic;
-    }
-
-    /* Intestazione profilo utente */
-    .profilo-hero {
-      background: var(--bosco-3);
-      padding: 20px 16px 24px;
-      padding-top: calc(20px + var(--safe-top));
-      margin-bottom: 0;
-    }
-    .profilo-avatar {
-      width: 52px; height: 52px;
-      border-radius: 50%;
-      background: var(--bosco-2);
-      border: 2px solid rgba(201,168,76,.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.4rem;
-      font-weight: 600;
-      color: var(--oro);
-      margin-bottom: 10px;
-    }
-    .profilo-nome {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #fff;
-      line-height: 1.2;
-    }
-    .profilo-email {
-      font-size: .72rem;
-      color: rgba(255,255,255,.4);
-      margin-top: 2px;
-    }
-    .profilo-bib-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: var(--oro-soft);
-      border: 1px solid rgba(201,168,76,.25);
-      border-radius: 20px;
-      padding: 3px 10px 3px 7px;
-      font-size: .68rem;
-      color: var(--oro);
-      margin-top: 8px;
-    }
-    .profilo-main {
-      background: var(--avorio);
-      border-radius: var(--r-l) var(--r-l) 0 0;
-      margin-top: -12px;
-      flex: 1;
-      padding: 24px 16px;
-    }
-
-    /* Sezione impostazioni */
-    .impost-card {
-      background: #fff;
-      border-radius: var(--r-m);
-      box-shadow: var(--sh-s);
-      overflow: hidden;
-      margin-bottom: 12px;
-    }
-    .impost-row {
-      display: flex;
-      align-items: center;
-      padding: 13px 16px;
-      border-bottom: 1px solid var(--av2);
-      gap: 12px;
-      cursor: pointer;
-    }
-    .impost-row:last-child { border-bottom: none; }
-    .impost-icon {
-      width: 32px; height: 32px;
-      display: flex; align-items: center; justify-content: center;
-      background: var(--avorio);
-      border-radius: var(--r-s);
-      font-size: .95rem;
-      flex-shrink: 0;
-    }
-    .impost-label { flex: 1; font-size: .88rem; font-weight: 500; }
-    .impost-val { font-size: .78rem; color: #aaa; }
-    .impost-arrow { font-size: .75rem; color: #ccc; }
-
-    /* Sheet modale per impostazioni */
-    .sheet-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.5);
-      z-index: 400;
-      display: none;
-      align-items: flex-end;
-    }
-    .sheet-overlay.aperto { display: flex; }
-    .sheet {
-      background: var(--avorio);
-      border-radius: var(--r-l) var(--r-l) 0 0;
-      padding: 0 20px calc(24px + var(--safe-bottom));
-      width: 100%;
-      max-height: 85dvh;
-      overflow-y: auto;
-      animation: slideUp .25s ease;
-    }
-    @keyframes slideUp {
-      from { transform: translateY(40px); opacity: 0; }
-      to   { transform: none; opacity: 1; }
-    }
-    .sheet-handle {
-      width: 36px; height: 4px;
-      background: var(--av3);
-      border-radius: 2px;
-      margin: 14px auto 20px;
-    }
-    .sheet-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: var(--bosco);
-      margin-bottom: 18px;
-    }
-
-    /* ══════════════════════════════════════
-       RESPONSIVE — tabella/desktop hint
-    ══════════════════════════════════════ */
-    @media (min-width: 640px) {
-      .page-main { padding: 28px 24px; }
-      .w-titolo  { font-size: 3rem; }
-    }
-  </style>
+/* ESPLORA TABS */
+.etabs{display:flex;border-bottom:1px solid var(--av3);margin-bottom:20px}
+.etab{flex:1;padding:10px 4px;text-align:center;font-size:.7rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#bbb;background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s;font-family:'Inter',sans-serif}
+.etab.on{color:var(--bosco);border-bottom-color:var(--bosco)}
+.epan{display:none}.epan.on{display:block}
+.ec{background:#fff;border-radius:0 var(--r) var(--r) 0;border-left:3px solid var(--oro);box-shadow:var(--sh-m);overflow:hidden;margin-bottom:16px;animation:up .3s ease both}
+.ech{padding:16px 16px 12px}
+.ecl{font-size:.61rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--oro);margin-bottom:7px}
+.ect{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;line-height:1.3;color:var(--ink);margin-bottom:4px}
+.eca{font-family:'Cormorant Garamond',serif;font-size:.92rem;font-style:italic;color:#777}
+.ecact{display:flex;gap:8px;padding:0 16px 14px;flex-wrap:wrap;align-items:center}
+.bopac{font-size:.73rem;font-weight:600;padding:7px 14px;border-radius:20px;background:var(--bosco);color:var(--oro);text-decoration:none;white-space:nowrap}
+.besalv{font-size:.73rem;font-weight:600;padding:6px 13px;border-radius:20px;background:transparent;color:var(--bosco);border:1.5px solid var(--bosco);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
+.besalv.on{background:var(--bosco);color:var(--oro);border-color:var(--bosco)}
+.bric{display:inline-flex;align-items:center;gap:6px;background:none;border:1.5px solid var(--av3);border-radius:20px;color:#aaa;font-size:.73rem;font-weight:600;padding:6px 14px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;margin-bottom:16px}
+.bric:hover{border-color:var(--bosco);color:var(--bosco)}
+.bric:disabled{opacity:.5;cursor:default}
+.spi{display:inline-block;animation:gira .7s linear infinite}
+.ecdata{font-size:.65rem;color:#bbb;letter-spacing:.08em;text-transform:uppercase;margin-bottom:11px}
+.autn{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;color:var(--bosco);line-height:1.2;margin-bottom:2px}
+.auts{font-size:.73rem;color:#aaa}
+.oplist{padding:4px 16px 14px}
+.opi{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px solid var(--av2)}
+.opi:last-child{border-bottom:none}
+.opn{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--av4);width:20px;flex-shrink:0;text-align:center}
+.opb{flex:1;min-width:0}
+.opt{font-family:'Cormorant Garamond',serif;font-size:.94rem;font-weight:600;color:var(--ink);line-height:1.3}
+.opl{font-size:.68rem;color:var(--bosco-2);text-decoration:none;letter-spacing:.03em}
+.opl:hover{text-decoration:underline}
+</style>
 </head>
 <body>
 
-<!-- ════════════════════════════════════════
-     S-WELCOME
-════════════════════════════════════════ -->
-<div id="s-welcome" class="schermata">
-
-  <!-- Sfondo decorativo: dorsi di libri stilizzati -->
-  <div class="welcome-bg" id="welcome-bg"></div>
-
-  <div class="welcome-content">
-    <div class="w-logo">
-      <svg width="56" height="56" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="192" height="192" rx="38" fill="#254d28"/>
-        <path d="M22 52 C22 48 26 46 30 47 L92 58 L92 148 L30 136 C26 135 22 132 22 128 Z" fill="#1a3a1c" stroke="#c9a84c" stroke-width="2"/>
-        <path d="M170 52 C170 48 166 46 162 47 L100 58 L100 148 L162 136 C166 135 170 132 170 128 Z" fill="#1a3a1c" stroke="#c9a84c" stroke-width="2"/>
-        <line x1="96" y1="56" x2="96" y2="149" stroke="#c9a84c" stroke-width="3"/>
-        <line x1="34" y1="74"  x2="85" y2="80"  stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
-        <line x1="34" y1="89"  x2="85" y2="95"  stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
-        <line x1="34" y1="104" x2="85" y2="110" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
-        <line x1="158" y1="74"  x2="107" y2="80"  stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
-        <line x1="158" y1="89"  x2="107" y2="95"  stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
-        <line x1="158" y1="104" x2="107" y2="110" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
-      </svg>
-    </div>
-
-    <h1 class="w-titolo">La biblioteca<strong>di Babele</strong></h1>
-    <p class="w-sottotitolo">Rete Bibliotecaria Bresciana e Cremonese</p>
-
-    <div class="w-sep">
-      <div class="w-sep-line"></div>
-      <div class="w-sep-sym">✦</div>
-      <div class="w-sep-line"></div>
-    </div>
-
-    <div class="w-btns">
-      <button class="btn-prim" onclick="vai('s-auth','login')">Accedi</button>
-      <button class="btn-sec"  onclick="vai('s-auth','registra')">Crea account</button>
-      <button class="btn-ghost" onclick="usaSenzaAccount()">Continua senza account</button>
+<!-- WELCOME -->
+<div id="sw" class="S">
+  <div class="wbg" id="wbg"></div>
+  <div class="wc">
+    <svg width="54" height="54" viewBox="0 0 192 192" fill="none" style="margin-top:26px">
+      <rect width="192" height="192" rx="38" fill="#254d28"/>
+      <path d="M22 52C22 48 26 46 30 47L92 58V148L30 136C26 135 22 132 22 128Z" fill="#1a3a1c" stroke="#c9a84c" stroke-width="2"/>
+      <path d="M170 52C170 48 166 46 162 47L100 58V148L162 136C166 135 170 132 170 128Z" fill="#1a3a1c" stroke="#c9a84c" stroke-width="2"/>
+      <line x1="96" y1="56" x2="96" y2="149" stroke="#c9a84c" stroke-width="3"/>
+      <line x1="34" y1="74" x2="85" y2="80" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>
+      <line x1="34" y1="89" x2="85" y2="95" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>
+      <line x1="34" y1="104" x2="85" y2="110" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>
+      <line x1="158" y1="74" x2="107" y2="80" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>
+      <line x1="158" y1="89" x2="107" y2="95" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>
+      <line x1="158" y1="104" x2="107" y2="110" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>
+    </svg>
+    <h1 class="wt">La biblioteca<strong>di Babele</strong></h1>
+    <p class="wsub">Rete Bibliotecaria Bresciana e Cremonese</p>
+    <div class="wsep"><div class="wsl"></div><div class="wss">✦</div><div class="wsl"></div></div>
+    <div class="wbtns">
+      <button class="bp" onclick="vai('sa','login')">Accedi</button>
+      <button class="bs" onclick="vai('sa','registra')">Crea account</button>
+      <button class="bg" onclick="usaSenza()">Continua senza account</button>
     </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════
-     S-AUTH
-════════════════════════════════════════ -->
-<div id="s-auth" class="schermata">
-  <div class="auth-header">
-    <button class="auth-back" onclick="vai('s-welcome')">←</button>
-    <div>
-      <div class="auth-heading" id="auth-heading"><strong>Accedi</strong></div>
-      <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:2px;letter-spacing:.06em" id="auth-sub-hd">Bentornato nel catalogo</div>
-    </div>
+<!-- AUTH -->
+<div id="sa" class="S">
+  <div class="ahd">
+    <button class="abk" onclick="vai('sw')">←</button>
+    <div><div class="abt" id="atit"><strong>Accedi</strong></div>
+    <div style="font-size:.67rem;color:rgba(255,255,255,.38);margin-top:2px;letter-spacing:.06em" id="asub">Bentornato nel catalogo</div></div>
   </div>
-
-  <div class="auth-body">
-    <div class="auth-err" id="auth-err"></div>
-
-    <!-- Form login -->
-    <div id="auth-form-login">
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="l-email" placeholder="la@tua.email" autocomplete="email">
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="l-pw" placeholder="••••••" autocomplete="current-password">
-      </div>
-      <button class="btn-prim" onclick="doLogin()">Accedi</button>
-      <p class="auth-switch" style="margin-top:16px">
-        Non hai un account? <a onclick="vai('s-auth','registra')">Registrati</a>
-      </p>
-      <div class="auth-divider"><span>oppure</span></div>
-      <button class="btn-ghost" style="display:block;width:100%;text-align:center" onclick="usaSenzaAccount()">
-        Continua senza account
-      </button>
+  <div class="abd">
+    <div class="aerr" id="aerr"></div>
+    <div id="afl">
+      <div class="fi"><label>Email</label><input type="email" id="le" placeholder="la@tua.email" autocomplete="email"></div>
+      <div class="fi"><label>Password</label><input type="password" id="lp" placeholder="••••••" autocomplete="current-password"></div>
+      <button class="bp" onclick="doLogin()">Accedi</button>
+      <p class="asw" style="margin-top:14px">Non hai un account? <a onclick="vai('sa','registra')">Registrati</a></p>
+      <div class="adv"><span>oppure</span></div>
+      <button class="bg" style="display:block;width:100%;text-align:center" onclick="usaSenza()">Continua senza account</button>
     </div>
-
-    <!-- Form registrazione -->
-    <div id="auth-form-registra" style="display:none">
-      <div class="field">
-        <label>Nome</label>
-        <input type="text" id="r-nome" placeholder="Il tuo nome" autocomplete="name">
+    <div id="afr" style="display:none">
+      <div class="fi"><label>Nome</label><input type="text" id="rn" placeholder="Il tuo nome" autocomplete="name"></div>
+      <div class="fi"><label>Email</label><input type="email" id="re" placeholder="la@tua.email" autocomplete="email"></div>
+      <div class="fi"><label>Password</label><input type="password" id="rp" placeholder="Almeno 6 caratteri" autocomplete="new-password"></div>
+      <div class="fi"><label>Biblioteca di riferimento</label>
+        <div class="acw"><input type="text" id="rb" placeholder="Es. Rezzato, Chiari…" autocomplete="off" autocorrect="off"><div class="dd" id="ddr"></div></div>
       </div>
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="r-email" placeholder="la@tua.email" autocomplete="email">
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="r-pw" placeholder="Almeno 6 caratteri" autocomplete="new-password">
-      </div>
-      <div class="field">
-        <label>Biblioteca di riferimento</label>
-        <div class="ac-wrap">
-          <input type="text" id="r-bib" placeholder="Es. Rezzato, Chiari…" autocomplete="off" autocorrect="off">
-          <div class="dropdown" id="dd-r"></div>
-        </div>
-      </div>
-      <button class="btn-prim" style="margin-top:4px" onclick="doRegistra()">Crea account</button>
-      <p class="auth-switch" style="margin-top:16px">
-        Hai già un account? <a onclick="vai('s-auth','login')">Accedi</a>
-      </p>
+      <button class="bp" style="margin-top:4px" onclick="doReg()">Crea account</button>
+      <p class="asw" style="margin-top:14px">Hai già un account? <a onclick="vai('sa','login')">Accedi</a></p>
     </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════
-     S-BIB (selezione biblioteca ospite)
-════════════════════════════════════════ -->
-<div id="s-bib" class="schermata">
-  <div class="bib-header">
-    <p>Catalogo RBBC</p>
-    <h2>Scegli la tua<strong><br> biblioteca</strong></h2>
+<!-- BIB -->
+<div id="sbib" class="S">
+  <div class="bh"><p>Catalogo RBBC</p><h2>Scegli la tua<strong><br>biblioteca</strong></h2></div>
+  <div class="bb">
+    <p class="bhint">Seleziona la biblioteca in cui vuoi verificare la disponibilità.</p>
+    <div class="acw"><input type="text" id="gb" placeholder="Es. Rezzato, Brescia…" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"><div class="dd" id="ddg"></div></div>
+    <button class="bp" style="margin-top:14px" id="bbOk" disabled onclick="confBib()">Inizia →</button>
+    <div style="margin-top:10px;text-align:center"><button class="bg" onclick="vai('sw')">← Indietro</button></div>
   </div>
-  <div class="bib-body">
-    <p class="bib-hint">Seleziona la biblioteca in cui vuoi verificare la disponibilità dei libri.</p>
-    <div class="ac-wrap">
-      <input type="text" id="g-bib"
-             placeholder="Es. Rezzato, Brescia, Chiari…"
-             autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false">
-      <div class="dropdown" id="dd-g"></div>
+</div>
+
+<!-- HOME -->
+<div id="shome" class="S cnav">
+  <div class="hh">
+    <div class="horn">§</div>
+    <div class="hhi">
+      <div class="hsal" id="hsal">Buongiorno</div>
+      <h1 class="htit">La biblioteca<strong>di Babele</strong></h1>
+      <div class="hsubt">Rete Bibliotecaria Bresciana e Cremonese</div>
     </div>
-    <button class="btn-prim" style="margin-top:14px" id="btn-bib-ok" disabled onclick="confermaBib()">
-      Inizia a cercare →
-    </button>
-    <div style="margin-top:12px;text-align:center">
-      <button class="btn-ghost" onclick="vai('s-welcome')">← Torna indietro</button>
+  </div>
+  <div class="hm">
+    <div class="cit" id="citbox">
+      <div class="citsym">"</div>
+      <div class="cittxt" style="color:#ccc;font-style:italic">La citazione del giorno apparirà qui.</div>
+      <div class="citaut">— </div>
+    </div>
+    <div class="cosae">
+      <div class="cosaorn">?</div>
+      <h3>Cos'è La biblioteca di Babele?</h3>
+      <p class="ph">La descrizione dell'app apparirà qui.</p>
+    </div>
+    <div class="sgrid">
+      <div class="sc" data-c="v" onclick="vai('salex')">
+        <div class="sc-ico">🏛️</div><div class="sc-nome">Alexandria</div>
+        <div class="sc-desc">Cerca libri nel catalogo RBBC</div><div class="sc-orn">A</div>
+      </div>
+      <div class="sc" data-c="o" onclick="vai('satlante')">
+        <div class="sc-ico">🗺️</div><div class="sc-nome">Atlante</div>
+        <div class="sc-desc">Esplora libri e mappa del mondo</div><div class="sc-orn">A</div>
+      </div>
+      <div class="sc" data-c="r" onclick="vai('sclio')">
+        <div class="sc-ico">📜</div><div class="sc-nome">Clio</div>
+        <div class="sc-desc">Storia e "Accadde oggi"</div><div class="sc-orn">C</div>
+      </div>
+      <div class="sc" data-c="b" onclick="vai('smnem')">
+        <div class="sc-ico">📊</div><div class="sc-nome">Mnemosine</div>
+        <div class="sc-desc">Le tue statistiche di lettura</div><div class="sc-orn">M</div>
+      </div>
+      <div class="sc wide" data-c="o" onclick="vai('slap')">
+        <div class="sc-ico">🏺</div><div class="sc-nome">Lapides Miliarii</div>
+        <div class="sc-desc">I grandi classici della letteratura mondiale</div><div class="sc-orn">L</div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════
-     S-RICERCA
-════════════════════════════════════════ -->
-<div id="s-ricerca" class="schermata con-nav">
-  <header class="app-header">
-    <div class="hd-bar">
-      <div class="hd-brand">
-        <h1>La biblioteca di Babele</h1>
-        <p>RBBC · Catalogo</p>
-      </div>
-      <div class="bib-chip" id="bib-chip" onclick="apriCambiaBib()">
-        <span class="bib-chip-dot"></span>
-        <span id="chip-nome">—</span>
+<!-- ALEXANDRIA -->
+<div id="salex" class="S cnav">
+  <header class="hdr">
+    <div class="hbar">
+      <button class="hbtn" onclick="vai('shome')">←</button>
+      <div class="hbrand"><h1>Alexandria</h1><p>Catalogo RBBC</p></div>
+      <div class="bchip" id="bchip" onclick="apriSh('shcb')">
+        <span class="bchip-dot"></span><span id="chipn">—</span>
       </div>
     </div>
-    <div class="hd-search">
-      <input type="search" id="it" placeholder="Cerca un titolo…"
-             autocomplete="off" autocorrect="off" enterkeyhint="search">
-      <button class="btn-cerca" id="btn-cerca">Cerca</button>
+    <div class="hsearch">
+      <input type="search" id="it" placeholder="Cerca un titolo…" autocomplete="off" autocorrect="off" enterkeyhint="search">
+      <button class="bsm bsmp" id="bcerca" onclick="cerca()">Cerca</button>
     </div>
   </header>
-  <div class="page-main" id="main">
+  <div class="pm" id="main">
     <div class="vuoto">
-      <svg width="52" height="52" viewBox="0 0 192 192" fill="none">
-        <path d="M22 52 C22 48 26 46 30 47 L92 58 L92 148 L30 136 C26 135 22 132 22 128 Z" fill="#1a3a1c"/>
-        <path d="M170 52 C170 48 166 46 162 47 L100 58 L100 148 L162 136 C166 135 170 132 170 128 Z" fill="#1a3a1c"/>
-        <line x1="96" y1="56" x2="96" y2="149" stroke="#c9a84c" stroke-width="3.5"/>
-      </svg>
-      <h2>Cerca un libro</h2>
-      <p id="vuoto-hint">Digita il titolo per verificare la disponibilità.</p>
+      <svg width="48" height="48" viewBox="0 0 192 192" fill="none"><path d="M22 52C22 48 26 46 30 47L92 58V148L30 136C26 135 22 132 22 128Z" fill="#1a3a1c"/><path d="M170 52C170 48 166 46 162 47L100 58V148L162 136C166 135 170 132 170 128Z" fill="#1a3a1c"/><line x1="96" y1="56" x2="96" y2="149" stroke="#c9a84c" stroke-width="3.5"/></svg>
+      <h2>Cerca un libro</h2><p id="vuotoh">Digita il titolo per verificare la disponibilità.</p>
     </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════
-     S-ESPLORA
-════════════════════════════════════════ -->
-<div id="s-esplora" class="schermata con-nav">
-  <header class="app-header">
-    <div class="hd-bar">
-      <div class="hd-brand">
-        <h1>Esplora</h1>
-        <p>Scopri qualcosa di nuovo</p>
-      </div>
+<!-- ATLANTE -->
+<div id="satlante" class="S cnav">
+  <div class="sint">
+    <div class="sornbg">A</div>
+    <div class="sinti">
+      <div class="stag">Esplora · Mondo</div>
+      <h1 class="stitolo">At<strong>lante</strong></h1>
+      <div class="ssub">Dal greco Ἄτλας — il titano che sorregge il cielo</div>
     </div>
-  </header>
-  <div class="page-main">
-    <div class="e-tabs">
-      <button class="e-tab attivo" data-tab="giorno"  onclick="cambiaTabE('giorno')">Del giorno</button>
-      <button class="e-tab"        data-tab="casuale" onclick="cambiaTabE('casuale')">A caso</button>
-      <button class="e-tab"        data-tab="autore"  onclick="cambiaTabE('autore')">Autore</button>
+  </div>
+  <div class="sbody">
+    <button class="bsm bsmg" style="margin-bottom:20px" onclick="vai('shome')">← Home</button>
+    <div class="etimo">
+      <div class="etn">Atlante</div><div class="eto">Dal greco antico · Ἄτλας, Átlas</div>
+      <p class="etd ph">Il testo di spiegazione del nome Atlante apparirà qui.</p>
     </div>
-
-    <div class="e-panel attivo" id="ep-giorno">
-      <div id="ec-giorno">
-        <div class="loading"><div class="spinner"></div><p>Scelgo il libro del giorno…</p></div>
-      </div>
+    <div class="psez">
+      <div class="sh3">🎲 Libro a caso</div>
+      <button class="bric" id="btnCas" onclick="caricaCas()"><span id="spCas">↻</span> Altro libro</button>
+      <div id="ecCas"><div class="ld"><div class="sp"></div><p>Pesco dal catalogo…</p></div></div>
     </div>
-    <div class="e-panel" id="ep-casuale">
-      <button class="btn-ricarica" id="btn-nuovo-casuale" onclick="caricaCasuale()">
-        <span id="spin-casuale">↻</span> Altro libro
-      </button>
-      <div id="ec-casuale">
-        <div class="loading"><div class="spinner"></div><p>Pesco dal catalogo…</p></div>
-      </div>
+    <div class="psez">
+      <div class="sh3">✍️ Autore del momento</div>
+      <button class="bric" id="btnAut" onclick="caricaAut()"><span id="spAut">↻</span> Altro autore</button>
+      <div id="ecAut"><div class="ld"><div class="sp"></div><p>Cerco un autore…</p></div></div>
     </div>
-    <div class="e-panel" id="ep-autore">
-      <button class="btn-ricarica" id="btn-nuovo-autore" onclick="caricaAutore()">
-        <span id="spin-autore">↻</span> Altro autore
-      </button>
-      <div id="ec-autore">
-        <div class="loading"><div class="spinner"></div><p>Cerco un autore…</p></div>
+    <div class="psez">
+      <div class="sh3">🗺️ Mappa del mondo letterario</div>
+      <div style="background:#fff;border-radius:var(--r);box-shadow:var(--sh-s);overflow:hidden;margin-bottom:4px">
+        <div class="mpla"><span>🗺️</span><p>Mappa interattiva in arrivo</p></div>
+        <div style="padding:12px 16px"><p style="font-size:.8rem;color:#aaa;font-style:italic">La mappa interattiva delle nazioni con autori e opere apparirà qui.</p></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════
-     S-SALVATI
-════════════════════════════════════════ -->
-<div id="s-salvati" class="schermata con-nav">
-  <header class="app-header">
-    <div class="hd-bar">
-      <div class="hd-brand">
-        <h1>Salvati</h1>
-        <p>I tuoi libri</p>
-      </div>
+<!-- CLIO -->
+<div id="sclio" class="S cnav">
+  <div class="sint">
+    <div class="sornbg">C</div>
+    <div class="sinti">
+      <div class="stag">Musa della Storia</div>
+      <h1 class="stitolo">C<strong>lio</strong></h1>
+      <div class="ssub">Dal greco Κλειώ — colei che celebra e rende famosi</div>
     </div>
-  </header>
-  <div class="page-main" id="salvati-main">
-    <div class="loading"><div class="spinner"></div><p>Carico i tuoi libri…</p></div>
+  </div>
+  <div class="sbody">
+    <button class="bsm bsmg" style="margin-bottom:20px" onclick="vai('shome')">← Home</button>
+    <div class="etimo">
+      <div class="etn">Clio</div><div class="eto">Dal greco antico · Κλειώ, Kleiṓ</div>
+      <p class="etd ph">Il testo di introduzione e spiegazione del nome Clio apparirà qui.</p>
+    </div>
+    <div class="psez">
+      <div class="sh3">📅 Accadde oggi</div>
+      <div class="adata" id="cliodata"></div>
+      <div class="inarr"><p>Il contenuto "Accadde oggi" apparirà qui.</p></div>
+    </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════
-     S-PROFILO
-════════════════════════════════════════ -->
-<div id="s-profilo" class="schermata con-nav">
-  <div class="profilo-hero">
-    <div class="profilo-avatar" id="profilo-avatar">?</div>
-    <div class="profilo-nome" id="profilo-nome">Profilo</div>
-    <div class="profilo-email" id="profilo-email"></div>
-    <div class="profilo-bib-tag" id="profilo-bib-tag">
-      <span>📍</span> <span id="profilo-bib-label">—</span>
+<!-- MNEMOSINE -->
+<div id="smnem" class="S cnav">
+  <div class="sint">
+    <div class="sornbg">M</div>
+    <div class="sinti">
+      <div class="stag">Dea della Memoria</div>
+      <h1 class="stitolo">Mnemo<strong>sine</strong></h1>
+      <div class="ssub">Dal greco Μνημοσύνη — la personificazione della memoria</div>
     </div>
   </div>
-  <div class="profilo-main">
-
-    <!-- Stats -->
-    <div class="profilo-sezione">
-      <h3>Statistiche</h3>
-      <div class="stat-grid">
-        <div class="stat-card">
-          <div class="stat-n" id="st-ricerche">—</div>
-          <div class="stat-l">Ricerche</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-n" id="st-salvati">—</div>
-          <div class="stat-l">Salvati</div>
+  <div class="sbody">
+    <button class="bsm bsmg" style="margin-bottom:20px" onclick="vai('shome')">← Home</button>
+    <div class="etimo">
+      <div class="etn">Mnemosine</div><div class="eto">Dal greco antico · Μνημοσύνη, Mnēmosýnē</div>
+      <p class="etd ph">Il testo di introduzione e spiegazione del nome apparirà qui.</p>
+    </div>
+    <div id="mn-auth">
+      <div class="psez">
+        <div class="sh3">Le tue statistiche</div>
+        <div class="stgr" style="margin-bottom:16px">
+          <div class="stc"><div class="stn" id="mnr">—</div><div class="stl">Ricerche</div></div>
+          <div class="stc"><div class="stn" id="mns">—</div><div class="stl">Salvati</div></div>
         </div>
       </div>
-    </div>
-
-    <!-- Ricerche frequenti -->
-    <div class="profilo-sezione">
-      <h3>Ricerche frequenti</h3>
-      <div id="top-query"><div class="vuoto-piccolo">Nessuna ricerca ancora.</div></div>
-    </div>
-
-    <!-- Storico ricerche -->
-    <div class="profilo-sezione">
-      <h3>Ultime ricerche</h3>
-      <div id="lista-storico"><div class="vuoto-piccolo">Nessuna ricerca ancora.</div></div>
-    </div>
-
-    <!-- Impostazioni -->
-    <div class="profilo-sezione">
-      <h3>Impostazioni account</h3>
-      <div class="impost-card">
-        <div class="impost-row" onclick="apriSheet('sheet-profilo')">
-          <div class="impost-icon">✏️</div>
-          <div class="impost-label">Modifica profilo</div>
-          <div class="impost-arrow">›</div>
-        </div>
-        <div class="impost-row" onclick="apriSheet('sheet-bib')">
-          <div class="impost-icon">📍</div>
-          <div class="impost-label">Cambia biblioteca</div>
-          <div class="impost-val" id="im-bib-val"></div>
-          <div class="impost-arrow">›</div>
-        </div>
+      <div class="psez">
+        <div class="sh3">Ricerche frequenti</div>
+        <div id="mntq"><div class="vp">Nessuna ricerca ancora.</div></div>
       </div>
-      <div class="impost-card">
-        <div class="impost-row" onclick="doLogout()" style="color:var(--rosso)">
-          <div class="impost-icon">🚪</div>
-          <div class="impost-label" style="color:var(--rosso)">Esci dall'account</div>
-        </div>
+      <div class="psez">
+        <div class="sh3">Ultime ricerche</div>
+        <div id="mnst"><div class="vp">Nessuna ricerca ancora.</div></div>
       </div>
     </div>
-
+    <div id="mn-noauth" style="display:none">
+      <div class="vuoto">
+        <svg width="48" height="48" viewBox="0 0 192 192" fill="none"><path d="M22 52C22 48 26 46 30 47L92 58V148L30 136C26 135 22 132 22 128Z" fill="#1a3a1c"/><path d="M170 52C170 48 166 46 162 47L100 58V148L162 136C166 135 170 132 170 128Z" fill="#1a3a1c"/><line x1="96" y1="56" x2="96" y2="149" stroke="#c9a84c" stroke-width="3.5"/></svg>
+        <h2>Accedi per le statistiche</h2><p>Crea un account per tracciare le tue letture.</p>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════
-     BOTTOM NAV
-════════════════════════════════════════ -->
-<nav id="bottom-nav">
-  <div class="nav-inner">
-    <button class="nav-tab attivo" data-tab="s-ricerca" onclick="switchTab('s-ricerca')">
-      <span class="nav-icon">🔍</span>
-      <span>Cerca</span>
-    </button>
-    <button class="nav-tab" data-tab="s-esplora" onclick="switchTab('s-esplora')">
-      <span class="nav-icon">✦</span>
-      <span>Esplora</span>
-    </button>
-    <button class="nav-tab" data-tab="s-salvati" onclick="switchTab('s-salvati')" id="nav-salvati" style="display:none">
-      <span class="nav-icon">♥</span>
-      <span>Salvati</span>
-    </button>
-    <button class="nav-tab" data-tab="s-profilo" onclick="switchTab('s-profilo')" id="nav-profilo" style="display:none">
-      <span class="nav-icon">👤</span>
-      <span>Profilo</span>
-    </button>
+<!-- LAPIDES MILIARII -->
+<div id="slap" class="S cnav">
+  <div class="sint">
+    <div class="sornbg">L</div>
+    <div class="sinti">
+      <div class="stag">Grandi Classici</div>
+      <h1 class="stitolo">Lapides<strong><br>Miliarii</strong></h1>
+      <div class="ssub">Le pietre miliari della letteratura mondiale</div>
+    </div>
+  </div>
+  <div class="sbody">
+    <button class="bsm bsmg" style="margin-bottom:20px" onclick="vai('shome')">← Home</button>
+    <div class="etimo">
+      <div class="etn">Lapides Miliarii</div><div class="eto">Dal latino · Pietre miliari</div>
+      <p class="etd ph">Il testo di introduzione ai grandi classici apparirà qui.</p>
+    </div>
+    <div id="laplist"><div class="vp">La lista dei classici apparirà qui.</div></div>
+  </div>
+</div>
+
+<!-- PROFILO -->
+<div id="sprof" class="S cnav">
+  <div class="ph">
+    <div class="pho">Ω</div>
+    <div class="phi">
+      <div class="av" id="pav">?</div>
+      <div class="pn" id="pnom">Profilo</div>
+      <div class="pe" id="pem"></div>
+      <div class="btag"><span>📍</span><span id="pbib">—</span></div>
+    </div>
+  </div>
+  <div class="pbody">
+    <div class="psez">
+      <div class="sh3">La mia biblioteca</div>
+      <div id="p-mialib"><div class="vp">Nessun libro salvato ancora.</div></div>
+    </div>
+    <div class="psez">
+      <div class="sh3">Lista dei desideri</div>
+      <div id="p-desid"><div class="vp">Nessun libro nella lista dei desideri.</div></div>
+    </div>
+    <div class="psez">
+      <div class="sh3">Ad imperitura memoria</div>
+      <p style="font-size:.74rem;color:#aaa;margin-bottom:10px;font-style:italic">I tuoi preferiti intramontabili</p>
+      <div id="p-imper"><div class="vp">Nessun preferito ancora.</div></div>
+    </div>
+    <div class="psez">
+      <div class="sh3">Pantheon</div>
+      <p style="font-size:.74rem;color:#aaa;margin-bottom:14px;font-style:italic">Badge sbloccati e quelli che ti aspettano</p>
+      <div class="bgr">
+        <div class="bc"><div class="bbi">📚</div><div class="bbn">Prima ricerca</div><div class="bbd">Hai cercato il tuo primo libro</div></div>
+        <div class="bc lk"><div class="bbi">🌟</div><div class="bbn">Bibliofilo</div><div class="bbd">10 libri salvati</div></div>
+        <div class="bc lk"><div class="bbi">🏛️</div><div class="bbn">Alexandrino</div><div class="bbd">50 ricerche nel catalogo</div></div>
+        <div class="bc lk"><div class="bbi">🗺️</div><div class="bbn">Esploratore</div><div class="bbd">Visitato Atlante 5 volte</div></div>
+        <div class="bc lk"><div class="bbi">🏺</div><div class="bbn">Classicista</div><div class="bbd">Cercato 3 Lapides</div></div>
+        <div class="bc lk"><div class="bbi">📜</div><div class="bbn">Storico</div><div class="bbd">Visitato Clio 10 volte</div></div>
+      </div>
+    </div>
+    <div class="psez">
+      <div class="sh3">Impostazioni account</div>
+      <div class="imc">
+        <div class="imr" onclick="apriSh('shprof')"><div class="imico">✏️</div><div class="imlab">Modifica profilo</div><div class="imarr">›</div></div>
+        <div class="imr" onclick="apriSh('shbib')"><div class="imico">📍</div><div class="imlab">Cambia biblioteca</div><div class="imval" id="imbv"></div><div class="imarr">›</div></div>
+      </div>
+      <div class="imc">
+        <div class="imr" onclick="doLogout()" style="color:var(--rosso)"><div class="imico">🚪</div><div class="imlab" style="color:var(--rosso)">Esci dall'account</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav id="bnav">
+  <div class="navi">
+    <button class="ntab on" data-s="shome" onclick="switchTab('shome')"><span class="nico">🏠</span><span>Home</span></button>
+    <button class="ntab" data-s="salex" onclick="switchTab('salex')"><span class="nico">🏛️</span><span>Alexandria</span></button>
+    <button class="ntab" data-s="satlante" onclick="switchTab('satlante')"><span class="nico">✦</span><span>Esplora</span></button>
+    <button class="ntab" data-s="sprof" onclick="switchTab('sprof')"><span class="nico">👤</span><span>Profilo</span></button>
   </div>
 </nav>
 
-<!-- ════════════════════════════════════════
-     SHEETS MODALI
-════════════════════════════════════════ -->
-
-<!-- Sheet: modifica profilo -->
-<div class="sheet-overlay" id="sheet-profilo" onclick="chiudiSheet('sheet-profilo', event)">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Modifica profilo</div>
-    <div class="field"><label>Nome</label>
-      <input type="text" id="p-nome" placeholder="Il tuo nome">
-    </div>
-    <div style="display:flex;gap:10px">
-      <button class="btn-sm btn-sm-prim" onclick="salvaProfilo()">Salva modifiche</button>
-      <button class="btn-sm btn-sm-ghost" onclick="chiudiSheet('sheet-profilo')">Annulla</button>
-    </div>
+<!-- SHEETS -->
+<div class="shovr" id="shcb" onclick="chiudiSh('shcb',event)">
+  <div class="sh"><div class="shhnd"></div><div class="shtit">Cambia biblioteca</div>
+    <div class="fi"><div class="acw"><input type="text" id="cbib" placeholder="Es. Rezzato, Brescia…" autocomplete="off"><div class="dd" id="ddcb"></div></div></div>
+    <div style="display:flex;gap:10px"><button class="bsm bsmp" onclick="confChip()">Cambia</button><button class="bsm bsmg" onclick="chiudiSh('shcb')">Annulla</button></div>
   </div>
 </div>
-
-<!-- Sheet: cambia biblioteca -->
-<div class="sheet-overlay" id="sheet-bib" onclick="chiudiSheet('sheet-bib', event)">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Cambia biblioteca</div>
-    <div class="field">
-      <label>Biblioteca di riferimento</label>
-      <div class="ac-wrap">
-        <input type="text" id="p-bib" placeholder="Es. Rezzato…" autocomplete="off">
-        <div class="dropdown" id="dd-p"></div>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px">
-      <button class="btn-sm btn-sm-prim" onclick="salvaLibreria()">Salva</button>
-      <button class="btn-sm btn-sm-ghost" onclick="chiudiSheet('sheet-bib')">Annulla</button>
-    </div>
+<div class="shovr" id="shprof" onclick="chiudiSh('shprof',event)">
+  <div class="sh"><div class="shhnd"></div><div class="shtit">Modifica profilo</div>
+    <div class="fi"><label>Nome</label><input type="text" id="pni" placeholder="Il tuo nome"></div>
+    <div style="display:flex;gap:10px"><button class="bsm bsmp" onclick="salvaProfilo()">Salva</button><button class="bsm bsmg" onclick="chiudiSh('shprof')">Annulla</button></div>
   </div>
 </div>
-
-<!-- Sheet: cambia biblioteca (ospite, dalla ricerca) -->
-<div class="sheet-overlay" id="sheet-cambia-bib" onclick="chiudiSheet('sheet-cambia-bib', event)">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Cambia biblioteca</div>
-    <div class="field">
-      <div class="ac-wrap">
-        <input type="text" id="cb-bib" placeholder="Es. Rezzato, Brescia…" autocomplete="off">
-        <div class="dropdown" id="dd-cb"></div>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px">
-      <button class="btn-sm btn-sm-prim" onclick="confermaChip()">Cambia</button>
-      <button class="btn-sm btn-sm-ghost" onclick="chiudiSheet('sheet-cambia-bib')">Annulla</button>
-    </div>
+<div class="shovr" id="shbib" onclick="chiudiSh('shbib',event)">
+  <div class="sh"><div class="shhnd"></div><div class="shtit">Cambia biblioteca</div>
+    <div class="fi"><label>Biblioteca</label><div class="acw"><input type="text" id="pbi" placeholder="Es. Rezzato…" autocomplete="off"><div class="dd" id="ddpb"></div></div></div>
+    <div style="display:flex;gap:10px"><button class="bsm bsmp" onclick="salvaLib()">Salva</button><button class="bsm bsmg" onclick="chiudiSh('shbib')">Annulla</button></div>
   </div>
 </div>
 
 <script>
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
-/* ══════════════════════════════════════
-   STATO GLOBALE
-══════════════════════════════════════ */
-let stato = { utente: null, biblioteca: '', salvatiSet: new Set() };
+let G={u:null,bib:'',salv:new Set()};
 
-/* ══════════════════════════════════════
-   LISTA BIBLIOTECHE
-══════════════════════════════════════ */
-const BIBS = [
-  "Acquafredda","Adro","Agnadello","Agnosine","Anfo","Angolo Terme","Annicco",
-  "Artogne","Azzano Mella","Bagnolo Cremasco","Bagnolo Mella","Bagolino",
-  "Barbariga","Barghe","Bassano Bresciano","Bedizzole","Berlingo","Berzo Demo",
-  "Berzo Inferiore","Bienno","Bione","Bonemerse","Borgo San Giacomo",
-  "Borgosatollo","Borno","Botticino","Bovegno","Bovezzo","Brandico","Braone",
-  "Breno","Brescia - Abba-Ballini","Brescia - Archivio Storico",
-  "Brescia - Arnaldo","Brescia - Bibliobus","Brescia - Buffalora",
-  "Brescia - Canton Mombello","Brescia - Casazza","Brescia - Centro Casa Severino",
-  "Brescia - Emeroteca Queriniana","Brescia - Fondazione Trebeschi",
-  "Brescia - Gambara","Brescia - Ghetti","Brescia - Golgi",
-  "Brescia - La Vetrina","Brescia - Largo Torrelunga",
-  "Brescia - Mediateca Queriniana","Brescia - Museo Scienze Naturali",
-  "Brescia - Parco Gallo","Brescia - Prealpino","Brescia - Queriniana",
-  "Brescia - San Polo","Brescia - SBU","Brescia - Sereno","Brescia - UAU",
-  "Brione","Caino","Calcinato","Calvagese D-R","Calvatone","Calvisano",
-  "Camisano","Capergnanica","Capo Di Ponte","Capovalle","Capralba",
-  "Capriano Del Colle","Capriolo","Carpenedolo","Casalbuttano",
-  "Casale Cremasco Vidolasco","Casaletto Ceredano","Casaletto Vaprio",
-  "Casalmaggiore","Casalpusterlengo","Castegnato","Castel Mella","Castelcovati",
-  "Castelleone","Castello Di Padernello","Castelverde","Castenedolo","Casto",
-  "Castrezzato","Cazzago SM","Cedegolo","Cellatica","Centro Fumetto A. Pazienza",
-  "Centro Studi RSI Salò","Cerveno","Ceto","Cevo","Chiari","Chieve","Cigole",
-  "Cimbergo","Cingia De' Botti","Cividate Camuno","Clusane","Coccaglio",
-  "Collebeato","Collio","Cologne","Comezzano - Cizzago","Concesio",
-  "Corte De' Frati","Corte Franca","Corteno Golgi","Corzano","Credera Rubbiano",
-  "Crema","Crema - Museo","Cremona - Anguissola","Cremona - CDA",
-  "Cremona - Manin","Darfo Boario Terme","Dello","Desenzano","Dovera","Edolo",
-  "Elnos","Erbusco","Esine","Fiesco","Fiesse","Flero","Gadesco Pieve Delmona",
-  "Gambara","Gardone Riviera","Gardone Val Trompia","Gargnano","Gavardo",
-  "Genivolta","Ghedi","Gianico","Gottolengo","Grontardo","Grumello Cremonese",
-  "Gussago","Gussola","Idro","Incudine","Irma","Iseo","Isola Dovarese",
-  "Isorella","Izano","Lavenone","Leno","Limone Sul Garda","Lodrino","Lograto",
-  "Lonato Del Garda","Longhena","Losine","Lozio","Lumezzane","Maclodio",
-  "Madignano","Magasa","Mairano","Malegno","Malonno","Manerba Del Garda",
-  "Manerbio","Marcheno","Marmentino","Marone","Martignana Di Po","Mazzano",
-  "Milzano","Moniga Del Garda","Monno","Monte Cremasco","Monte Isola",
-  "Monticelli Brusati","Montichiari","Montirone","Montodine","Mura","Muscoline",
-  "Nave","Niardo","Nuvolento","Nuvolera","Odolo","Offanengo","Offlaga","Ome",
-  "Ono San Pietro","Orzinuovi","Orzivecchi","Ospitaletto","Ostiano",
-  "Padenghe Sul Garda","Paderno FC","Paderno Ponchielli","Paitone",
-  "Palazzo Pignano","Palazzolo Sull'Oglio","Pandino","Paratico","Passirano",
-  "Pavone Del Mella","Persico Dosimo","Pertica Alta","Pertica Bassa",
-  "Pescarolo Ed Uniti","Pezzaze","Piadena Drizzona","Pian Camuno","Piancogno",
-  "Pianengo","Pisogne","Pizzighettone","Polaveno","Polpenazze Del Garda",
-  "Pompiano","Poncarale","Ponte Di Legno","Pontevico","Pontoglio","Pozzolengo",
-  "Pralboino","Preseglie","Prestine","Prevalle","Provaglio D'Iseo","Provaglio VS",
-  "Puegnago Del Garda","Quinzano D'Oglio","Remedello","Rezzato","Ricengo",
-  "Ripalta Cremasca","Rivarolo Del Re","Rivolta D'Adda","Roccafranca",
-  "Rodengo Saiano","Roè Volciano","Romanengo","Roncadelle","Rovato","Rudiano",
-  "Sabbio Chiese","Sale Marasino","Salò","San Bassano","San Daniele Po",
-  "San Felice Del Benaco","San Gervasio Bresciano","San Giovanni In Croce",
-  "San Paolo","San Zeno Naviglio","Sarezzo","Saviore Dell'Adamello","Sellero",
-  "Seniga","Sergnano","Serle","Sesto Ed Uniti","Sirmione","Soiano Del Lago",
-  "Solarolo Rainerio","Soncino","Sonico","Soresina","Sospiro","Spino D'Adda",
-  "Sulzano","Tavernole Sul Mella","Temù","Tignale","Torbole Casaglia","Tornata",
-  "Torre De' Picenardi","Torricella Del Pizzo","Toscolano Maderno","Travagliato",
-  "Tremosine","Trenzano","Trescore Balneario","Trescore Cremasco",
-  "Treviso Bresciano","Urago D'Oglio","Vallio Terme","Valvestino","Verolanuova",
-  "Verolavecchia","Vestone","Vezza D'Oglio","Villa Carcina","Villanuova Sul Clisi",
-  "Visano","Vobarno","Zone"
-];
+const BIBS=["Acquafredda","Adro","Agnadello","Agnosine","Anfo","Angolo Terme","Annicco","Artogne","Azzano Mella","Bagnolo Cremasco","Bagnolo Mella","Bagolino","Barbariga","Barghe","Bassano Bresciano","Bedizzole","Berlingo","Berzo Demo","Berzo Inferiore","Bienno","Bione","Bonemerse","Borgo San Giacomo","Borgosatollo","Borno","Botticino","Bovegno","Bovezzo","Brandico","Braone","Breno","Brescia - Abba-Ballini","Brescia - Archivio Storico","Brescia - Arnaldo","Brescia - Bibliobus","Brescia - Buffalora","Brescia - Canton Mombello","Brescia - Casazza","Brescia - Centro Casa Severino","Brescia - Emeroteca Queriniana","Brescia - Fondazione Trebeschi","Brescia - Gambara","Brescia - Ghetti","Brescia - Golgi","Brescia - La Vetrina","Brescia - Largo Torrelunga","Brescia - Mediateca Queriniana","Brescia - Museo Scienze Naturali","Brescia - Parco Gallo","Brescia - Prealpino","Brescia - Queriniana","Brescia - San Polo","Brescia - SBU","Brescia - Sereno","Brescia - UAU","Brione","Caino","Calcinato","Calvagese D-R","Calvatone","Calvisano","Camisano","Capergnanica","Capo Di Ponte","Capovalle","Capralba","Capriano Del Colle","Capriolo","Carpenedolo","Casalbuttano","Casale Cremasco Vidolasco","Casaletto Ceredano","Casaletto Vaprio","Casalmaggiore","Casalpusterlengo","Castegnato","Castel Mella","Castelcovati","Castelleone","Castello Di Padernello","Castelverde","Castenedolo","Casto","Castrezzato","Cazzago SM","Cedegolo","Cellatica","Centro Fumetto A. Pazienza","Centro Studi RSI Salò","Cerveno","Ceto","Cevo","Chiari","Chieve","Cigole","Cimbergo","Cingia De' Botti","Cividate Camuno","Clusane","Coccaglio","Collebeato","Collio","Cologne","Comezzano - Cizzago","Concesio","Corte De' Frati","Corte Franca","Corteno Golgi","Corzano","Credera Rubbiano","Crema","Crema - Museo","Cremona - Anguissola","Cremona - CDA","Cremona - Manin","Darfo Boario Terme","Dello","Desenzano","Dovera","Edolo","Elnos","Erbusco","Esine","Fiesco","Fiesse","Flero","Gadesco Pieve Delmona","Gambara","Gardone Riviera","Gardone Val Trompia","Gargnano","Gavardo","Genivolta","Ghedi","Gianico","Gottolengo","Grontardo","Grumello Cremonese","Gussago","Gussola","Idro","Incudine","Irma","Iseo","Isola Dovarese","Isorella","Izano","Lavenone","Leno","Limone Sul Garda","Lodrino","Lograto","Lonato Del Garda","Longhena","Losine","Lozio","Lumezzane","Maclodio","Madignano","Magasa","Mairano","Malegno","Malonno","Manerba Del Garda","Manerbio","Marcheno","Marmentino","Marone","Martignana Di Po","Mazzano","Milzano","Moniga Del Garda","Monno","Monte Cremasco","Monte Isola","Monticelli Brusati","Montichiari","Montirone","Montodine","Mura","Muscoline","Nave","Niardo","Nuvolento","Nuvolera","Odolo","Offanengo","Offlaga","Ome","Ono San Pietro","Orzinuovi","Orzivecchi","Ospitaletto","Ostiano","Padenghe Sul Garda","Paderno FC","Paderno Ponchielli","Paitone","Palazzo Pignano","Palazzolo Sull'Oglio","Pandino","Paratico","Passirano","Pavone Del Mella","Persico Dosimo","Pertica Alta","Pertica Bassa","Pescarolo Ed Uniti","Pezzaze","Piadena Drizzona","Pian Camuno","Piancogno","Pianengo","Pisogne","Pizzighettone","Polaveno","Polpenazze Del Garda","Pompiano","Poncarale","Ponte Di Legno","Pontevico","Pontoglio","Pozzolengo","Pralboino","Preseglie","Prestine","Prevalle","Provaglio D'Iseo","Provaglio VS","Puegnago Del Garda","Quinzano D'Oglio","Remedello","Rezzato","Ricengo","Ripalta Cremasca","Rivarolo Del Re","Rivolta D'Adda","Roccafranca","Rodengo Saiano","Roè Volciano","Romanengo","Roncadelle","Rovato","Rudiano","Sabbio Chiese","Sale Marasino","Salò","San Bassano","San Daniele Po","San Felice Del Benaco","San Gervasio Bresciano","San Giovanni In Croce","San Paolo","San Zeno Naviglio","Sarezzo","Saviore Dell'Adamello","Sellero","Seniga","Sergnano","Serle","Sesto Ed Uniti","Sirmione","Soiano Del Lago","Solarolo Rainerio","Soncino","Sonico","Soresina","Sospiro","Spino D'Adda","Sulzano","Tavernole Sul Mella","Temù","Tignale","Torbole Casaglia","Tornata","Torre De' Picenardi","Torricella Del Pizzo","Toscolano Maderno","Travagliato","Tremosine","Trenzano","Trescore Balneario","Trescore Cremasco","Treviso Bresciano","Urago D'Oglio","Vallio Terme","Valvestino","Verolanuova","Verolavecchia","Vestone","Vezza D'Oglio","Villa Carcina","Villanuova Sul Clisi","Visano","Vobarno","Zone"];
 
-/* ══════════════════════════════════════
-   NAVIGAZIONE
-══════════════════════════════════════ */
-const SCHERMATE_CON_NAV = ['s-ricerca','s-esplora','s-salvati','s-profilo'];
+const CNV=['shome','salex','satlante','sclio','smnem','slap','sprof'];
+let _atlAvv=false;
 
-function vai(id, sub) {
-  document.querySelectorAll('.schermata').forEach(s => s.classList.remove('attiva'));
-  document.getElementById(id).classList.add('attiva');
-
-  // Bottom nav visibile solo nelle schermate operative
-  const nav = document.getElementById('bottom-nav');
-  if (SCHERMATE_CON_NAV.includes(id)) {
-    nav.style.display = 'block';
-    // Aggiorna tab attivo
-    document.querySelectorAll('.nav-tab').forEach(t =>
-      t.classList.toggle('attivo', t.dataset.tab === id));
-  } else {
-    nav.style.display = 'none';
-  }
-
-  if (id === 's-auth') mostraFormAuth(sub || 'login');
-  if (id === 's-profilo') caricaProfilo();
-  if (id === 's-esplora') iniziaEsplora();
-  if (id === 's-salvati') caricaSalvatiPagina();
-
-  // Scrolla in cima
-  window.scrollTo(0, 0);
+function vai(id,sub){
+  document.querySelectorAll('.S').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  const nav=document.getElementById('bnav');
+  if(CNV.includes(id)){nav.style.display='block';document.querySelectorAll('.ntab').forEach(t=>t.classList.toggle('on',t.dataset.s===id));}
+  else nav.style.display='none';
+  if(id==='sa')mostraForm(sub||'login');
+  if(id==='shome')aggHome();
+  if(id==='sprof')caricaProf();
+  if(id==='smnem')caricaMnem();
+  if(id==='sclio')avviaClio();
+  if(id==='satlante'&&!_atlAvv){_atlAvv=true;caricaCas();caricaAut();}
+  window.scrollTo(0,0);
 }
+function switchTab(id){document.querySelectorAll('.ntab').forEach(t=>t.classList.toggle('on',t.dataset.s===id));vai(id);}
 
-function switchTab(id) {
-  vai(id);
-}
-
-/* ══════════════════════════════════════
-   AVVIO
-══════════════════════════════════════ */
 costruisciScaffale();
 
-async function avvia() {
-  try {
-    const r = await fetch('/api/auth/me');
-    const d = await r.json();
-    if (d.autenticato) {
-      stato.utente = d;
-      stato.biblioteca = d.biblioteca;
-      await caricaSalvati();
-      attivaRicerca(d.biblioteca, true);
-    } else {
-      vai('s-welcome');
-    }
-  } catch { vai('s-welcome'); }
+async function avvia(){
+  try{const r=await fetch('/api/auth/me');const d=await r.json();
+    if(d.autenticato){G.u=d;G.bib=d.biblioteca;await caricaSalv();attivaApp(d.biblioteca);}
+    else vai('sw');
+  }catch{vai('sw');}
 }
 avvia();
 
-/* ══════════════════════════════════════
-   SFONDO WELCOME: SCAFFALE
-══════════════════════════════════════ */
-function costruisciScaffale() {
-  const bg = document.getElementById('welcome-bg');
-  const colori = [
-    '#1e4d22','#2d6b32','#3a5f3c','#4a7a4e','#1a3a1c',
-    '#c9a84c','#254d28','#0f2210','#3d6b40','#2a5430'
-  ];
-  // Linee dello scaffale
-  [30, 42, 54, 66, 78].forEach(pct => {
-    const l = document.createElement('div');
-    l.className = 'shelf-line';
-    l.style.top = pct + '%';
-    bg.appendChild(l);
-  });
-  // Dorsi di libri
-  const n = 28;
-  for (let i = 0; i < n; i++) {
-    const b = document.createElement('div');
-    b.className = 'book-spine';
-    const w = 8 + Math.random() * 18;
-    const h = 60 + Math.random() * 80;
-    const shelf = Math.floor(Math.random() * 5); // 5 scaffali
-    const shelfPct = [30, 42, 54, 66, 78][shelf];
-    b.style.cssText = `
-      width:${w}px;height:${h}px;
-      left:${(i/n)*100+Math.random()*2}%;
-      bottom:calc(${100-shelfPct}% + 1px);
-      background:${colori[Math.floor(Math.random()*colori.length)]};
-      opacity:.18;
-      animation-delay:${i*0.04}s;
-    `;
+function aggHome(){
+  const h=new Date().getHours();
+  const sal=h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera';
+  const el=document.getElementById('hsal');
+  if(el)el.textContent=G.u?`${sal}, ${G.u.nome.split(' ')[0]}`:sal;
+}
+
+function costruisciScaffale(){
+  const bg=document.getElementById('wbg');if(!bg)return;
+  const C=['#1e4d22','#2d6b32','#3a5f3c','#4a7a4e','#1a3a1c','#c9a84c','#254d28','#0f2210','#3d6b40','#2a5430'];
+  [30,42,54,66,78].forEach(p=>{const l=document.createElement('div');l.className='wbl';l.style.top=p+'%';bg.appendChild(l);});
+  for(let i=0;i<26;i++){
+    const b=document.createElement('div');b.className='wbk';
+    const w=8+Math.random()*18,h=55+Math.random()*80,sh=Math.floor(Math.random()*5);
+    const sp=[30,42,54,66,78][sh];
+    b.style.cssText=`width:${w}px;height:${h}px;left:${(i/26)*100+Math.random()*2}%;bottom:calc(${100-sp}% + 1px);background:${C[~~(Math.random()*C.length)]};opacity:.16;animation-delay:${i*.04}s`;
     bg.appendChild(b);
   }
 }
 
-/* ══════════════════════════════════════
-   AUTH
-══════════════════════════════════════ */
-function mostraFormAuth(tipo) {
-  document.getElementById('auth-form-login').style.display    = tipo === 'login'    ? '' : 'none';
-  document.getElementById('auth-form-registra').style.display = tipo === 'registra' ? '' : 'none';
-  const heading = document.getElementById('auth-heading');
-  const sub     = document.getElementById('auth-sub-hd');
-  heading.innerHTML = tipo === 'login'
-    ? '<strong>Accedi</strong>'
-    : '<strong>Crea account</strong>';
-  sub.textContent = tipo === 'login'
-    ? 'Bentornato nel catalogo'
-    : 'Inizia a tracciare le tue letture';
-  document.getElementById('auth-err').style.display = 'none';
+function mostraForm(t){
+  document.getElementById('afl').style.display=t==='login'?'':'none';
+  document.getElementById('afr').style.display=t==='registra'?'':'none';
+  document.getElementById('atit').innerHTML=t==='login'?'<strong>Accedi</strong>':'<strong>Crea account</strong>';
+  document.getElementById('asub').textContent=t==='login'?'Bentornato nel catalogo':'Inizia a tracciare le tue letture';
+  document.getElementById('aerr').style.display='none';
+}
+function errA(m){const e=document.getElementById('aerr');e.textContent=m;e.style.display='block';}
+
+async function doLogin(){
+  const email=document.getElementById('le').value.trim(),pw=document.getElementById('lp').value;
+  if(!email||!pw)return errA('Inserisci email e password.');
+  const r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pw})});
+  const d=await r.json();if(!r.ok)return errA(d.error||'Errore login.');
+  G.u=d;G.bib=d.biblioteca;await caricaSalv();attivaApp(d.biblioteca);
+}
+async function doReg(){
+  const nome=document.getElementById('rn').value.trim(),email=document.getElementById('re').value.trim();
+  const pw=document.getElementById('rp').value,bib=document.getElementById('rb').value.trim();
+  if(!nome||!email||!pw||!bib)return errA('Compila tutti i campi.');
+  if(!BIBS.some(b=>b.toLowerCase()===bib.toLowerCase()))return errA("Seleziona una biblioteca dall'elenco.");
+  const r=await fetch('/api/auth/registra',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,email,password:pw,biblioteca:bib})});
+  const d=await r.json();if(!r.ok)return errA(d.error||'Errore.');
+  G.u=d;G.bib=d.biblioteca;await caricaSalv();attivaApp(d.biblioteca);
+}
+async function doLogout(){await fetch('/api/auth/logout',{method:'POST'});G.u=null;G.bib='';G.salv=new Set();vai('sw');}
+function usaSenza(){G.u=null;vai('sbib');}
+
+setupAC('gb','ddg',n=>{G.bib=n||'';document.getElementById('bbOk').disabled=!n;});
+function confBib(){if(!G.bib)return;attivaApp(G.bib);}
+
+function attivaApp(bib){
+  G.bib=bib;
+  document.getElementById('chipn').textContent=bib;
+  document.getElementById('vuotoh').textContent=`Digita il titolo per verificare la disponibilità a ${bib}.`;
+  aggiornaUIProf();vai('shome');
 }
 
-function mostraErrAuth(msg) {
-  const el = document.getElementById('auth-err');
-  el.textContent = msg;
-  el.style.display = 'block';
+setupAC('cbib','ddcb',()=>{});
+function confChip(){
+  const v=document.getElementById('cbib').value.trim();
+  if(!v||!BIBS.some(b=>b.toLowerCase()===v.toLowerCase()))return;
+  G.bib=v;document.getElementById('chipn').textContent=v;
+  document.getElementById('vuotoh').textContent=`Digita il titolo per verificare la disponibilità a ${v}.`;
+  if(G.u){fetch('/api/auth/aggiorna',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:G.u.nome,biblioteca:v})}).then(r=>r.json()).then(d=>{if(d.ok){G.u.biblioteca=v;aggiornaUIProf();}});}
+  chiudiSh('shcb');
 }
 
-async function doLogin() {
-  const email = document.getElementById('l-email').value.trim();
-  const pw    = document.getElementById('l-pw').value;
-  if (!email || !pw) return mostraErrAuth('Inserisci email e password.');
-  try {
-    const r = await fetch('/api/auth/login', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ email, password: pw })
-    });
-    const d = await r.json();
-    if (!r.ok) return mostraErrAuth(d.error || 'Errore login.');
-    stato.utente = d; stato.biblioteca = d.biblioteca;
-    await caricaSalvati();
-    attivaRicerca(d.biblioteca, true);
-  } catch { mostraErrAuth('Errore di rete.'); }
-}
-
-async function doRegistra() {
-  const nome  = document.getElementById('r-nome').value.trim();
-  const email = document.getElementById('r-email').value.trim();
-  const pw    = document.getElementById('r-pw').value;
-  const bib   = document.getElementById('r-bib').value.trim();
-  if (!nome || !email || !pw || !bib) return mostraErrAuth('Compila tutti i campi.');
-  if (!BIBS.some(b => b.toLowerCase() === bib.toLowerCase()))
-    return mostraErrAuth("Seleziona una biblioteca dall'elenco.");
-  try {
-    const r = await fetch('/api/auth/registra', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ nome, email, password: pw, biblioteca: bib })
-    });
-    const d = await r.json();
-    if (!r.ok) return mostraErrAuth(d.error || 'Errore registrazione.');
-    stato.utente = d; stato.biblioteca = d.biblioteca;
-    await caricaSalvati();
-    attivaRicerca(d.biblioteca, true);
-  } catch { mostraErrAuth('Errore di rete.'); }
-}
-
-async function doLogout() {
-  await fetch('/api/auth/logout', { method: 'POST' });
-  stato.utente = null; stato.biblioteca = '';
-  stato.salvatiSet = new Set();
-  vai('s-welcome');
-}
-
-function usaSenzaAccount() {
-  stato.utente = null;
-  vai('s-bib');
-}
-
-/* ══════════════════════════════════════
-   SELEZIONE BIBLIOTECA
-══════════════════════════════════════ */
-setupAutocomplete('g-bib', 'dd-g', nome => {
-  stato.biblioteca = nome || '';
-  document.getElementById('btn-bib-ok').disabled = !nome;
-});
-
-function confermaBib() {
-  if (!stato.biblioteca) return;
-  attivaRicerca(stato.biblioteca, false);
-}
-
-/* ══════════════════════════════════════
-   ATTIVA SCHERMATA RICERCA
-══════════════════════════════════════ */
-function attivaRicerca(bib, loggato) {
-  stato.biblioteca = bib;
-  document.getElementById('chip-nome').textContent = bib;
-  document.getElementById('vuoto-hint').textContent =
-    `Digita il titolo per verificare la disponibilità a ${bib}.`;
-
-  // Mostra/nascondi tab profilo e salvati
-  const haAcc = !!stato.utente;
-  document.getElementById('nav-salvati').style.display = haAcc ? '' : 'none';
-  document.getElementById('nav-profilo').style.display = haAcc ? '' : 'none';
-
-  vai('s-ricerca');
-}
-
-/* ══════════════════════════════════════
-   CHIP BIBLIOTECA (header ricerca)
-══════════════════════════════════════ */
-function apriCambiaBib() {
-  document.getElementById('cb-bib').value = stato.biblioteca;
-  apriSheet('sheet-cambia-bib');
-}
-
-let _chipBibTemp = '';
-setupAutocomplete('cb-bib', 'dd-cb', nome => { _chipBibTemp = nome || ''; });
-
-function confermaChip() {
-  const val = document.getElementById('cb-bib').value.trim();
-  if (!val || !BIBS.some(b => b.toLowerCase() === val.toLowerCase())) return;
-  stato.biblioteca = val;
-  document.getElementById('chip-nome').textContent = val;
-  document.getElementById('vuoto-hint').textContent =
-    `Digita il titolo per verificare la disponibilità a ${val}.`;
-  // Se loggato aggiorna anche il profilo
-  if (stato.utente) {
-    fetch('/api/auth/aggiorna', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ nome: stato.utente.nome, biblioteca: val })
-    }).then(r => r.json()).then(d => {
-      if (d.ok) { stato.utente.biblioteca = val; aggiornaUIProfilo(); }
-    }).catch(() => {});
-  }
-  chiudiSheet('sheet-cambia-bib');
-}
-
-/* ══════════════════════════════════════
-   SHEETS
-══════════════════════════════════════ */
-function apriSheet(id) {
-  document.getElementById(id).classList.add('aperto');
-}
-function chiudiSheet(id, e) {
-  if (!e || e.target === document.getElementById(id))
-    document.getElementById(id).classList.remove('aperto');
-}
-
-/* ══════════════════════════════════════
-   AUTOCOMPLETE
-══════════════════════════════════════ */
-const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[''`]/g,"'");
-function hl(nome, q) {
-  const i = norm(nome).indexOf(norm(q));
-  if (i < 0 || !q) return nome;
-  return nome.slice(0,i) + '<em>' + nome.slice(i,i+q.length) + '</em>' + nome.slice(i+q.length);
-}
-
-function setupAutocomplete(inputId, ddId, onSelect) {
-  const inp = document.getElementById(inputId);
-  const dd  = document.getElementById(ddId);
-  if (!inp || !dd) return;
-  let iHov = -1;
-
-  inp.addEventListener('input', () => {
-    const q = inp.value.trim();
-    onSelect(null);
-    iHov = -1;
-    if (!q) { dd.classList.remove('open'); return; }
-    const nq   = norm(q);
-    const ini  = BIBS.filter(n => norm(n).startsWith(nq));
-    const con  = BIBS.filter(n => !norm(n).startsWith(nq) && norm(n).includes(nq));
-    const list = [...ini, ...con].slice(0, 12);
-    dd.innerHTML = list.length
-      ? list.map(n => `<div class="dd-item">${hl(n,q)}</div>`).join('')
-      : '<div class="dd-empty">Nessuna biblioteca trovata</div>';
-    dd.classList.add('open');
-    dd.querySelectorAll('.dd-item').forEach(el => {
-      el.addEventListener('mousedown', e => {
-        e.preventDefault();
-        inp.value = el.textContent;
-        onSelect(el.textContent);
-        dd.classList.remove('open');
-      });
-    });
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[''`]/g,"'");
+function hl(n,q){const i=norm(n).indexOf(norm(q));if(i<0||!q)return n;return n.slice(0,i)+'<em>'+n.slice(i,i+q.length)+'</em>'+n.slice(i+q.length);}
+function setupAC(inpId,ddId,onSel){
+  const inp=document.getElementById(inpId),dd=document.getElementById(ddId);
+  if(!inp||!dd)return;let ih=-1;
+  inp.addEventListener('input',()=>{
+    const q=inp.value.trim();onSel(null);ih=-1;
+    if(!q){dd.classList.remove('on');return;}
+    const nq=norm(q),ini=BIBS.filter(n=>norm(n).startsWith(nq)),con=BIBS.filter(n=>!norm(n).startsWith(nq)&&norm(n).includes(nq));
+    const ls=[...ini,...con].slice(0,12);
+    dd.innerHTML=ls.length?ls.map(n=>`<div class="ddi">${hl(n,q)}</div>`).join(''):'<div class="dde">Nessuna biblioteca trovata</div>';
+    dd.classList.add('on');
+    dd.querySelectorAll('.ddi').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();inp.value=el.textContent;onSel(el.textContent);dd.classList.remove('on');}));
   });
-
-  inp.addEventListener('keydown', e => {
-    const items = dd.querySelectorAll('.dd-item');
-    if (!dd.classList.contains('open')) return;
-    if (e.key === 'ArrowDown') { e.preventDefault(); iHov = Math.min(iHov+1, items.length-1); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); iHov = Math.max(iHov-1, 0); }
-    else if (e.key === 'Enter' && iHov >= 0) {
-      e.preventDefault();
-      inp.value = items[iHov].textContent;
-      onSelect(items[iHov].textContent);
-      dd.classList.remove('open'); return;
-    } else if (e.key === 'Escape') { dd.classList.remove('open'); return; }
-    items.forEach((el,i) => el.classList.toggle('hl', i === iHov));
+  inp.addEventListener('keydown',e=>{
+    const its=dd.querySelectorAll('.ddi');if(!dd.classList.contains('on'))return;
+    if(e.key==='ArrowDown'){e.preventDefault();ih=Math.min(ih+1,its.length-1);}
+    else if(e.key==='ArrowUp'){e.preventDefault();ih=Math.max(ih-1,0);}
+    else if(e.key==='Enter'&&ih>=0){e.preventDefault();inp.value=its[ih].textContent;onSel(its[ih].textContent);dd.classList.remove('on');return;}
+    else if(e.key==='Escape'){dd.classList.remove('on');return;}
+    its.forEach((el,i)=>el.classList.toggle('hl',i===ih));
   });
+  document.addEventListener('click',e=>{if(!e.target.closest('#'+ddId)&&!e.target.closest('#'+inpId))dd.classList.remove('on');});
+}
+setupAC('rb','ddr',()=>{});
+setupAC('pbi','ddpb',()=>{});
 
-  document.addEventListener('click', e => {
-    if (!e.target.closest('#'+ddId) && !e.target.closest('#'+inputId))
-      dd.classList.remove('open');
+function apriSh(id){document.getElementById(id).classList.add('on');}
+function chiudiSh(id,e){if(!e||e.target===document.getElementById(id))document.getElementById(id).classList.remove('on');}
+
+/* RICERCA */
+const main=document.getElementById('main');
+function stC(c){if(!c?.length)return'';const ss=c.map(x=>x.stato.toLowerCase());if(ss.some(s=>s.includes('scaffale')||s.includes('disponib')))return'disp';if(ss.some(s=>s.includes('prestito')))return'prest';return'';}
+function dC(s){s=s.toLowerCase();if(s.includes('scaffale')||s.includes('disponib'))return'dv';if(s.includes('prestito'))return'dr';return'do';}
+async function caricaSalv(){if(!G.u)return;try{const r=await fetch('/api/salvati');if(r.ok){const d=await r.json();G.salv=new Set(d.map(s=>s.url_opac));}}catch{}}
+async function togSalv(btn,libro){
+  if(!G.u)return;const url=libro.url;
+  if(G.salv.has(url)){try{const r=await fetch('/api/salvati');const d=await r.json();const it=d.find(s=>s.url_opac===url);if(it){await fetch(`/api/salvati/${it.id}`,{method:'DELETE'});G.salv.delete(url);btn.textContent='♡ Salva';btn.classList.remove('on');}}catch{}}
+  else{try{await fetch('/api/salvati',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({titolo:libro.titolo,autore:libro.autore||'',url_opac:url,biblioteca:G.bib,disponibile:libro.disponibile?1:0})});G.salv.add(url);btn.textContent='♥ Salvato';btn.classList.add('on');}catch{}}
+}
+function renderRis(data){
+  const{query,biblioteca,risultati}=data;
+  if(!risultati?.length){main.innerHTML=`<div class="vuoto"><svg width="48" height="48" viewBox="0 0 192 192" fill="none"><path d="M22 52C22 48 26 46 30 47L92 58V148L30 136C26 135 22 132 22 128Z" fill="#1a3a1c"/><path d="M170 52C170 48 166 46 162 47L100 58V148L162 136C166 135 170 132 170 128Z" fill="#1a3a1c"/><line x1="96" y1="56" x2="96" y2="149" stroke="#c9a84c" stroke-width="3.5"/></svg><h2>Nessun risultato</h2><p>Nessun libro per <em>"${query}"</em>.</p></div>`;return;}
+  const nB=risultati.filter(r=>r.copie_rezzato?.length).length;
+  let h=`<div class="iq"><h2>«<strong>${query}</strong>»</h2><span class="bdg">${nB}/${risultati.length} a ${biblioteca}</span></div>`;
+  risultati.forEach((lib,i)=>{
+    const cl=stC(lib.copie_rezzato),au=lib.autore&&lib.autore!=='—'?lib.autore:'';
+    const sb=G.u?`<button class="bsalv${G.salv.has(lib.url)?' on':''}" data-i="${i}">${G.salv.has(lib.url)?'♥ Salvato':'♡ Salva'}</button>`:'';
+    let ch='';
+    if(!lib.copie_rezzato?.length)ch=`<div class="ctcop"><span class="assl">Non presente a ${biblioteca}</span></div>`;
+    else{const rr=lib.copie_rezzato.map(c=>`<div class="copr"><div class="cdot ${dC(c.stato)}"></div><div class="cb"><div><span class="cc">${c.collocazione}</span><span class="ci">${c.inventario}</span></div><div class="cs">${c.stato}</div>${c.rientra?`<div class="cri">Rientra: ${c.rientra}</div>`:''}</div></div>`).join('');ch=`<div class="ctcop">${rr}</div>`;}
+    h+=`<div class="card ${cl}" style="animation-delay:${i*.04}s" data-i="${i}"><div class="cth"><div class="ctt">${lib.titolo}</div>${au?`<div class="cta">${au}</div>`:''}</div>${sb?`<div class="ctact">${sb}</div>`:''}${ch}<a class="cln" href="${lib.url}" target="_blank" rel="noopener">Apri nel catalogo →</a></div>`;
   });
+  main.innerHTML=h;
+  if(G.u)main.querySelectorAll('.bsalv').forEach(btn=>{const i=parseInt(btn.dataset.i);btn.addEventListener('click',()=>togSalv(btn,risultati[i]));});
+}
+async function cerca(){
+  const q=document.getElementById('it').value.trim();if(!q||!G.bib)return;
+  main.innerHTML='<div class="ld"><div class="sp"></div><p>Cerco nell\'OPAC…</p></div>';
+  const bc=document.getElementById('bcerca');bc.disabled=true;bc.textContent='…';
+  try{const r=await fetch(`/api/search?q=${encodeURIComponent(q)}&biblioteca=${encodeURIComponent(G.bib)}`);if(!r.ok)throw new Error(`Errore ${r.status}`);renderRis(await r.json());}
+  catch(e){main.innerHTML=`<div class="er">⚠ ${e.message} — riprova.</div>`;}
+  finally{bc.disabled=false;bc.textContent='Cerca';}
+}
+document.getElementById('it').addEventListener('keydown',e=>{if(e.key==='Enter')cerca();});
+
+/* ATLANTE */
+function cardEC(libro,label){
+  const s=G.salv.has(libro.url);
+  const sb=G.u?`<button class="besalv${s?' on':''}" data-url="${libro.url}" data-t="${(libro.titolo||'').replace(/"/g,'&quot;')}" data-a="${(libro.autore||'').replace(/"/g,'&quot;')}">${s?'♥ Salvato':'♡ Salva'}</button>`:'';
+  return`<div class="ec"><div class="ech"><div class="ecl">${label}</div><div class="ect">${libro.titolo}</div>${libro.autore?`<div class="eca">${libro.autore}</div>`:''}</div><div class="ecact"><a class="bopac" href="${libro.url}" target="_blank" rel="noopener">Apri nel catalogo →</a>${sb}</div></div>`;
+}
+function attSalv(c){c.querySelectorAll('.besalv').forEach(b=>{if(G.salv.has(b.dataset.url)){b.textContent='♥ Salvato';b.classList.add('on');}b.addEventListener('click',async()=>togSalv(b,{url:b.dataset.url,titolo:b.dataset.t,autore:b.dataset.a}));});}
+async function caricaCas(){
+  const el=document.getElementById('ecCas'),btn=document.getElementById('btnCas'),sp=document.getElementById('spCas');
+  el.innerHTML='<div class="ld"><div class="sp"></div><p>Pesco dal catalogo…</p></div>';
+  if(btn){btn.disabled=true;if(sp)sp.className='spi';}
+  try{const r=await fetch('/api/esplora/casuale');if(!r.ok)throw 0;const l=await r.json();if(l.error)throw 0;el.innerHTML=cardEC(l,'🎲 Libro a caso');attSalv(el);}
+  catch{el.innerHTML='<div class="er">Non è stato possibile caricare un libro casuale.</div>';}
+  finally{if(btn){btn.disabled=false;if(sp)sp.className='';}}
+}
+async function caricaAut(){
+  const el=document.getElementById('ecAut'),btn=document.getElementById('btnAut'),sp=document.getElementById('spAut');
+  el.innerHTML='<div class="ld"><div class="sp"></div><p>Cerco un autore…</p></div>';
+  if(btn){btn.disabled=true;if(sp)sp.className='spi';}
+  try{
+    const r=await fetch('/api/esplora/autore');if(!r.ok)throw 0;const d=await r.json();if(d.error)throw 0;
+    const nome=d.autore.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+    const ops=d.opere?.length?d.opere.map((o,i)=>`<div class="opi"><span class="opn">${i+1}</span><div class="opb"><div class="opt">${o.titolo}</div><a class="opl" href="${o.url}" target="_blank" rel="noopener">Apri nel catalogo →</a></div></div>`).join(''):'<div class="vp">Nessuna opera trovata.</div>';
+    el.innerHTML=`<div class="ec"><div class="ech"><div class="ecl">✍️ Autore del momento</div><div class="autn">${nome}</div><div class="auts">${d.opere?.length||0} opere nel catalogo RBBC</div></div><div class="oplist">${ops}</div></div>`;
+  }catch{el.innerHTML='<div class="er">Non è stato possibile caricare un autore.</div>';}
+  finally{if(btn){btn.disabled=false;if(sp)sp.className='';}}
 }
 
-setupAutocomplete('r-bib', 'dd-r', () => {});
-setupAutocomplete('p-bib', 'dd-p', () => {});
-
-/* ══════════════════════════════════════
-   RICERCA
-══════════════════════════════════════ */
-const main = document.getElementById('main');
-
-function statoC(copie) {
-  if (!copie?.length) return 'assente';
-  const ss = copie.map(c => c.stato.toLowerCase());
-  if (ss.some(s => s.includes('scaffale') || s.includes('disponib'))) return 'disponibile';
-  if (ss.some(s => s.includes('prestito'))) return 'in-prestito';
-  return 'assente';
-}
-function dotC(s) {
-  s = s.toLowerCase();
-  if (s.includes('scaffale') || s.includes('disponib')) return 'dv';
-  if (s.includes('prestito')) return 'dr';
-  return 'do';
-}
-function isSalvato(url) { return stato.salvatiSet.has(url); }
-
-async function caricaSalvati() {
-  if (!stato.utente) return;
-  try {
-    const r = await fetch('/api/salvati');
-    if (r.ok) {
-      const d = await r.json();
-      stato.salvatiSet = new Set(d.map(s => s.url_opac));
-    }
-  } catch {}
+/* CLIO */
+function avviaClio(){
+  const el=document.getElementById('cliodata');
+  if(el){const o=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});el.textContent=o;}
 }
 
-async function toggleSalva(btn, libro) {
-  if (!stato.utente) return;
-  const url = libro.url;
-  if (isSalvato(url)) {
-    try {
-      const r = await fetch('/api/salvati');
-      const d = await r.json();
-      const item = d.find(s => s.url_opac === url);
-      if (item) {
-        await fetch(`/api/salvati/${item.id}`, { method: 'DELETE' });
-        stato.salvatiSet.delete(url);
-        btn.textContent = '♡ Salva'; btn.classList.remove('salvato');
-      }
-    } catch {}
-  } else {
-    try {
-      await fetch('/api/salvati', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({
-          titolo: libro.titolo, autore: libro.autore || '',
-          url_opac: url, biblioteca: stato.biblioteca,
-          disponibile: libro.disponibile ? 1 : 0
-        })
-      });
-      stato.salvatiSet.add(url);
-      btn.textContent = '♥ Salvato'; btn.classList.add('salvato');
-    } catch {}
-  }
+/* MNEMOSINE */
+async function caricaMnem(){
+  if(!G.u){document.getElementById('mn-noauth').style.display='';document.getElementById('mn-auth').style.display='none';return;}
+  document.getElementById('mn-noauth').style.display='none';document.getElementById('mn-auth').style.display='';
+  try{
+    const[stR,savR]=await Promise.all([fetch('/api/storico'),fetch('/api/salvati')]);
+    const st=await stR.json(),sav=await savR.json();
+    document.getElementById('mnr').textContent=st.tot_ricerche||0;
+    document.getElementById('mns').textContent=sav.length||0;
+    document.getElementById('mntq').innerHTML=st.top_query?.length?st.top_query.map((q,i)=>`<div class="tqi"><span class="tqr">${i+1}</span><span class="tqq">${q.query}</span><span class="tqn">${q.n}×</span></div>`).join(''):'<div class="vp">Nessuna ricerca ancora.</div>';
+    document.getElementById('mnst').innerHTML=st.ricerche?.length?st.ricerche.map(r=>`<div class="rci"><div><div class="riq">${r.query}</div><div class="rib">${r.biblioteca}</div></div><div class="rim">${r.a_bib}/${r.trovati}<br>${r.cercato_il.slice(0,10)}</div></div>`).join(''):'<div class="vp">Nessuna ricerca ancora.</div>';
+  }catch(e){console.error(e);}
 }
 
-function renderRis(data) {
-  const { query, biblioteca, risultati } = data;
-  if (!risultati?.length) {
-    main.innerHTML = `<div class="vuoto">
-      <svg width="52" height="52" viewBox="0 0 192 192" fill="none">
-        <path d="M22 52 C22 48 26 46 30 47 L92 58 L92 148 L30 136 C26 135 22 132 22 128 Z" fill="#1a3a1c"/>
-        <path d="M170 52 C170 48 166 46 162 47 L100 58 L100 148 L162 136 C166 135 170 132 170 128 Z" fill="#1a3a1c"/>
-        <line x1="96" y1="56" x2="96" y2="149" stroke="#c9a84c" stroke-width="3.5"/>
-      </svg>
-      <h2>Nessun risultato</h2>
-      <p>Nessun libro trovato per <em>"${query}"</em>.</p>
-    </div>`;
-    return;
-  }
-
-  const nBib = risultati.filter(r => r.copie_rezzato?.length).length;
-  let html = `<div class="info-q">
-    <h2>«<strong>${query}</strong>»</h2>
-    <span class="badge">${nBib}/${risultati.length} a ${biblioteca}</span>
-  </div>`;
-
-  risultati.forEach((libro, idx) => {
-    const cl = statoC(libro.copie_rezzato);
-    const au = libro.autore && libro.autore !== '—' ? libro.autore : '';
-    const salvBtn = stato.utente
-      ? `<button class="btn-salva${isSalvato(libro.url)?' salvato':''}" data-idx="${idx}">
-           ${isSalvato(libro.url) ? '♥ Salvato' : '♡ Salva'}
-         </button>` : '';
-    let copieH = '';
-    if (!libro.copie_rezzato?.length) {
-      copieH = `<div class="card-copie"><span class="assente-label">Non presente a ${biblioteca}</span></div>`;
-    } else {
-      const righe = libro.copie_rezzato.map(c => `
-        <div class="copia-riga">
-          <div class="cdot ${dotC(c.stato)}"></div>
-          <div class="cb">
-            <div><span class="cc">${c.collocazione}</span><span class="ci">${c.inventario}</span></div>
-            <div class="cs">${c.stato}</div>
-            ${c.rientra ? `<div class="cr">Rientra: ${c.rientra}</div>` : ''}
-          </div>
-        </div>`).join('');
-      copieH = `<div class="card-copie">${righe}</div>`;
-    }
-    html += `<div class="card ${cl}" style="animation-delay:${idx*.04}s" data-idx="${idx}">
-      <div class="card-head">
-        <div class="card-titolo">${libro.titolo}</div>
-        ${au ? `<div class="card-autore">${au}</div>` : ''}
-      </div>
-      ${salvBtn ? `<div class="card-actions">${salvBtn}</div>` : ''}
-      ${copieH}
-      <a class="card-link" href="${libro.url}" target="_blank" rel="noopener">Apri nel catalogo →</a>
-    </div>`;
-  });
-  main.innerHTML = html;
-
-  if (stato.utente) {
-    main.querySelectorAll('.btn-salva').forEach(btn => {
-      const idx = parseInt(btn.dataset.idx);
-      btn.addEventListener('click', () => toggleSalva(btn, risultati[idx]));
-    });
-  }
+/* PROFILO */
+function aggiornaUIProf(){
+  if(!G.u)return;const u=G.u;
+  const pa=document.getElementById('pav');if(pa)pa.textContent=(u.nome||'?')[0].toUpperCase();
+  const pn=document.getElementById('pnom');if(pn)pn.textContent=u.nome;
+  const pe=document.getElementById('pem');if(pe)pe.textContent=u.email||'';
+  const pb=document.getElementById('pbib');if(pb)pb.textContent=G.bib;
+  const ib=document.getElementById('imbv');if(ib)ib.textContent=G.bib;
+  const pi=document.getElementById('pni');if(pi)pi.value=u.nome||'';
+  const pbi=document.getElementById('pbi');if(pbi)pbi.value=G.bib||'';
 }
-
-async function cerca() {
-  const q = document.getElementById('it').value.trim();
-  if (!q || !stato.biblioteca) return;
-  main.innerHTML = `<div class="loading"><div class="spinner"></div><p>Cerco nell'OPAC…</p></div>`;
-  const bc = document.getElementById('btn-cerca');
-  bc.disabled = true; bc.textContent = '…';
-  try {
-    const r = await fetch(`/api/search?q=${encodeURIComponent(q)}&biblioteca=${encodeURIComponent(stato.biblioteca)}`);
-    if (!r.ok) throw new Error(`Errore ${r.status}`);
-    renderRis(await r.json());
-  } catch(err) {
-    main.innerHTML = `<div class="errore">⚠ ${err.message} — riprova tra qualche secondo.</div>`;
-  } finally { bc.disabled = false; bc.textContent = 'Cerca'; }
+async function caricaProf(){
+  if(!G.u)return;aggiornaUIProf();
+  try{
+    const r=await fetch('/api/salvati');const sav=await r.json();
+    const ml=document.getElementById('p-mialib');
+    ml.innerHTML=sav.length?sav.map(s=>`<div class="wi"><div class="wdot ${s.disponibile?'dv':'do'}"></div><div class="wbod"><div class="wtt">${s.titolo}</div>${s.autore?`<div class="wat">${s.autore}</div>`:''}<div class="wmt">${s.biblioteca}</div></div><button class="bdel" onclick="delSalv(${s.id},this)">✕</button></div>`).join(''):'<div class="vp">Nessun libro salvato ancora.</div>';
+  }catch{}
 }
-
-document.getElementById('btn-cerca').addEventListener('click', cerca);
-document.getElementById('it').addEventListener('keydown', e => { if (e.key === 'Enter') cerca(); });
-
-/* ══════════════════════════════════════
-   SALVATI (pagina dedicata)
-══════════════════════════════════════ */
-async function caricaSalvatiPagina() {
-  const el = document.getElementById('salvati-main');
-  if (!stato.utente) {
-    el.innerHTML = `<div class="vuoto">
-      <svg width="52" height="52" viewBox="0 0 192 192" fill="none">
-        <path d="M22 52 C22 48 26 46 30 47 L92 58 L92 148 L30 136 C26 135 22 132 22 128 Z" fill="#1a3a1c"/>
-        <path d="M170 52 C170 48 166 46 162 47 L100 58 L100 148 L162 136 C166 135 170 132 170 128 Z" fill="#1a3a1c"/>
-        <line x1="96" y1="56" x2="96" y2="149" stroke="#c9a84c" stroke-width="3.5"/>
-      </svg>
-      <h2>Accedi per salvare</h2>
-      <p>Crea un account gratuito per salvare i libri che ti interessano.</p>
-    </div>`;
-    return;
-  }
-  el.innerHTML = '<div class="loading"><div class="spinner"></div><p>Carico i tuoi libri…</p></div>';
-  try {
-    const r = await fetch('/api/salvati');
-    const sav = await r.json();
-    if (!sav.length) {
-      el.innerHTML = `<div class="vuoto">
-        <svg width="52" height="52" viewBox="0 0 192 192" fill="none">
-          <path d="M22 52 C22 48 26 46 30 47 L92 58 L92 148 L30 136 C26 135 22 132 22 128 Z" fill="#1a3a1c"/>
-          <path d="M170 52 C170 48 166 46 162 47 L100 58 L100 148 L162 136 C166 135 170 132 170 128 Z" fill="#1a3a1c"/>
-          <line x1="96" y1="56" x2="96" y2="149" stroke="#c9a84c" stroke-width="3.5"/>
-        </svg>
-        <h2>Nessun libro salvato</h2>
-        <p>Cerca un titolo e premi ♡ per salvarlo qui.</p>
-      </div>`;
-      return;
-    }
-    el.innerHTML = sav.map(s => `
-      <div class="salvato-item" data-id="${s.id}">
-        <div class="si-dot ${s.disponibile ? 'dv' : 'do'}"></div>
-        <div class="si-body">
-          <div class="si-titolo">${s.titolo}</div>
-          ${s.autore ? `<div class="si-autore">${s.autore}</div>` : ''}
-          <div class="si-meta">${s.biblioteca}</div>
-        </div>
-        <button class="btn-del" onclick="eliminaSalvato(${s.id}, this)" title="Rimuovi">✕</button>
-      </div>`).join('');
-  } catch {
-    el.innerHTML = '<div class="errore">Non è stato possibile caricare i libri salvati.</div>';
-  }
+async function delSalv(id,btn){await fetch(`/api/salvati/${id}`,{method:'DELETE'});btn.closest('.wi').remove();await caricaSalv();}
+async function salvaProfilo(){
+  const nome=document.getElementById('pni').value.trim();if(!nome)return;
+  const r=await fetch('/api/auth/aggiorna',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,biblioteca:G.bib})});
+  const d=await r.json();if(d.ok){G.u.nome=d.nome;aggiornaUIProf();chiudiSh('shprof');}
 }
-
-async function eliminaSalvato(id, btn) {
-  await fetch(`/api/salvati/${id}`, { method: 'DELETE' });
-  btn.closest('.salvato-item').remove();
-  stato.salvatiSet.delete([...stato.salvatiSet].find(u => u)); // aggiornamento approssimativo
-  await caricaSalvati();
-}
-
-/* ══════════════════════════════════════
-   PROFILO
-══════════════════════════════════════ */
-function aggiornaUIProfilo() {
-  if (!stato.utente) return;
-  const u = stato.utente;
-  document.getElementById('profilo-avatar').textContent   = (u.nome||'?')[0].toUpperCase();
-  document.getElementById('profilo-nome').textContent     = u.nome;
-  document.getElementById('profilo-email').textContent    = u.email || '';
-  document.getElementById('profilo-bib-label').textContent= stato.biblioteca;
-  document.getElementById('im-bib-val').textContent       = stato.biblioteca;
-}
-
-async function caricaProfilo() {
-  if (!stato.utente) return;
-  aggiornaUIProfilo();
-  document.getElementById('p-nome').value = stato.utente.nome || '';
-  document.getElementById('p-bib').value  = stato.utente.biblioteca || '';
-
-  try {
-    const [stR, savR] = await Promise.all([fetch('/api/storico'), fetch('/api/salvati')]);
-    const st  = await stR.json();
-    const sav = await savR.json();
-
-    document.getElementById('st-ricerche').textContent = st.tot_ricerche;
-    document.getElementById('st-salvati').textContent  = sav.length;
-
-    const tqEl = document.getElementById('top-query');
-    tqEl.innerHTML = st.top_query?.length
-      ? st.top_query.map((q,i) => `
-          <div class="top-query-item">
-            <span class="tq-rank">${i+1}</span>
-            <span class="tq-q">${q.query}</span>
-            <span class="tq-n">${q.n}×</span>
-          </div>`).join('')
-      : '<div class="vuoto-piccolo">Nessuna ricerca ancora.</div>';
-
-    const stEl = document.getElementById('lista-storico');
-    stEl.innerHTML = st.ricerche?.length
-      ? st.ricerche.map(r => `
-          <div class="ricerca-item">
-            <div>
-              <div class="ri-query">${r.query}</div>
-              <div class="ri-bib">${r.biblioteca}</div>
-            </div>
-            <div class="ri-meta">${r.a_bib}/${r.trovati}<br>${r.cercato_il.slice(0,10)}</div>
-          </div>`).join('')
-      : '<div class="vuoto-piccolo">Nessuna ricerca ancora.</div>';
-  } catch(e) { console.error(e); }
-}
-
-async function salvaProfilo() {
-  const nome = document.getElementById('p-nome').value.trim();
-  if (!nome) return;
-  const r = await fetch('/api/auth/aggiorna', {
-    method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ nome, biblioteca: stato.utente.biblioteca })
-  });
-  const d = await r.json();
-  if (d.ok) {
-    stato.utente.nome = d.nome;
-    aggiornaUIProfilo();
-    chiudiSheet('sheet-profilo');
-  }
-}
-
-async function salvaLibreria() {
-  const bib = document.getElementById('p-bib').value.trim();
-  if (!bib || !BIBS.some(b => b.toLowerCase() === bib.toLowerCase())) return;
-  const r = await fetch('/api/auth/aggiorna', {
-    method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ nome: stato.utente.nome, biblioteca: bib })
-  });
-  const d = await r.json();
-  if (d.ok) {
-    stato.utente.biblioteca = d.biblioteca;
-    stato.biblioteca = d.biblioteca;
-    document.getElementById('chip-nome').textContent = d.biblioteca;
-    aggiornaUIProfilo();
-    chiudiSheet('sheet-bib');
-  }
-}
-
-/* ══════════════════════════════════════
-   ESPLORA
-══════════════════════════════════════ */
-let _esploraAvviato = false;
-
-function iniziaEsplora() {
-  if (_esploraAvviato) return;
-  _esploraAvviato = true;
-  caricaGiorno();
-  caricaCasuale();
-  caricaAutore();
-}
-
-function cambiaTabE(tab) {
-  document.querySelectorAll('.e-tab').forEach(el =>
-    el.classList.toggle('attivo', el.dataset.tab === tab));
-  document.querySelectorAll('.e-panel').forEach(el =>
-    el.classList.toggle('attivo', el.id === `ep-${tab}`));
-}
-
-function cardEC(libro, label) {
-  const salvato  = stato.salvatiSet.has(libro.url);
-  const salvBtn  = stato.utente
-    ? `<button class="btn-esalva${salvato?' salvato':''}"
-         data-url="${libro.url}"
-         data-titolo="${(libro.titolo||'').replace(/"/g,'&quot;')}"
-         data-autore="${(libro.autore||'').replace(/"/g,'&quot;')}"
-       >${salvato ? '♥ Salvato' : '♡ Salva'}</button>` : '';
-  return `
-    <div class="ec">
-      <div class="ec-head">
-        <div class="ec-label">${label}</div>
-        <div class="ec-titolo">${libro.titolo}</div>
-        ${libro.autore ? `<div class="ec-autore">${libro.autore}</div>` : ''}
-      </div>
-      <div class="ec-actions">
-        <a class="btn-opac" href="${libro.url}" target="_blank" rel="noopener">Apri nel catalogo →</a>
-        ${salvBtn}
-      </div>
-    </div>`;
-}
-
-function attachSalvaEC(container) {
-  container.querySelectorAll('.btn-esalva').forEach(btn => {
-    if (stato.salvatiSet.has(btn.dataset.url)) {
-      btn.textContent = '♥ Salvato'; btn.classList.add('salvato');
-    }
-    btn.addEventListener('click', async () => {
-      await toggleSalva(btn, { url: btn.dataset.url, titolo: btn.dataset.titolo, autore: btn.dataset.autore });
-    });
-  });
-}
-
-async function caricaGiorno() {
-  const el = document.getElementById('ec-giorno');
-  el.innerHTML = '<div class="loading"><div class="spinner"></div><p>Scelgo il libro del giorno…</p></div>';
-  try {
-    const r = await fetch('/api/esplora/giorno');
-    if (!r.ok) throw new Error();
-    const libro = await r.json();
-    if (libro.error) throw new Error();
-    const oggi = new Date().toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
-    el.innerHTML = `<div class="ec-data">${oggi}</div>` + cardEC(libro, 'Libro del giorno');
-    attachSalvaEC(el);
-  } catch {
-    el.innerHTML = '<div class="errore">Non è stato possibile caricare il libro del giorno.</div>';
-  }
-}
-
-async function caricaCasuale() {
-  const el  = document.getElementById('ec-casuale');
-  const btn = document.getElementById('btn-nuovo-casuale');
-  const sp  = document.getElementById('spin-casuale');
-  el.innerHTML = '<div class="loading"><div class="spinner"></div><p>Pesco dal catalogo…</p></div>';
-  if (btn) { btn.disabled = true; sp.className = 'spin-i'; }
-  try {
-    const r = await fetch('/api/esplora/casuale');
-    if (!r.ok) throw new Error();
-    const libro = await r.json();
-    if (libro.error) throw new Error();
-    el.innerHTML = cardEC(libro, '🎲 Libro a caso');
-    attachSalvaEC(el);
-  } catch {
-    el.innerHTML = '<div class="errore">Non è stato possibile caricare un libro casuale.</div>';
-  } finally {
-    if (btn) { btn.disabled = false; sp.className = ''; }
-  }
-}
-
-async function caricaAutore() {
-  const el  = document.getElementById('ec-autore');
-  const btn = document.getElementById('btn-nuovo-autore');
-  const sp  = document.getElementById('spin-autore');
-  el.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cerco un autore…</p></div>';
-  if (btn) { btn.disabled = true; sp.className = 'spin-i'; }
-  try {
-    const r = await fetch('/api/esplora/autore');
-    if (!r.ok) throw new Error();
-    const d = await r.json();
-    if (d.error) throw new Error();
-    const nomeAutore = d.autore.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
-    const opereHtml  = d.opere?.length
-      ? d.opere.map((o,i) => `
-          <div class="opera-item">
-            <span class="opera-n">${i+1}</span>
-            <div class="opera-body">
-              <div class="opera-titolo">${o.titolo}</div>
-              <a class="opera-link" href="${o.url}" target="_blank" rel="noopener">Apri nel catalogo →</a>
-            </div>
-          </div>`).join('')
-      : '<div class="vuoto-piccolo">Nessuna opera trovata nel catalogo.</div>';
-    el.innerHTML = `
-      <div class="ec">
-        <div class="ec-head">
-          <div class="ec-label">✍️ Autore del momento</div>
-          <div class="autore-nome">${nomeAutore}</div>
-          <div class="autore-sub">${d.opere?.length || 0} opere nel catalogo RBBC</div>
-        </div>
-        <div class="opere-list">${opereHtml}</div>
-      </div>`;
-  } catch {
-    el.innerHTML = '<div class="errore">Non è stato possibile caricare un autore.</div>';
-  } finally {
-    if (btn) { btn.disabled = false; sp.className = ''; }
-  }
+async function salvaLib(){
+  const bib=document.getElementById('pbi').value.trim();
+  if(!bib||!BIBS.some(b=>b.toLowerCase()===bib.toLowerCase()))return;
+  const r=await fetch('/api/auth/aggiorna',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:G.u.nome,biblioteca:bib})});
+  const d=await r.json();if(d.ok){G.u.biblioteca=d.biblioteca;G.bib=d.biblioteca;document.getElementById('chipn').textContent=d.biblioteca;aggiornaUIProf();chiudiSh('shbib');}
 }
 </script>
 </body>
