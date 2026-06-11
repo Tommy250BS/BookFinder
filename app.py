@@ -83,9 +83,15 @@ def init_db():
                     url_opac TEXT NOT NULL,
                     biblioteca TEXT NOT NULL,
                     disponibile BOOLEAN NOT NULL DEFAULT FALSE,
+                    letto BOOLEAN NOT NULL DEFAULT FALSE,
                     salvato_il TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     UNIQUE (utente_id, url_opac)
                 );
+            """)
+
+            # Migrazione: aggiunge la colonna 'letto' se il DB esisteva già
+            cur.execute("""
+                ALTER TABLE salvati ADD COLUMN IF NOT EXISTS letto BOOLEAN NOT NULL DEFAULT FALSE;
             """)
 
 init_db()
@@ -330,17 +336,19 @@ def aggiungi_salvato():
                     autore,
                     url_opac,
                     biblioteca,
-                    disponibile
+                    disponibile,
+                    letto
                 )
             VALUES
-                (%s, %s, %s, %s, %s, %s)
+                (%s, %s, %s, %s, %s, %s, %s)
 
             ON CONFLICT (utente_id, url_opac)
             DO UPDATE SET
                 titolo = EXCLUDED.titolo,
                 autore = EXCLUDED.autore,
                 biblioteca = EXCLUDED.biblioteca,
-                disponibile = EXCLUDED.disponibile
+                disponibile = EXCLUDED.disponibile,
+                letto = EXCLUDED.letto
             """,
             (
                 u["id"],
@@ -349,6 +357,7 @@ def aggiungi_salvato():
                 d.get("url_opac", ""),
                 d.get("biblioteca", ""),
                 bool(d.get("disponibile")),
+                bool(d.get("letto")),
             )
         )
 
@@ -359,6 +368,18 @@ def aggiungi_salvato():
     except Exception as e:
         get_db().rollback()
         return jsonify({"error": str(e)}), 400
+
+@app.route("/api/salvati/<int:sid>/letto", methods=["POST"])
+@login_richiesto
+def segna_letto(sid):
+    u = utente_corrente()
+    d = request.get_json() or {}
+    letto = bool(d.get("letto"))
+    get_db().execute(
+        "UPDATE salvati SET letto=%s WHERE id=%s AND utente_id=%s",
+        (letto, sid, u["id"]))
+    get_db().commit()
+    return jsonify({"ok": True, "letto": letto})
 
 @app.route("/api/salvati/<int:sid>", methods=["DELETE"])
 @login_richiesto
