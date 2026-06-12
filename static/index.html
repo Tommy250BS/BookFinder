@@ -1106,7 +1106,7 @@ async function togLetto(btn,libro){
       G.letti.delete(url);G.lettiData=G.lettiData.filter(l=>l.url_opac!==url);
       btn.textContent='○ Segna come letto';btn.classList.remove('on');
     }
-    if(document.getElementById('slap')?.classList.contains('on')){renderCostellazioni();renderPantheon();}
+    renderCostellazioni();renderPantheon();renderMnemoMappa();renderPassaporto();
   }catch(e){console.error('togLetto',e);}
 }
 function renderRis(data){
