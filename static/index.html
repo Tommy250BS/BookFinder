@@ -863,7 +863,7 @@ function mostraCitazione(){
   if(!txt||!aut)return;
   txt.style.color='';txt.style.fontStyle='';
   txt.style.opacity='0';txt.style.transform='translateY(6px)';
-  txt.style.transition='opacity 1s ease, transform 1s ease';
+  txt.style.transition='opacity .5s ease, transform .5s ease';
   txt.textContent=c.t;
   aut.textContent='— '+c.a;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
