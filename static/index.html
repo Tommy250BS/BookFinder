@@ -863,7 +863,7 @@ function mostraCitazione(){
   if(!txt||!aut)return;
   txt.style.color='';txt.style.fontStyle='';
   txt.style.opacity='0';txt.style.transform='translateY(6px)';
-  txt.style.transition='opacity .5s ease, transform .5s ease';
+  txt.style.transition='opacity 1s ease, transform 1s ease';
   txt.textContent=c.t;
   aut.textContent='— '+c.a;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
@@ -1004,9 +1004,7 @@ async function togLetto(btn,libro){
   const nuovo=!G.letti.has(url);
   try{
     if(!G.salv.has(url)){
-      await fetch('/api/salvati',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({titolo:libro.titolo,autore:libro.autore||'',url_opac:url,biblioteca:G.bib,disponibile:libro.disponibile?1:0,letto:nuovo})});
-      G.salv.add(url);
-      const sb=btn.parentElement?.querySelector('.bsalv,.besalv');if(sb){sb.textContent='♥ Salvato';sb.classList.add('on');}
+      return;
     }else{
       const r=await fetch('/api/salvati');const d=await r.json();const it=d.find(s=>s.url_opac===url);
       if(it)await fetch(`/api/salvati/${it.id}/letto`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({letto:nuovo})});
@@ -1113,6 +1111,8 @@ async function caricaProf(){
   if(!G.u)return;aggiornaUIProf();
   try{
     const r=await fetch('/api/salvati');const sav=await r.json();
+    G.salv=new Set(sav.map(s=>s.url_opac));
+    G.letti=new Set(sav.filter(s=>s.letto).map(s=>s.url_opac));
     const letti=sav.filter(s=>s.letto),tutti=sav;
     const ml=document.getElementById('p-mialib');
     ml.innerHTML=letti.length?letti.map(s=>`<div class="wi"><div class="wdot ${s.disponibile?'dv':'do'}"></div><div class="wbod"><div class="wtt">${s.titolo}</div>${s.autore?`<div class="wat">${s.autore}</div>`:''}<div class="wmt">${s.biblioteca}</div></div><button class="bdel" title="Segna come non letto" onclick="toglLettoProf(${s.id},this)">↺</button></div>`).join(''):'<div class="vp">Nessun libro segnato come letto.</div>';
