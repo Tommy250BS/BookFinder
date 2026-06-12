@@ -263,11 +263,13 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
 .cln:hover{text-decoration:underline}
 
 /* ATLANTE MAPPA */
-.mapwrap{background:#fff;border-radius:var(--r);box-shadow:var(--sh-s);overflow:hidden;padding:10px}
+.mapwrap{background:#eef3f6;border-radius:var(--r);box-shadow:var(--sh-s);overflow:hidden;padding:8px}
 .mapwrap svg{width:100%;height:auto;display:block}
-.mapnaz{fill:var(--av3);stroke:#fff;stroke-width:.4;transition:fill .2s}
+.mapcont{fill:var(--av3);stroke:#fff;stroke-width:1}
+.mapnaz{stroke:#fff;stroke-width:1.2;transition:fill .2s,stroke-width .2s}
 .mapnaz.attiva{fill:var(--bosco-2);cursor:pointer}
-.mapnaz.attiva:hover,.mapnaz.attiva.sel{fill:var(--oro)}
+.mapnaz.attiva:hover{fill:var(--bosco)}
+.mapnaz.attiva.sel{fill:var(--oro);stroke:var(--bosco);stroke-width:1.6}
 .mapinfo{margin-top:14px}
 .maphint{font-size:.8rem;color:#aaa;font-style:italic;text-align:center;padding:8px 0}
 
@@ -580,7 +582,7 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
     <div class="psez">
       <div class="sh3">🗺️ Mappa del mondo letterario</div>
       <div class="mapwrap">
-        <svg id="mapsvg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"></svg>
+        <svg id="mapsvg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"></svg>
       </div>
       <div id="mapinfo" class="mapinfo">
         <p class="maphint">Tocca una nazione evidenziata per scoprire un autore e le sue opere.</p>
@@ -1109,36 +1111,56 @@ async function caricaAut(){
 }
 
 /* MAPPA DEL MONDO LETTERARIO */
+// Sfondo: continenti stilizzati ma proporzionati (equirettangolare 1000x500)
+const CONTINENTI=[
+ // Nord America
+ 'M40 60 L120 50 L200 70 L230 110 L210 160 L240 200 L220 240 L180 230 L150 190 L120 200 L90 170 L60 150 L70 110 L40 90 Z',
+ // Groenlandia
+ 'M250 30 L300 25 L320 55 L290 75 L255 65 Z',
+ // Sud America
+ 'M180 260 L240 250 L270 300 L260 360 L240 420 L210 460 L185 430 L175 360 L160 310 Z',
+ // Africa
+ 'M430 180 L500 165 L540 190 L555 250 L545 320 L520 390 L490 430 L460 400 L445 340 L430 280 L420 220 Z',
+ // Europa
+ 'M430 70 L520 55 L560 80 L550 120 L500 140 L450 130 L420 100 Z',
+ // Asia
+ 'M560 50 L760 40 L860 90 L880 150 L820 200 L750 230 L680 210 L620 180 L580 140 L555 100 Z',
+ // Sud-est asiatico/Indonesia
+ 'M700 240 L800 235 L830 270 L770 290 L710 280 Z',
+ // Oceania / Australia
+ 'M790 330 L880 320 L920 360 L900 420 L830 430 L780 390 Z',
+];
+
 const NAZIONI=[
-  {id:'it',nome:'Italia',d:'M205 78 L212 76 L216 82 L214 92 L210 100 L206 108 L202 100 L200 90 L203 84 Z',autori:[
+  {id:'it',nome:'Italia',d:'M495 128 L505 124 L512 132 L515 148 L508 168 L500 185 L494 200 L488 185 L490 160 L486 140 Z',autori:[
     {a:'Italo Calvino',o:'Le città invisibili'},{a:'Umberto Eco',o:'Il nome della rosa'},{a:'Elsa Morante',o:'La storia'}]},
-  {id:'fr',nome:'Francia',d:'M178 62 L196 60 L200 70 L194 80 L182 82 L172 74 L174 64 Z',autori:[
+  {id:'fr',nome:'Francia',d:'M440 95 L478 88 L490 110 L480 138 L450 142 L425 125 L428 105 Z',autori:[
     {a:'Victor Hugo',o:'I miserabili'},{a:'Marcel Proust',o:'Alla ricerca del tempo perduto'},{a:'Albert Camus',o:'Lo straniero'}]},
-  {id:'es',nome:'Spagna',d:'M156 78 L176 76 L180 86 L170 94 L154 92 L150 84 Z',autori:[
+  {id:'es',nome:'Spagna',d:'M395 130 L440 122 L450 145 L425 162 L390 158 L380 140 Z',autori:[
     {a:'Miguel de Cervantes',o:'Don Chisciotte'},{a:'Carlos Ruiz Zafón',o:"L'ombra del vento"}]},
-  {id:'uk',nome:'Regno Unito',d:'M168 38 L178 36 L182 46 L176 56 L166 54 L162 46 Z',autori:[
+  {id:'uk',nome:'Regno Unito',d:'M418 60 L440 55 L448 75 L438 95 L418 92 L410 75 Z',autori:[
     {a:'Jane Austen',o:'Orgoglio e pregiudizio'},{a:'George Orwell',o:'1984'},{a:'Virginia Woolf',o:'Gita al faro'}]},
-  {id:'de',nome:'Germania',d:'M198 44 L214 42 L218 52 L210 62 L196 60 L194 50 Z',autori:[
+  {id:'de',nome:'Germania',d:'M468 75 L500 70 L508 92 L495 112 L470 108 L462 88 Z',autori:[
     {a:'Franz Kafka',o:'La metamorfosi'},{a:'Thomas Mann',o:'La montagna magica'},{a:'Hermann Hesse',o:'Siddharta'}]},
-  {id:'ru',nome:'Russia',d:'M240 28 L320 24 L330 56 L300 70 L250 64 L236 46 Z',autori:[
+  {id:'ru',nome:'Russia',d:'M555 35 L760 25 L800 70 L740 110 L640 100 L560 90 L530 60 Z',autori:[
     {a:'Fëdor Dostoevskij',o:'Delitto e castigo'},{a:'Lev Tolstoj',o:'Guerra e pace'},{a:'Anton Čechov',o:'Racconti'}]},
-  {id:'us',nome:'Stati Uniti',d:'M40 56 L100 50 L112 68 L96 86 L52 88 L34 72 Z',autori:[
+  {id:'us',nome:'Stati Uniti',d:'M60 105 L200 90 L235 125 L210 170 L140 185 L80 175 L50 140 Z',autori:[
     {a:'Mark Twain',o:'Le avventure di Huckleberry Finn'},{a:'Toni Morrison',o:'Beloved'},{a:'Ernest Hemingway',o:'Il vecchio e il mare'}]},
-  {id:'br',nome:'Brasile',d:'M90 130 L120 126 L130 150 L112 172 L90 166 L82 146 Z',autori:[
+  {id:'br',nome:'Brasile',d:'M210 290 L265 280 L285 330 L270 390 L230 400 L195 360 L195 310 Z',autori:[
     {a:'Jorge Amado',o:'Gabriela, garofano e cannella'},{a:'Clarice Lispector',o:"L'ora della stella"}]},
-  {id:'ar',nome:'Argentina',d:'M88 172 L106 168 L112 196 L98 210 L86 200 Z',autori:[
+  {id:'ar',nome:'Argentina',d:'M195 365 L235 360 L245 420 L220 465 L195 445 L188 400 Z',autori:[
     {a:'Jorge Luis Borges',o:'Finzioni'},{a:'Julio Cortázar',o:'Rayuela'}]},
-  {id:'jp',nome:'Giappone',d:'M340 64 L352 60 L358 70 L352 80 L342 78 L338 70 Z',autori:[
+  {id:'jp',nome:'Giappone',d:'M845 140 L865 130 L880 155 L865 180 L845 175 L838 155 Z',autori:[
     {a:'Haruki Murakami',o:'Norwegian Wood'},{a:'Yukio Mishima',o:"Il padiglione d'oro"}]},
-  {id:'cn',nome:'Cina',d:'M296 50 L334 44 L344 64 L324 76 L300 72 L292 60 Z',autori:[
+  {id:'cn',nome:'Cina',d:'M700 100 L790 85 L820 130 L790 175 L730 180 L690 145 L685 115 Z',autori:[
     {a:'Lu Xun',o:'Diario di un pazzo'},{a:'Yu Hua',o:'Vivere!'}]},
-  {id:'eg',nome:'Egitto',d:'M208 96 L226 94 L230 108 L218 116 L206 110 Z',autori:[
+  {id:'eg',nome:'Egitto',d:'M495 195 L530 190 L538 220 L520 245 L495 235 Z',autori:[
     {a:'Naguib Mahfouz',o:'Il Cairo nuovo'}]},
-  {id:'gr',nome:'Grecia',d:'M218 80 L228 78 L230 86 L222 90 L216 86 Z',autori:[
+  {id:'gr',nome:'Grecia',d:'M512 138 L530 132 L536 150 L520 162 L508 152 Z',autori:[
     {a:'Nikos Kazantzakis',o:'Zorba il greco'},{a:'Omero',o:"L'Odissea"}]},
-  {id:'in',nome:'India',d:'M270 84 L292 80 L298 100 L284 116 L270 108 L266 94 Z',autori:[
+  {id:'in',nome:'India',d:'M650 175 L700 165 L715 210 L690 250 L655 240 L640 200 Z',autori:[
     {a:'Rabindranath Tagore',o:'Gitanjali'},{a:'Arundhati Roy',o:'Il dio delle piccole cose'}]},
-  {id:'co',nome:'Colombia',d:'M76 130 L92 128 L96 142 L84 150 L74 142 Z',autori:[
+  {id:'co',nome:'Colombia',d:'M180 270 L215 263 L225 295 L205 315 L178 305 Z',autori:[
     {a:'Gabriel García Márquez',o:'Cent\u2019anni di solitudine'}]},
 ];
 
@@ -1147,11 +1169,19 @@ function initMappa(){
   if(_mapInit)return;_mapInit=true;
   const svg=document.getElementById('mapsvg');
   if(!svg)return;
-  // sfondo continenti generico (silhouette semplificata neutra)
+  // sfondo oceano
   const bg=document.createElementNS('http://www.w3.org/2000/svg','rect');
-  bg.setAttribute('x','0');bg.setAttribute('y','0');bg.setAttribute('width','400');bg.setAttribute('height','200');
-  bg.setAttribute('fill','var(--av2)');
+  bg.setAttribute('x','0');bg.setAttribute('y','0');bg.setAttribute('width','1000');bg.setAttribute('height','500');
+  bg.setAttribute('fill','#eef3f6');
   svg.appendChild(bg);
+  // continenti
+  CONTINENTI.forEach(d=>{
+    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d',d);
+    p.setAttribute('class','mapcont');
+    svg.appendChild(p);
+  });
+  // nazioni evidenziate
   NAZIONI.forEach(n=>{
     const p=document.createElementNS('http://www.w3.org/2000/svg','path');
     p.setAttribute('d',n.d);
