@@ -318,7 +318,39 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
 .bbn{font-size:.7rem;font-weight:600;letter-spacing:.04em;color:var(--ink2);line-height:1.3}
 .bbd{font-size:.62rem;color:#bbb;margin-top:2px;line-height:1.4}
 
-/* STORICO */
+/* COSTELLAZIONI */
+.cost-epoca{margin-bottom:32px}
+.cost-label{font-size:.63rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--oro);margin-bottom:6px}
+.cost-nome{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;color:var(--bosco);margin-bottom:2px;line-height:1.2}
+.cost-badge-hint{font-size:.68rem;color:#bbb;margin-bottom:12px;font-style:italic}
+.cost-wrap{background:var(--bosco-3);border-radius:var(--r);overflow:hidden;position:relative;padding:8px}
+.cost-wrap svg{width:100%;display:block}
+.cost-link{stroke:rgba(201,168,76,.2);stroke-width:1.5;transition:stroke .5s,stroke-width .5s}
+.cost-link.lit{stroke:var(--oro);stroke-width:2.5;filter:drop-shadow(0 0 4px rgba(201,168,76,.5))}
+.cost-star{cursor:pointer;transition:all .3s}
+.cost-star circle{fill:rgba(255,255,255,.18);stroke:rgba(201,168,76,.35);stroke-width:1.5;transition:fill .4s,stroke .4s,r .3s}
+.cost-star.lit circle{fill:var(--oro);stroke:var(--oro-2);filter:drop-shadow(0 0 6px rgba(201,168,76,.8))}
+.cost-star.lit circle{animation:starPulse 2.5s ease-in-out infinite}
+@keyframes starPulse{0%,100%{opacity:1}50%{opacity:.7}}
+.cost-star text{fill:rgba(255,255,255,.0);font-size:7px;font-family:'Inter',sans-serif;pointer-events:none;transition:fill .3s}
+.cost-star.lit text{fill:rgba(255,255,255,.6)}
+.cost-info{background:#fff;border-radius:0 0 var(--r) var(--r);padding:12px 16px;min-height:48px;border-top:1px solid var(--av2);display:none}
+.cost-info.on{display:block}
+.cost-info-t{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--ink);line-height:1.3}
+.cost-info-a{font-size:.78rem;color:#888;font-style:italic;font-family:'Cormorant Garamond',serif}
+.cost-info-url{font-size:.7rem;color:var(--bosco-2);text-decoration:none;letter-spacing:.03em;margin-top:4px;display:inline-block}
+.cost-info-url:hover{text-decoration:underline}
+.cost-stato{display:flex;align-items:center;gap:8px;margin-top:8px}
+.cost-prog{flex:1;height:4px;background:var(--av3);border-radius:2px;overflow:hidden}
+.cost-prog-inner{height:100%;background:var(--oro);border-radius:2px;transition:width .5s ease}
+.cost-prog-txt{font-size:.67rem;color:#aaa;white-space:nowrap}
+.cost-badge-earned{display:inline-flex;align-items:center;gap:7px;background:var(--bosco);border-radius:20px;padding:5px 12px 5px 8px;font-size:.72rem;color:var(--oro);font-weight:600;margin-top:8px;animation:badgePop .5s cubic-bezier(.18,.89,.32,1.28) both}
+@keyframes badgePop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+
+/* PANTHEON schermata */
+.pant-section{margin-bottom:28px}
+.pant-sh3{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;color:var(--bosco);margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--av3)}
+
 .rci{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--av2)}
 .rci:last-child{border-bottom:none}
 .riq{font-size:.87rem;font-weight:500;flex:1}
@@ -499,7 +531,7 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
     </div>
     <div class="cosae">
       <div class="cosaorn">?</div>
-      <h3>Cos'è la biblioteca di Babele?</h3>
+      <h3>Cos'è La biblioteca di Babele?</h3>
       <p class="ph">La descrizione dell'app apparirà qui.</p>
     </div>
     <div class="sgrid">
@@ -513,10 +545,10 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
         <div class="sc-ico">🗺️</div><div class="sc-nome">Atlante</div>
         <div class="sc-desc">Esplora libri e mappa del mondo</div><div class="sc-orn">A</div>
       </div>
-      <div class="sc" data-c="r" onclick="vai('sclio')">
+      <div class="sc" data-c="r" onclick="vai('spant')">
         <div class="sc-arr">›</div>
-        <div class="sc-ico">📜</div><div class="sc-nome">Clio</div>
-        <div class="sc-desc">Storia e "Accadde oggi"</div><div class="sc-orn">C</div>
+        <div class="sc-ico">🏛️</div><div class="sc-nome">Pantheon</div>
+        <div class="sc-desc">I tuoi badge e traguardi</div><div class="sc-orn">P</div>
       </div>
       <div class="sc" data-c="b" onclick="vai('smnem')">
         <div class="sc-arr">›</div>
@@ -593,26 +625,27 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
   </div>
 </div>
 
-<!-- CLIO -->
-<div id="sclio" class="S cnav">
+<!-- PANTHEON -->
+<div id="spant" class="S cnav">
   <div class="sint">
-    <div class="sornbg">C</div>
+    <div class="sornbg">P</div>
     <div class="sinti">
-      <div class="stag">Musa della Storia</div>
-      <h1 class="stitolo">C<strong>lio</strong></h1>
-      <div class="ssub">Dal greco Κλειώ — colei che celebra e rende famosi</div>
+      <div class="stag">Traguardi · Badge</div>
+      <h1 class="stitolo">Pan<strong>theon</strong></h1>
+      <div class="ssub">Dal greco Πάνθεον — il tempio di tutti gli dèi</div>
     </div>
   </div>
   <div class="sbody">
     <button class="bsm bsmg" style="margin-bottom:20px" onclick="vai('shome')">← Home</button>
     <div class="etimo">
-      <div class="etn">Clio</div><div class="eto">Dal greco antico · Κλειώ, Kleiṓ</div>
-      <p class="etd ph">Il testo di introduzione e spiegazione del nome Clio apparirà qui.</p>
+      <div class="etn">Pantheon</div><div class="eto">Dal greco antico · Πάνθεον, Pántheon</div>
+      <p class="etd">I tuoi badge celebrano ogni conquista: ogni ricerca, ogni libro salvato, ogni costellazione completata è un passo verso il tempio dei lettori immortali.</p>
     </div>
     <div class="psez">
-      <div class="sh3">📅 Accadde oggi</div>
-      <div class="adata" id="cliodata"></div>
-      <div class="inarr"><p>Il contenuto "Accadde oggi" apparirà qui.</p></div>
+      <div class="sh3">Badge sbloccati e in attesa</div>
+      <div class="bgr" id="pant-bgr">
+        <!-- badge renderizzati da JS -->
+      </div>
     </div>
   </div>
 </div>
@@ -666,16 +699,16 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
     <div class="sinti">
       <div class="stag">Grandi Classici</div>
       <h1 class="stitolo">Lapides<strong><br>Miliarii</strong></h1>
-      <div class="ssub">Le pietre miliari della letteratura mondiale</div>
+      <div class="ssub">Le costellazioni della letteratura mondiale</div>
     </div>
   </div>
   <div class="sbody">
     <button class="bsm bsmg" style="margin-bottom:20px" onclick="vai('shome')">← Home</button>
     <div class="etimo">
       <div class="etn">Lapides Miliarii</div><div class="eto">Dal latino · Pietre miliari</div>
-      <p class="etd ph">Il testo di introduzione ai grandi classici apparirà qui.</p>
+      <p class="etd">Come le stelle formano costellazioni, i grandi classici disegnano la mappa della letteratura universale. Ogni opera letta illumina una stella; quando due stelle vicine brillano insieme, si accende il legame tra loro. Completa una costellazione per ottenere il badge dell'epoca.</p>
     </div>
-    <div id="laplist"><div class="vp">La lista dei classici apparirà qui.</div></div>
+    <div id="cost-container"><!-- costellazioni renderizzate da JS --></div>
   </div>
 </div>
 
@@ -703,15 +736,8 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
     </div>
     <div class="psez">
       <div class="sh3">Pantheon</div>
-      <p style="font-size:.74rem;color:#aaa;margin-bottom:14px;font-style:italic">Badge sbloccati e quelli che ti aspettano</p>
-      <div class="bgr">
-        <div class="bc"><div class="bbi">📚</div><div class="bbn">Prima ricerca</div><div class="bbd">Hai cercato il tuo primo libro</div></div>
-        <div class="bc lk"><div class="bbi">🌟</div><div class="bbn">Bibliofilo</div><div class="bbd">10 libri salvati</div></div>
-        <div class="bc lk"><div class="bbi">🏛️</div><div class="bbn">Alexandrino</div><div class="bbd">50 ricerche nel catalogo</div></div>
-        <div class="bc lk"><div class="bbi">🗺️</div><div class="bbn">Esploratore</div><div class="bbd">Visitato Atlante 5 volte</div></div>
-        <div class="bc lk"><div class="bbi">🏺</div><div class="bbn">Classicista</div><div class="bbd">Cercato 3 Lapides</div></div>
-        <div class="bc lk"><div class="bbi">📜</div><div class="bbn">Storico</div><div class="bbd">Visitato Clio 10 volte</div></div>
-      </div>
+      <p style="font-size:.74rem;color:#aaa;margin-bottom:10px;font-style:italic">Badge e traguardi letterari</p>
+      <button class="bs" style="margin-bottom:4px" onclick="vai('spant')">Vai al Pantheon →</button>
     </div>
     <div class="psez">
       <div class="sh3">Impostazioni account</div>
@@ -732,6 +758,7 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
     <button class="ntab on" data-s="shome" onclick="switchTab('shome')"><span class="nico">🏠</span><span>Home</span></button>
     <button class="ntab" data-s="salex" onclick="switchTab('salex')"><span class="nico">🏛️</span><span>Alexandria</span></button>
     <button class="ntab" data-s="satlante" onclick="switchTab('satlante')"><span class="nico">✦</span><span>Esplora</span></button>
+    <button class="ntab" data-s="spant" onclick="switchTab('spant')"><span class="nico">🏛️</span><span>Pantheon</span></button>
     <button class="ntab" data-s="sprof" onclick="switchTab('sprof')"><span class="nico">👤</span><span>Profilo</span></button>
   </div>
 </nav>
@@ -763,7 +790,7 @@ let G={u:null,bib:'',salv:new Set(),letti:new Set()};
 
 const BIBS=["Acquafredda","Adro","Agnadello","Agnosine","Anfo","Angolo Terme","Annicco","Artogne","Azzano Mella","Bagnolo Cremasco","Bagnolo Mella","Bagolino","Barbariga","Barghe","Bassano Bresciano","Bedizzole","Berlingo","Berzo Demo","Berzo Inferiore","Bienno","Bione","Bonemerse","Borgo San Giacomo","Borgosatollo","Borno","Botticino","Bovegno","Bovezzo","Brandico","Braone","Breno","Brescia - Abba-Ballini","Brescia - Archivio Storico","Brescia - Arnaldo","Brescia - Bibliobus","Brescia - Buffalora","Brescia - Canton Mombello","Brescia - Casazza","Brescia - Centro Casa Severino","Brescia - Emeroteca Queriniana","Brescia - Fondazione Trebeschi","Brescia - Gambara","Brescia - Ghetti","Brescia - Golgi","Brescia - La Vetrina","Brescia - Largo Torrelunga","Brescia - Mediateca Queriniana","Brescia - Museo Scienze Naturali","Brescia - Parco Gallo","Brescia - Prealpino","Brescia - Queriniana","Brescia - San Polo","Brescia - SBU","Brescia - Sereno","Brescia - UAU","Brione","Caino","Calcinato","Calvagese D-R","Calvatone","Calvisano","Camisano","Capergnanica","Capo Di Ponte","Capovalle","Capralba","Capriano Del Colle","Capriolo","Carpenedolo","Casalbuttano","Casale Cremasco Vidolasco","Casaletto Ceredano","Casaletto Vaprio","Casalmaggiore","Casalpusterlengo","Castegnato","Castel Mella","Castelcovati","Castelleone","Castello Di Padernello","Castelverde","Castenedolo","Casto","Castrezzato","Cazzago SM","Cedegolo","Cellatica","Centro Fumetto A. Pazienza","Centro Studi RSI Salò","Cerveno","Ceto","Cevo","Chiari","Chieve","Cigole","Cimbergo","Cingia De' Botti","Cividate Camuno","Clusane","Coccaglio","Collebeato","Collio","Cologne","Comezzano - Cizzago","Concesio","Corte De' Frati","Corte Franca","Corteno Golgi","Corzano","Credera Rubbiano","Crema","Crema - Museo","Cremona - Anguissola","Cremona - CDA","Cremona - Manin","Darfo Boario Terme","Dello","Desenzano","Dovera","Edolo","Elnos","Erbusco","Esine","Fiesco","Fiesse","Flero","Gadesco Pieve Delmona","Gambara","Gardone Riviera","Gardone Val Trompia","Gargnano","Gavardo","Genivolta","Ghedi","Gianico","Gottolengo","Grontardo","Grumello Cremonese","Gussago","Gussola","Idro","Incudine","Irma","Iseo","Isola Dovarese","Isorella","Izano","Lavenone","Leno","Limone Sul Garda","Lodrino","Lograto","Lonato Del Garda","Longhena","Losine","Lozio","Lumezzane","Maclodio","Madignano","Magasa","Mairano","Malegno","Malonno","Manerba Del Garda","Manerbio","Marcheno","Marmentino","Marone","Martignana Di Po","Mazzano","Milzano","Moniga Del Garda","Monno","Monte Cremasco","Monte Isola","Monticelli Brusati","Montichiari","Montirone","Montodine","Mura","Muscoline","Nave","Niardo","Nuvolento","Nuvolera","Odolo","Offanengo","Offlaga","Ome","Ono San Pietro","Orzinuovi","Orzivecchi","Ospitaletto","Ostiano","Padenghe Sul Garda","Paderno FC","Paderno Ponchielli","Paitone","Palazzo Pignano","Palazzolo Sull'Oglio","Pandino","Paratico","Passirano","Pavone Del Mella","Persico Dosimo","Pertica Alta","Pertica Bassa","Pescarolo Ed Uniti","Pezzaze","Piadena Drizzona","Pian Camuno","Piancogno","Pianengo","Pisogne","Pizzighettone","Polaveno","Polpenazze Del Garda","Pompiano","Poncarale","Ponte Di Legno","Pontevico","Pontoglio","Pozzolengo","Pralboino","Preseglie","Prestine","Prevalle","Provaglio D'Iseo","Provaglio VS","Puegnago Del Garda","Quinzano D'Oglio","Remedello","Rezzato","Ricengo","Ripalta Cremasca","Rivarolo Del Re","Rivolta D'Adda","Roccafranca","Rodengo Saiano","Roè Volciano","Romanengo","Roncadelle","Rovato","Rudiano","Sabbio Chiese","Sale Marasino","Salò","San Bassano","San Daniele Po","San Felice Del Benaco","San Gervasio Bresciano","San Giovanni In Croce","San Paolo","San Zeno Naviglio","Sarezzo","Saviore Dell'Adamello","Sellero","Seniga","Sergnano","Serle","Sesto Ed Uniti","Sirmione","Soiano Del Lago","Solarolo Rainerio","Soncino","Sonico","Soresina","Sospiro","Spino D'Adda","Sulzano","Tavernole Sul Mella","Temù","Tignale","Torbole Casaglia","Tornata","Torre De' Picenardi","Torricella Del Pizzo","Toscolano Maderno","Travagliato","Tremosine","Trenzano","Trescore Balneario","Trescore Cremasco","Treviso Bresciano","Urago D'Oglio","Vallio Terme","Valvestino","Verolanuova","Verolavecchia","Vestone","Vezza D'Oglio","Villa Carcina","Villanuova Sul Clisi","Visano","Vobarno","Zone"];
 
-const CNV=['shome','salex','satlante','sclio','smnem','slap','sprof'];
+const CNV=['shome','salex','satlante','smnem','slap','sprof','spant'];
 let _atlAvv=false;
 
 /* --- HAPTIC --- */
@@ -804,7 +831,8 @@ function vai(id,sub){
   if(id==='shome')aggHome();
   if(id==='sprof')caricaProf();
   if(id==='smnem')caricaMnem();
-  if(id==='sclio')avviaClio();
+  if(id==='slap')renderCostellazioni();
+  if(id==='spant'){renderPantheon();}
   if(id==='satlante'&&!_atlAvv){_atlAvv=true;caricaCas();caricaAut();initMappa();}
   window.scrollTo(0,0);
 }
@@ -1186,11 +1214,249 @@ function selNazione(name,info,el){
   box.innerHTML=`<div class="ec"><div class="ech"><div class="ecl">📍 ${nome}</div><div class="autn" style="font-size:1.1rem">Autori da scoprire</div></div><div class="oplist">${ops}</div></div>`;
 }
 
-/* CLIO */
-function avviaClio(){
-  const el=document.getElementById('cliodata');
-  if(el){const o=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});el.textContent=o;}
+/* PANTHEON */
+const TUTTI_BADGE=[
+  {id:'prima_ricerca',    ico:'📚', nome:'Prima ricerca',    desc:'Hai cercato il tuo primo libro'},
+  {id:'bibliofilo',       ico:'🌟', nome:'Bibliofilo',       desc:'10 libri salvati'},
+  {id:'alexandrino',      ico:'🏛️', nome:'Alexandrino',      desc:'50 ricerche nel catalogo'},
+  {id:'esploratore',      ico:'🗺️', nome:'Esploratore',      desc:'Visitato Atlante 5 volte'},
+  {id:'antichita',        ico:'🏺', nome:'Custode dell\'antichità',    desc:'Costellazione Antichità completata'},
+  {id:'medioevo',         ico:'⚔️', nome:'Pellegrino medievale',        desc:'Costellazione Medioevo completata'},
+  {id:'rinascimento',     ico:'🎨', nome:'Umanista',                    desc:'Costellazione Rinascimento completata'},
+  {id:'seicento',         ico:'🔭', nome:'Illuminato',                  desc:'Costellazione 600-700 completata'},
+  {id:'ottocento',        ico:'📖', nome:'Romantico',                   desc:'Costellazione Ottocento completata'},
+  {id:'novecento',        ico:'✒️', nome:'Moderno',                     desc:'Costellazione Novecento completata'},
+];
+
+function getBadgeUnlocked(){
+  const raw=localStorage.getItem('rbbc_badge_unlocked');
+  try{return new Set(JSON.parse(raw)||[]);}catch{return new Set();}
 }
+function unlockBadge(id){
+  const s=getBadgeUnlocked();
+  if(s.has(id))return false;
+  s.add(id);localStorage.setItem('rbbc_badge_unlocked',JSON.stringify([...s]));
+  return true;
+}
+
+function renderPantheon(){
+  const gr=document.getElementById('pant-bgr');if(!gr)return;
+  const unl=getBadgeUnlocked();
+  gr.innerHTML=TUTTI_BADGE.map(b=>{
+    const ok=unl.has(b.id);
+    return`<div class="bc${ok?'':' lk'}"><div class="bbi">${b.ico}</div><div class="bbn">${b.nome}</div><div class="bbd">${b.desc}</div></div>`;
+  }).join('');
+}
+
+/* COSTELLAZIONI */
+const COSTELLAZIONI=[
+  {
+    id:'antichita', badge:'antichita',
+    label:'Antichità', nome:'Le origini del logos',
+    stars:[
+      {id:'odissea',  t:"L'Odissea",             a:'Omero',             url:'https://opac.provincia.brescia.it/opac/search?q=odissea+omero',  x:60, y:40},
+      {id:'iliade',   t:"L'Iliade",               a:'Omero',             url:'https://opac.provincia.brescia.it/opac/search?q=iliade+omero',   x:130,y:25},
+      {id:'eneide',   t:"L'Eneide",               a:'Virgilio',          url:'https://opac.provincia.brescia.it/opac/search?q=eneide+virgilio', x:200,y:55},
+      {id:'simposio', t:'Il simposio',             a:'Platone',           url:'https://opac.provincia.brescia.it/opac/search?q=simposio+platone',x:270,y:30},
+      {id:'poetica',  t:'Poetica',                 a:'Aristotele',        url:'https://opac.provincia.brescia.it/opac/search?q=poetica+aristotele',x:340,y:50},
+    ],
+    links:[[0,1],[1,2],[2,3],[3,4],[1,3]],
+  },
+  {
+    id:'medioevo', badge:'medioevo',
+    label:'Medioevo', nome:'Luce nel buio del tempo',
+    stars:[
+      {id:'commedia', t:'La Divina Commedia',      a:'Dante Alighieri',   url:'https://opac.provincia.brescia.it/opac/search?q=divina+commedia',  x:60, y:45},
+      {id:'decameron',t:'Decameron',               a:'Giovanni Boccaccio',url:'https://opac.provincia.brescia.it/opac/search?q=decameron+boccaccio',x:140,y:25},
+      {id:'canzoniere',t:'Canzoniere',             a:'Francesco Petrarca',url:'https://opac.provincia.brescia.it/opac/search?q=canzoniere+petrarca',x:220,y:50},
+      {id:'beowulf',  t:'Beowulf',                 a:'Anonimo',           url:'https://opac.provincia.brescia.it/opac/search?q=beowulf',           x:300,y:28},
+      {id:'nibelungi',t:'Il canto dei Nibelunghi', a:'Anonimo',           url:'https://opac.provincia.brescia.it/opac/search?q=nibelunghi',        x:360,y:55},
+    ],
+    links:[[0,1],[1,2],[0,2],[2,3],[3,4]],
+  },
+  {
+    id:'rinascimento', badge:'rinascimento',
+    label:'Rinascimento', nome:'L\'uomo al centro del mondo',
+    stars:[
+      {id:'principe', t:'Il Principe',             a:'Niccolò Machiavelli',url:'https://opac.provincia.brescia.it/opac/search?q=principe+machiavelli',x:70, y:30},
+      {id:'furioso',  t:"Orlando Furioso",          a:'Ludovico Ariosto',   url:'https://opac.provincia.brescia.it/opac/search?q=orlando+furioso',   x:160,y:55},
+      {id:'utopia',   t:'Utopia',                  a:'Thomas More',        url:'https://opac.provincia.brescia.it/opac/search?q=utopia+more',        x:240,y:25},
+      {id:'essais',   t:'Saggi',                   a:'Michel de Montaigne', url:'https://opac.provincia.brescia.it/opac/search?q=saggi+montaigne',   x:310,y:50},
+    ],
+    links:[[0,1],[1,2],[2,3],[0,3]],
+  },
+  {
+    id:'seicento', badge:'seicento',
+    label:'Seicento–Settecento', nome:'La ragione illumina il cielo',
+    stars:[
+      {id:'amleto',   t:'Amleto',                  a:'William Shakespeare',url:'https://opac.provincia.brescia.it/opac/search?q=amleto+shakespeare', x:55, y:50},
+      {id:'paradiso', t:'Paradiso Perduto',         a:'John Milton',        url:'https://opac.provincia.brescia.it/opac/search?q=paradiso+perduto',   x:140,y:25},
+      {id:'candide',  t:'Candido',                  a:'Voltaire',           url:'https://opac.provincia.brescia.it/opac/search?q=candido+voltaire',   x:220,y:55},
+      {id:'gulliver', t:"I viaggi di Gulliver",     a:'Jonathan Swift',     url:'https://opac.provincia.brescia.it/opac/search?q=gulliver+swift',     x:300,y:30},
+      {id:'donchi',   t:'Don Chisciotte',           a:'Miguel de Cervantes',url:'https://opac.provincia.brescia.it/opac/search?q=don+chisciotte',     x:370,y:55},
+    ],
+    links:[[0,1],[0,4],[1,2],[2,3],[3,4],[1,3]],
+  },
+  {
+    id:'ottocento', badge:'ottocento',
+    label:'Ottocento', nome:'Il romanzo del cuore',
+    stars:[
+      {id:'crimedelit',t:'Delitto e castigo',       a:'Fëdor Dostoevskij',  url:'https://opac.provincia.brescia.it/opac/search?q=delitto+castigo',   x:60, y:40},
+      {id:'guerrpace', t:'Guerra e pace',            a:'Lev Tolstoj',        url:'https://opac.provincia.brescia.it/opac/search?q=guerra+pace+tolstoj',x:145,y:20},
+      {id:'miserabili',t:'I miserabili',             a:'Victor Hugo',        url:'https://opac.provincia.brescia.it/opac/search?q=miserabili+hugo',    x:225,y:50},
+      {id:'orgoglio',  t:'Orgoglio e pregiudizio',  a:'Jane Austen',        url:'https://opac.provincia.brescia.it/opac/search?q=orgoglio+pregiudizio',x:310,y:25},
+      {id:'mobydi',   t:'Moby Dick',                a:'Herman Melville',    url:'https://opac.provincia.brescia.it/opac/search?q=moby+dick',           x:370,y:55},
+    ],
+    links:[[0,1],[1,2],[2,3],[3,4],[0,2],[1,3]],
+  },
+  {
+    id:'novecento', badge:'novecento',
+    label:'Novecento', nome:'Il frammento e l\'eterno',
+    stars:[
+      {id:'kafka',     t:'La metamorfosi',           a:'Franz Kafka',        url:'https://opac.provincia.brescia.it/opac/search?q=metamorfosi+kafka',   x:65, y:45},
+      {id:'1984',      t:'1984',                     a:'George Orwell',      url:'https://opac.provincia.brescia.it/opac/search?q=1984+orwell',          x:145,y:20},
+      {id:'centanni',  t:"Cent'anni di solitudine",  a:'Gabriel García Márquez',url:'https://opac.provincia.brescia.it/opac/search?q=cento+anni+solitudine',x:225,y:55},
+      {id:'ulisse',    t:'Ulisse',                   a:'James Joyce',        url:'https://opac.provincia.brescia.it/opac/search?q=ulisse+joyce',          x:305,y:25},
+      {id:'montagna',  t:'La montagna magica',       a:'Thomas Mann',        url:'https://opac.provincia.brescia.it/opac/search?q=montagna+magica',       x:370,y:50},
+    ],
+    links:[[0,1],[1,2],[2,3],[3,4],[0,2],[1,4]],
+  },
+];
+
+/* Stato letti costellazioni (locale, basato su G.letti se loggato) */
+function getLitStars(){
+  const raw=localStorage.getItem('rbbc_lit_stars');
+  try{return new Set(JSON.parse(raw)||[]);}catch{return new Set();}
+}
+function setLitStar(starId){
+  const s=getLitStars();s.add(starId);
+  localStorage.setItem('rbbc_lit_stars',JSON.stringify([...s]));
+}
+
+function renderCostellazioni(){
+  const cont=document.getElementById('cost-container');if(!cont)return;
+  const lit=getLitStars();
+  cont.innerHTML='';
+  COSTELLAZIONI.forEach(ep=>{
+    const litCount=ep.stars.filter(s=>lit.has(s.id)).length;
+    const total=ep.stars.length;
+    const completed=litCount===total;
+    const pct=Math.round(litCount/total*100);
+
+    const wrap=document.createElement('div');
+    wrap.className='cost-epoca';
+    wrap.innerHTML=`
+      <div class="cost-label">${ep.label}</div>
+      <div class="cost-nome">${ep.nome}</div>
+      <div class="cost-badge-hint">🏅 Badge: ${TUTTI_BADGE.find(b=>b.id===ep.badge)?.nome}</div>
+      <div class="cost-wrap" id="cw-${ep.id}">
+        <svg viewBox="0 0 440 90" xmlns="http://www.w3.org/2000/svg" id="svg-${ep.id}"></svg>
+      </div>
+      <div class="cost-stato">
+        <div class="cost-prog"><div class="cost-prog-inner" style="width:${pct}%"></div></div>
+        <div class="cost-prog-txt">${litCount}/${total}</div>
+      </div>
+      <div class="cost-info" id="ci-${ep.id}"></div>
+      ${completed?`<div class="cost-badge-earned">${TUTTI_BADGE.find(b=>b.id===ep.badge)?.ico} ${TUTTI_BADGE.find(b=>b.id===ep.badge)?.nome}</div>`:''}
+    `;
+    cont.appendChild(wrap);
+
+    const svg=wrap.querySelector(`#svg-${ep.id}`);
+
+    // Disegna link
+    ep.links.forEach(([ai,bi])=>{
+      const a=ep.stars[ai],b=ep.stars[bi];
+      const bothLit=lit.has(a.id)&&lit.has(b.id);
+      const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',a.x);line.setAttribute('y1',a.y);
+      line.setAttribute('x2',b.x);line.setAttribute('y2',b.y);
+      line.className.baseVal=`cost-link${bothLit?' lit':''}`;
+      line.dataset.a=a.id;line.dataset.b=b.id;
+      svg.appendChild(line);
+    });
+
+    // Disegna stelle
+    ep.stars.forEach(star=>{
+      const isLit=lit.has(star.id);
+      const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+      g.className.baseVal=`cost-star${isLit?' lit':''}`;
+      g.dataset.id=star.id;
+
+      const circ=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      circ.setAttribute('cx',star.x);circ.setAttribute('cy',star.y);
+      circ.setAttribute('r', isLit?7:5.5);
+      g.appendChild(circ);
+
+      // Punto touch più grande (invisibile)
+      const hit=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      hit.setAttribute('cx',star.x);hit.setAttribute('cy',star.y);
+      hit.setAttribute('r',18);hit.setAttribute('fill','transparent');
+      g.appendChild(hit);
+
+      // Numero stelle come aiuto visivo
+      const num=document.createElementNS('http://www.w3.org/2000/svg','text');
+      num.setAttribute('x',star.x);num.setAttribute('y',star.y-10);
+      num.setAttribute('text-anchor','middle');
+      num.textContent=isLit?'★':'';
+      g.appendChild(num);
+
+      g.addEventListener('click',()=>clickStar(ep,star,svg,wrap));
+      svg.appendChild(g);
+    });
+
+    // Controlla badge
+    if(completed)unlockBadge(ep.badge);
+  });
+}
+
+function clickStar(ep,star,svg,wrap){
+  tap('medium');
+  const lit=getLitStars();
+  const infoBox=wrap.querySelector(`.cost-info`);
+
+  // Toggle
+  const wasLit=lit.has(star.id);
+  if(wasLit){lit.delete(star.id);localStorage.setItem('rbbc_lit_stars',JSON.stringify([...lit]));}
+  else{setLitStar(star.id);}
+
+  // Ricarica
+  renderCostellazioni();
+  renderPantheon();
+
+  // Mostra info nel box dell'opera cliccata
+  const newLit=getLitStars();
+  const newInfoBox=document.querySelector(`#ci-${ep.id}`);
+  if(newInfoBox){
+    newInfoBox.className='cost-info on';
+    newInfoBox.innerHTML=`
+      <div class="cost-info-t">${star.t}</div>
+      <div class="cost-info-a">${star.a}</div>
+      <a class="cost-info-url" href="${star.url}" target="_blank" rel="noopener">🔍 Cerca nel catalogo RBBC →</a>
+      ${newLit.has(star.id)?'<div style="font-size:.7rem;color:var(--bosco);margin-top:5px;font-weight:600">✓ Segnato come letto</div>':'<div style="font-size:.7rem;color:#bbb;margin-top:5px">Clicca di nuovo per rimuovere</div>'}
+    `;
+  }
+
+  // Badge popup se appena completata
+  const litNow=getLitStars();
+  const allLit=ep.stars.every(s=>litNow.has(s.id));
+  if(allLit&&!wasLit){
+    const didUnlock=unlockBadge(ep.badge);
+    if(didUnlock){
+      const b=TUTTI_BADGE.find(b=>b.id===ep.badge);
+      showBadgeToast(b);
+    }
+  }
+}
+
+function showBadgeToast(badge){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:calc(80px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--bosco);color:var(--oro);padding:10px 20px;border-radius:30px;font-size:.82rem;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;animation:badgePop .5s cubic-bezier(.18,.89,.32,1.28) both;white-space:nowrap';
+  t.innerHTML=`${badge.ico} Badge sbloccato: ${badge.nome}!`;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(()=>t.remove(),400);},3200);
+}
+
+
 
 /* MNEMOSINE */
 async function caricaMnem(){
