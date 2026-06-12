@@ -996,29 +996,24 @@ function dC(s){s=s.toLowerCase();if(s.includes('scaffale')||s.includes('disponib
 async function caricaSalv(){if(!G.u)return;try{const r=await fetch('/api/salvati');if(r.ok){const d=await r.json();G.salv=new Set(d.map(s=>s.url_opac));G.letti=new Set(d.filter(s=>s.letto).map(s=>s.url_opac));}}catch{}}
 async function togSalv(btn,libro){
   if(!G.u)return;tap('medium');const url=libro.url;
-  if(G.salv.has(url)){try{const r=await fetch('/api/salvati');const d=await r.json();const it=d.find(s=>s.url_opac===url);if(it){await fetch(`/api/salvati/${it.id}`,{method:'DELETE'});G.salv.delete(url);G.letti.delete(url);btn.textContent='♡ Salva';btn.classList.remove('on');const lb=btn.parentElement?.querySelector('.bletto');if(lb){lb.textContent='○ Segna come letto';lb.classList.remove('on');}}}catch{}}
+  if(G.salv.has(url)){try{const r=await fetch('/api/salvati');const d=await r.json();const it=d.find(s=>s.url_opac===url);if(it){await fetch(`/api/salvati/${it.id}`,{method:'DELETE'});G.salv.delete(url);G.letti.delete(url);btn.textContent='♡ Salva';btn.classList.remove('on');const lb=btn.parentElement?.querySelector('.bletto');if(lb){lb.textContent='✓ Letto';lb.classList.remove('on');}}}catch{}}
   else{try{await fetch('/api/salvati',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({titolo:libro.titolo,autore:libro.autore||'',url_opac:url,biblioteca:G.bib,disponibile:libro.disponibile?1:0})});G.salv.add(url);btn.textContent='♥ Salvato';btn.classList.add('on');}catch{}}
 }
 async function togLetto(btn,libro){
   if(!G.u)return;tap('medium');const url=libro.url;
   const nuovo=!G.letti.has(url);
   try{
-    // Se non ancora salvato, salvalo prima
-    if(!G.salv.has(url)){
-      const sr=await fetch('/api/salvati',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({titolo:libro.titolo,autore:libro.autore||'',url_opac:url,biblioteca:G.bib,disponibile:libro.disponibile?1:0})});
-      if(!sr.ok)return;
-      G.salv.add(url);
-      const sb=btn.parentElement?.querySelector('.bsalv:not(.bletto),.besalv:not(.bletto)');
-      if(sb){sb.textContent='♥ Salvato';sb.classList.add('on');}
+    if(nuovo){
+      const r=await fetch('/api/letti',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({titolo:libro.titolo,autore:libro.autore||'',url_opac:url,biblioteca:G.bib})});
+      if(!r.ok){const e=await r.json();throw new Error(e.error);}
+      G.letti.add(url);btn.textContent='✓ Letto';btn.classList.add('on');
+    }else{
+      const r=await fetch(`/api/letti/${encodeURIComponent(url)}`,{method:'DELETE'});
+      if(!r.ok)throw new Error('delete failed');
+      G.letti.delete(url);btn.textContent='○ Segna come letto';btn.classList.remove('on');
     }
-    // Recupera id dal db aggiornato
-    const r=await fetch('/api/salvati');const d=await r.json();
-    const it=d.find(s=>s.url_opac===url);
-    if(!it)return;
-    await fetch(`/api/salvati/${it.id}/letto`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({letto:nuovo?1:0})});
-    if(nuovo){G.letti.add(url);btn.textContent='✓ Letto';btn.classList.add('on');}
-    else{G.letti.delete(url);btn.textContent='○ Segna come letto';btn.classList.remove('on');}
-  }catch(e){console.error('togLetto error',e);}
+  }catch(e){console.error('togLetto',e);}
 }
 function renderRis(data){
   const{query,biblioteca,risultati}=data;
@@ -1117,19 +1112,20 @@ function aggiornaUIProf(){
 async function caricaProf(){
   if(!G.u)return;aggiornaUIProf();
   try{
-    const r=await fetch('/api/salvati');const sav=await r.json();
+    const[rs,rl]=await Promise.all([fetch('/api/salvati'),fetch('/api/letti')]);
+    const sav=await rs.json(),lett=await rl.json();
     G.salv=new Set(sav.map(s=>s.url_opac));
-    G.letti=new Set(sav.filter(s=>s.letto).map(s=>s.url_opac));
-    const letti=sav.filter(s=>s.letto==1||s.letto===true),tutti=sav;
+    G.letti=new Set(lett.map(s=>s.url_opac));
     const ml=document.getElementById('p-mialib');
-    ml.innerHTML=letti.length?letti.map(s=>`<div class="wi"><div class="wdot ${s.disponibile?'dv':'do'}"></div><div class="wbod"><div class="wtt">${s.titolo}</div>${s.autore?`<div class="wat">${s.autore}</div>`:''}<div class="wmt">${s.biblioteca}</div></div><button class="bdel" title="Segna come non letto" onclick="toglLettoProf(${s.id},this)">↺</button></div>`).join(''):'<div class="vp">Nessun libro segnato come letto.</div>';
+    ml.innerHTML=lett.length?lett.map(s=>`<div class="wi"><div class="wdot dv"></div><div class="wbod"><div class="wtt">${s.titolo}</div>${s.autore?`<div class="wat">${s.autore}</div>`:''}<div class="wmt">${s.biblioteca}</div></div><button class="bdel" title="Rimuovi dai letti" onclick="toglLettoProf('${encodeURIComponent(s.url_opac)}',this)">↺</button></div>`).join(''):'<div class="vp">Nessun libro segnato come letto.</div>';
     const mi=document.getElementById('p-imper');
-    mi.innerHTML=tutti.length?tutti.map(s=>`<div class="wi"><div class="wdot ${s.letto?'dv':'do'}"></div><div class="wbod"><div class="wtt">${s.titolo}</div>${s.autore?`<div class="wat">${s.autore}</div>`:''}<div class="wmt">${s.biblioteca}${s.letto?' · letto':''}</div></div><button class="bdel" onclick="delSalv(${s.id},this)">✕</button></div>`).join(''):'<div class="vp">Nessun libro salvato ancora.</div>';
-  }catch{}
+    mi.innerHTML=sav.length?sav.map(s=>`<div class="wi"><div class="wdot ${G.letti.has(s.url_opac)?'dv':'do'}"></div><div class="wbod"><div class="wtt">${s.titolo}</div>${s.autore?`<div class="wat">${s.autore}</div>`:''}<div class="wmt">${s.biblioteca}${G.letti.has(s.url_opac)?' · letto':''}</div></div><button class="bdel" onclick="delSalv(${s.id},this)">✕</button></div>`).join(''):'<div class="vp">Nessun libro salvato ancora.</div>';
+  }catch(e){console.error('caricaProf',e);}
 }
-async function toglLettoProf(id,btn){
-  await fetch(`/api/salvati/${id}/letto`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({letto:0})});
-  await caricaSalv();await caricaProf();
+async function toglLettoProf(urlEnc,btn){
+  await fetch(`/api/letti/${urlEnc}`,{method:'DELETE'});
+  btn.closest('.wi').remove();
+  await caricaSalv();
 }
 async function delSalv(id,btn){await fetch(`/api/salvati/${id}`,{method:'DELETE'});btn.closest('.wi').remove();await caricaSalv();await caricaProf();}
 async function salvaProfilo(){
