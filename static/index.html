@@ -263,9 +263,13 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
 .cln:hover{text-decoration:underline}
 
 /* ATLANTE MAPPA */
-.mpla{height:200px;background:linear-gradient(135deg,var(--bosco-3),var(--bosco-2));display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:rgba(255,255,255,.4)}
-.mpla span{font-size:2rem}
-.mpla p{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
+.mapwrap{background:#fff;border-radius:var(--r);box-shadow:var(--sh-s);overflow:hidden;padding:10px}
+.mapwrap svg{width:100%;height:auto;display:block}
+.mapnaz{fill:var(--av3);stroke:#fff;stroke-width:.4;transition:fill .2s}
+.mapnaz.attiva{fill:var(--bosco-2);cursor:pointer}
+.mapnaz.attiva:hover,.mapnaz.attiva.sel{fill:var(--oro)}
+.mapinfo{margin-top:14px}
+.maphint{font-size:.8rem;color:#aaa;font-style:italic;text-align:center;padding:8px 0}
 
 /* LAPIDES */
 .lapi{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--av2)}
@@ -575,9 +579,11 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
     </div>
     <div class="psez">
       <div class="sh3">🗺️ Mappa del mondo letterario</div>
-      <div style="background:#fff;border-radius:var(--r);box-shadow:var(--sh-s);overflow:hidden;margin-bottom:4px">
-        <div class="mpla"><span>🗺️</span><p>Mappa interattiva in arrivo</p></div>
-        <div style="padding:12px 16px"><p style="font-size:.8rem;color:#aaa;font-style:italic">La mappa interattiva delle nazioni con autori e opere apparirà qui.</p></div>
+      <div class="mapwrap">
+        <svg id="mapsvg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <div id="mapinfo" class="mapinfo">
+        <p class="maphint">Tocca una nazione evidenziata per scoprire un autore e le sue opere.</p>
       </div>
     </div>
   </div>
@@ -795,7 +801,7 @@ function vai(id,sub){
   if(id==='sprof')caricaProf();
   if(id==='smnem')caricaMnem();
   if(id==='sclio')avviaClio();
-  if(id==='satlante'&&!_atlAvv){_atlAvv=true;caricaCas();caricaAut();}
+  if(id==='satlante'&&!_atlAvv){_atlAvv=true;caricaCas();caricaAut();initMappa();}
   window.scrollTo(0,0);
 }
 function switchTab(id){document.querySelectorAll('.ntab').forEach(t=>t.classList.toggle('on',t.dataset.s===id));tap('light');vai(id);}
@@ -1100,6 +1106,67 @@ async function caricaAut(){
     el.innerHTML=`<div class="ec"><div class="ech"><div class="ecl">✍️ Autore del momento</div><div class="autn">${nome}</div><div class="auts">${d.opere?.length||0} opere nel catalogo RBBC</div></div><div class="oplist">${ops}</div></div>`;
   }catch{el.innerHTML='<div class="er">Non è stato possibile caricare un autore.</div>';}
   finally{if(btn){btn.disabled=false;if(sp)sp.className='';}}
+}
+
+/* MAPPA DEL MONDO LETTERARIO */
+const NAZIONI=[
+  {id:'it',nome:'Italia',d:'M205 78 L212 76 L216 82 L214 92 L210 100 L206 108 L202 100 L200 90 L203 84 Z',autori:[
+    {a:'Italo Calvino',o:'Le città invisibili'},{a:'Umberto Eco',o:'Il nome della rosa'},{a:'Elsa Morante',o:'La storia'}]},
+  {id:'fr',nome:'Francia',d:'M178 62 L196 60 L200 70 L194 80 L182 82 L172 74 L174 64 Z',autori:[
+    {a:'Victor Hugo',o:'I miserabili'},{a:'Marcel Proust',o:'Alla ricerca del tempo perduto'},{a:'Albert Camus',o:'Lo straniero'}]},
+  {id:'es',nome:'Spagna',d:'M156 78 L176 76 L180 86 L170 94 L154 92 L150 84 Z',autori:[
+    {a:'Miguel de Cervantes',o:'Don Chisciotte'},{a:'Carlos Ruiz Zafón',o:"L'ombra del vento"}]},
+  {id:'uk',nome:'Regno Unito',d:'M168 38 L178 36 L182 46 L176 56 L166 54 L162 46 Z',autori:[
+    {a:'Jane Austen',o:'Orgoglio e pregiudizio'},{a:'George Orwell',o:'1984'},{a:'Virginia Woolf',o:'Gita al faro'}]},
+  {id:'de',nome:'Germania',d:'M198 44 L214 42 L218 52 L210 62 L196 60 L194 50 Z',autori:[
+    {a:'Franz Kafka',o:'La metamorfosi'},{a:'Thomas Mann',o:'La montagna magica'},{a:'Hermann Hesse',o:'Siddharta'}]},
+  {id:'ru',nome:'Russia',d:'M240 28 L320 24 L330 56 L300 70 L250 64 L236 46 Z',autori:[
+    {a:'Fëdor Dostoevskij',o:'Delitto e castigo'},{a:'Lev Tolstoj',o:'Guerra e pace'},{a:'Anton Čechov',o:'Racconti'}]},
+  {id:'us',nome:'Stati Uniti',d:'M40 56 L100 50 L112 68 L96 86 L52 88 L34 72 Z',autori:[
+    {a:'Mark Twain',o:'Le avventure di Huckleberry Finn'},{a:'Toni Morrison',o:'Beloved'},{a:'Ernest Hemingway',o:'Il vecchio e il mare'}]},
+  {id:'br',nome:'Brasile',d:'M90 130 L120 126 L130 150 L112 172 L90 166 L82 146 Z',autori:[
+    {a:'Jorge Amado',o:'Gabriela, garofano e cannella'},{a:'Clarice Lispector',o:"L'ora della stella"}]},
+  {id:'ar',nome:'Argentina',d:'M88 172 L106 168 L112 196 L98 210 L86 200 Z',autori:[
+    {a:'Jorge Luis Borges',o:'Finzioni'},{a:'Julio Cortázar',o:'Rayuela'}]},
+  {id:'jp',nome:'Giappone',d:'M340 64 L352 60 L358 70 L352 80 L342 78 L338 70 Z',autori:[
+    {a:'Haruki Murakami',o:'Norwegian Wood'},{a:'Yukio Mishima',o:"Il padiglione d'oro"}]},
+  {id:'cn',nome:'Cina',d:'M296 50 L334 44 L344 64 L324 76 L300 72 L292 60 Z',autori:[
+    {a:'Lu Xun',o:'Diario di un pazzo'},{a:'Yu Hua',o:'Vivere!'}]},
+  {id:'eg',nome:'Egitto',d:'M208 96 L226 94 L230 108 L218 116 L206 110 Z',autori:[
+    {a:'Naguib Mahfouz',o:'Il Cairo nuovo'}]},
+  {id:'gr',nome:'Grecia',d:'M218 80 L228 78 L230 86 L222 90 L216 86 Z',autori:[
+    {a:'Nikos Kazantzakis',o:'Zorba il greco'},{a:'Omero',o:"L'Odissea"}]},
+  {id:'in',nome:'India',d:'M270 84 L292 80 L298 100 L284 116 L270 108 L266 94 Z',autori:[
+    {a:'Rabindranath Tagore',o:'Gitanjali'},{a:'Arundhati Roy',o:'Il dio delle piccole cose'}]},
+  {id:'co',nome:'Colombia',d:'M76 130 L92 128 L96 142 L84 150 L74 142 Z',autori:[
+    {a:'Gabriel García Márquez',o:'Cent\u2019anni di solitudine'}]},
+];
+
+let _mapInit=false;
+function initMappa(){
+  if(_mapInit)return;_mapInit=true;
+  const svg=document.getElementById('mapsvg');
+  if(!svg)return;
+  // sfondo continenti generico (silhouette semplificata neutra)
+  const bg=document.createElementNS('http://www.w3.org/2000/svg','rect');
+  bg.setAttribute('x','0');bg.setAttribute('y','0');bg.setAttribute('width','400');bg.setAttribute('height','200');
+  bg.setAttribute('fill','var(--av2)');
+  svg.appendChild(bg);
+  NAZIONI.forEach(n=>{
+    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d',n.d);
+    p.setAttribute('class','mapnaz attiva');
+    p.setAttribute('data-id',n.id);
+    p.addEventListener('click',()=>selNazione(n,p));
+    svg.appendChild(p);
+  });
+}
+function selNazione(n,el){
+  document.querySelectorAll('.mapnaz').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel');
+  const info=document.getElementById('mapinfo');
+  const ops=n.autori.map(a=>`<div class="opi"><div class="opb"><div class="opt">${a.a}</div><div style="font-size:.78rem;color:#999;font-style:italic;font-family:'Cormorant Garamond',serif">${a.o}</div></div></div>`).join('');
+  info.innerHTML=`<div class="ec"><div class="ech"><div class="ecl">📍 ${n.nome}</div><div class="autn" style="font-size:1.1rem">Autori da scoprire</div></div><div class="oplist">${ops}</div></div>`;
 }
 
 /* CLIO */
