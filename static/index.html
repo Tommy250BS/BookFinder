@@ -1296,7 +1296,64 @@ const TUTTI_BADGE=[
   {id:'seicento',         ico:'🔭', nome:'Illuminato',                  desc:'Costellazione 600-700 completata'},
   {id:'ottocento',        ico:'📖', nome:'Romantico',                   desc:'Costellazione Ottocento completata'},
   {id:'novecento',        ico:'✒️', nome:'Moderno',                     desc:'Costellazione Novecento completata'},
+  {id:'viaggiatore',      ico:'🧳', nome:'Viaggiatore',                  desc:'Letture da 5 paesi diversi'},
+  {id:'navigatore',       ico:'⛵', nome:'Navigatore',                   desc:'Letture da 10 paesi diversi'},
+  {id:'cartografo',       ico:'🧭', nome:'Cartografo',                   desc:'Letture da 25 paesi diversi'},
+  {id:'cosmopolita',      ico:'🌍', nome:'Cosmopolita',                  desc:'Letture da 50 paesi diversi'},
+  {id:'transiberiana',    ico:'🚂', nome:'Transiberiana',                desc:'5 autori russi letti'},
+  {id:'via_seta',         ico:'🐫', nome:'Via della Seta',               desc:'Opere da almeno 5 paesi asiatici'},
+  {id:'mediterraneo',     ico:'⛴️', nome:'Giro del Mediterraneo',        desc:'Italia, Grecia, Turchia, Libano, Egitto, Marocco, Spagna'},
+  {id:'custode_tempo',    ico:'⏳', nome:'Custode del Tempo',            desc:'Almeno un\'opera letta per ogni costellazione'},
+  {id:'torre_babele',     ico:'🗝️', nome:'Torre di Babele',              desc:'Opere lette in 5 lingue originali diverse'},
+  {id:'accademia_svezia', ico:'🏅', nome:'Accademia di Svezia',          desc:'20 autori Nobel letti'},
+  {id:'pantocratore',     ico:'👑', nome:'Pantocratore delle Lettere',   desc:'Tutte le costellazioni completate'},
+  {id:'eterno_pellegrino',ico:'🕊️', nome:'Eterno pellegrino',           desc:'Letture da tutti i paesi della mappa'},
+  {id:'alessandria_bibliotecario',ico:'📜', nome:'Bibliotecario di Alessandria', desc:'250 libri letti'},
+  {id:'biblioteca_babele',ico:'🌌', nome:'Biblioteca di Babele',         desc:'Tutti i badge ottenuti'},
 ];
+
+/* Liste di supporto per nuovi badge */
+const PAESI_ASIATICI=['Russia','Japan','China','India','Iran','South Korea','Vietnam','Indonesia','Malaysia','Philippines','Uzbekistan','Lebanon','Syria','Israel','Iraq','Saudi Arabia','Turkey','Afghanistan','Georgia','Armenia'];
+const PAESI_MEDITERRANEO=['Italy','Greece','Turkey','Lebanon','Egypt','Morocco','Spain'];
+const LINGUE_NAZIONE={
+  'Italy':'Italiano','France':'Francese','Spain':'Spagnolo','United Kingdom':'Inglese','Germany':'Tedesco',
+  'Russia':'Russo','United States of America':'Inglese','Brazil':'Portoghese','Argentina':'Spagnolo','Japan':'Giapponese',
+  'China':'Cinese','Egypt':'Arabo','Greece':'Greco antico','India':'Bengali/Inglese','Colombia':'Spagnolo',
+  'Portugal':'Portoghese','Ireland':'Inglese','Poland':'Polacco','Norway':'Norvegese','Hungary':'Ungherese',
+  'Turkey':'Turco','Mexico':'Spagnolo','Chile':'Spagnolo','Iran':'Persiano','South Korea':'Coreano',
+  'Czech Republic':'Ceco','Austria':'Tedesco','Romania':'Rumeno','Serbia':'Serbo','Denmark':'Danese',
+  'Afghanistan':'Pashtu','Lebanon':'Arabo','Syria':'Arabo','Israel':'Ebraico','Iraq':'Arabo',
+  'Saudi Arabia':'Arabo','Uzbekistan':'Uzbeko','Vietnam':'Vietnamita','Indonesia':'Indonesiano','Malaysia':'Malese',
+  'Philippines':'Filippino','South Africa':'Inglese','Kenya':'Inglese','Algeria':'Francese','Senegal':'Francese',
+  'Ethiopia':'Amarico','Peru':'Spagnolo','Cuba':'Spagnolo','Nigeria':'Inglese','Tanzania':'Swahili',
+  'Sweden':'Svedese','Finland':'Finlandese','Netherlands':'Olandese','Belgium':'Francese','Switzerland':'Tedesco',
+  'Ukraine':'Ucraino','Belarus':'Bielorusso','Croatia':'Croato','Slovenia':'Sloveno','Bulgaria':'Bulgaro',
+  'Slovakia':'Slovacco','Lithuania':'Lituano','Latvia':'Lettone','Estonia':'Estone','Georgia':'Georgiano',
+  'Armenia':'Armeno','Morocco':'Arabo','Tunisia':'Arabo','Ghana':'Inglese','Zimbabwe':'Inglese',
+  'Venezuela':'Spagnolo','Uruguay':'Spagnolo'
+};
+/* Costellazioni Antichità: latino/greco antico esplicitamente */
+const LINGUE_COSTELLAZIONE_ANTICHITA={
+  odissea:'Greco antico',iliade:'Greco antico',eneide:'Latino',simposio:'Greco antico',poetica:'Greco antico',
+  storie:'Greco antico',edipo:'Greco antico',repubbl:'Greco antico',ars:'Latino',georgiche:'Latino'
+};
+/* Autori Nobel per la letteratura (lista parziale ma estesa per i match presenti) */
+const AUTORI_NOBEL=['Toni Morrison','Ernest Hemingway','Gabriel García Márquez','Pablo Neruda','Albert Camus',
+  'Wisława Szymborska','Imre Kertész','Mario Vargas Llosa','Naguib Mahfouz','Kazuo Ishiguro','Doris Lessing',
+  'Günter Grass','José Saramago','Nadine Gordimer','J.M. Coetzee','Wole Soyinka','Octavio Paz','Czesław Miłosz',
+  'Elias Canetti','Isaac Bashevis Singer','Saul Bellow','Vicente Aleixandre','Eugenio Montale','Odysseas Elytis',
+  'Gao Xingjian','Orhan Pamuk','Herta Müller','Mo Yan','Svetlana Aleksievič','Olga Tokarczuk','Abdulrazak Gurnah',
+  'Han Kang','Bob Dylan','Rabindranath Tagore','William Faulkner','John Steinbeck','Pearl Buck','Thomas Mann',
+  'Hermann Hesse','André Gide','François Mauriac','Boris Pasternak','Mikhail Sholokhov','Samuel Beckett',
+  'Pär Lagerkvist','Halldór Laxness','Selma Lagerlöf','Henrik Pontoppidan','Karl Gjellerup','Sigrid Undset',
+  'Knut Hamsun','Bjørnstjerne Bjørnson','George Bernard Shaw','William Butler Yeats','Rudyard Kipling',
+  'Anatole France','Romain Rolland','Carl Spitteler','Sully Prudhomme','José Echegaray','Frédéric Mistral',
+  'Giosuè Carducci','Rudolf Christoph Eucken','Verner von Heidenstam','Maurice Maeterlinck','Gerhart Hauptmann',
+  'Paul Heyse','Theodor Mommsen','Sully'];
+function autLetto(nomeAutore){
+  if(!G.lettiData?.length)return false;
+  return G.lettiData.some(l=>autMatch(nomeAutore,l.autore));
+}
 
 /* Badge: cache in memoria (fonte: API se loggato, localStorage se ospite) */
 let _badgeCache=null;
@@ -1350,6 +1407,48 @@ async function renderPantheon(){
       const completed=ep.stars.every(s=>lit.has(s.id));
       if(completed)unlockBadge(ep.badge);
     });
+    // Custode del Tempo: almeno una stella accesa per costellazione
+    if(COSTELLAZIONI.every(ep=>ep.stars.some(s=>lit.has(s.id))))unlockBadge('custode_tempo');
+    // Pantocratore: tutte le costellazioni complete
+    if(COSTELLAZIONI.every(ep=>ep.stars.every(s=>lit.has(s.id))))unlockBadge('pantocratore');
+    // Torre di Babele: 5 lingue originali diverse (incl. costellazione Antichità)
+    const lingue=new Set();
+    G.lettiData.forEach(l=>{
+      Object.entries(NAZIONI).forEach(([key,info])=>{
+        if(info.autori.some(a=>autMatch(a.a,l.autore))&&LINGUE_NAZIONE[key])lingue.add(LINGUE_NAZIONE[key]);
+      });
+    });
+    COSTELLAZIONI.forEach(ep=>ep.stars.forEach(s=>{
+      if(lit.has(s.id)&&LINGUE_COSTELLAZIONE_ANTICHITA[s.id])lingue.add(LINGUE_COSTELLAZIONE_ANTICHITA[s.id]);
+    }));
+    if(lingue.size>=5)unlockBadge('torre_babele');
+    // Accademia di Svezia: 20 autori Nobel letti
+    const nobelLetti=AUTORI_NOBEL.filter(n=>autLetto(n)).length;
+    if(nobelLetti>=20)unlockBadge('accademia_svezia');
+    // Transiberiana: 5 autori russi letti
+    const russiLetti=new Set();
+    (NAZIONI['Russia']?.autori||[]).forEach(a=>{if(autLetto(a.a))russiLetti.add(a.a);});
+    if(russiLetti.size>=5)unlockBadge('transiberiana');
+    // Paesi "visitati" tramite letture
+    const paesiVisitati=Object.keys(getLettiPerNazione());
+    const nPaesi=paesiVisitati.length;
+    if(nPaesi>=5)unlockBadge('viaggiatore');
+    if(nPaesi>=10)unlockBadge('navigatore');
+    if(nPaesi>=25)unlockBadge('cartografo');
+    if(nPaesi>=50)unlockBadge('cosmopolita');
+    if(nPaesi>=Object.keys(NAZIONI).length)unlockBadge('eterno_pellegrino');
+    // Via della Seta: almeno 5 paesi asiatici visitati
+    if(PAESI_ASIATICI.filter(p=>paesiVisitati.includes(p)).length>=5)unlockBadge('via_seta');
+    // Giro del Mediterraneo: tutti i paesi richiesti
+    if(PAESI_MEDITERRANEO.every(p=>paesiVisitati.includes(p)))unlockBadge('mediterraneo');
+    // Bibliotecario di Alessandria: 250 libri letti
+    if(G.lettiData.length>=250)unlockBadge('alessandria_bibliotecario');
+  }
+  // Biblioteca di Babele: tutti gli altri badge ottenuti
+  {
+    const unl0=getBadgeUnlocked();
+    const altri=TUTTI_BADGE.filter(b=>b.id!=='biblioteca_babele');
+    if(altri.every(b=>unl0.has(b.id)))unlockBadge('biblioteca_babele');
   }
   const unl=getBadgeUnlocked();
   gr.innerHTML=TUTTI_BADGE.map(b=>{
