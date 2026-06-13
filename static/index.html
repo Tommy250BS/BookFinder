@@ -805,7 +805,7 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
 <script>
 if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
-let G={u:null,bib:'',salv:new Set(),letti:new Set(),lettiData:[]};
+let G={u:null,bib:'',letti:new Set(),lettiData:[]};
 
 const BIBS=["Acquafredda","Adro","Agnadello","Agnosine","Anfo","Angolo Terme","Annicco","Artogne","Azzano Mella","Bagnolo Cremasco","Bagnolo Mella","Bagolino","Barbariga","Barghe","Bassano Bresciano","Bedizzole","Berlingo","Berzo Demo","Berzo Inferiore","Bienno","Bione","Bonemerse","Borgo San Giacomo","Borgosatollo","Borno","Botticino","Bovegno","Bovezzo","Brandico","Braone","Breno","Brescia - Abba-Ballini","Brescia - Archivio Storico","Brescia - Arnaldo","Brescia - Bibliobus","Brescia - Buffalora","Brescia - Canton Mombello","Brescia - Casazza","Brescia - Centro Casa Severino","Brescia - Emeroteca Queriniana","Brescia - Fondazione Trebeschi","Brescia - Gambara","Brescia - Ghetti","Brescia - Golgi","Brescia - La Vetrina","Brescia - Largo Torrelunga","Brescia - Mediateca Queriniana","Brescia - Museo Scienze Naturali","Brescia - Parco Gallo","Brescia - Prealpino","Brescia - Queriniana","Brescia - San Polo","Brescia - SBU","Brescia - Sereno","Brescia - UAU","Brione","Caino","Calcinato","Calvagese D-R","Calvatone","Calvisano","Camisano","Capergnanica","Capo Di Ponte","Capovalle","Capralba","Capriano Del Colle","Capriolo","Carpenedolo","Casalbuttano","Casale Cremasco Vidolasco","Casaletto Ceredano","Casaletto Vaprio","Casalmaggiore","Casalpusterlengo","Castegnato","Castel Mella","Castelcovati","Castelleone","Castello Di Padernello","Castelverde","Castenedolo","Casto","Castrezzato","Cazzago SM","Cedegolo","Cellatica","Centro Fumetto A. Pazienza","Centro Studi RSI Salò","Cerveno","Ceto","Cevo","Chiari","Chieve","Cigole","Cimbergo","Cingia De' Botti","Cividate Camuno","Clusane","Coccaglio","Collebeato","Collio","Cologne","Comezzano - Cizzago","Concesio","Corte De' Frati","Corte Franca","Corteno Golgi","Corzano","Credera Rubbiano","Crema","Crema - Museo","Cremona - Anguissola","Cremona - CDA","Cremona - Manin","Darfo Boario Terme","Dello","Desenzano","Dovera","Edolo","Elnos","Erbusco","Esine","Fiesco","Fiesse","Flero","Gadesco Pieve Delmona","Gambara","Gardone Riviera","Gardone Val Trompia","Gargnano","Gavardo","Genivolta","Ghedi","Gianico","Gottolengo","Grontardo","Grumello Cremonese","Gussago","Gussola","Idro","Incudine","Irma","Iseo","Isola Dovarese","Isorella","Izano","Lavenone","Leno","Limone Sul Garda","Lodrino","Lograto","Lonato Del Garda","Longhena","Losine","Lozio","Lumezzane","Maclodio","Madignano","Magasa","Mairano","Malegno","Malonno","Manerba Del Garda","Manerbio","Marcheno","Marmentino","Marone","Martignana Di Po","Mazzano","Milzano","Moniga Del Garda","Monno","Monte Cremasco","Monte Isola","Monticelli Brusati","Montichiari","Montirone","Montodine","Mura","Muscoline","Nave","Niardo","Nuvolento","Nuvolera","Odolo","Offanengo","Offlaga","Ome","Ono San Pietro","Orzinuovi","Orzivecchi","Ospitaletto","Ostiano","Padenghe Sul Garda","Paderno FC","Paderno Ponchielli","Paitone","Palazzo Pignano","Palazzolo Sull'Oglio","Pandino","Paratico","Passirano","Pavone Del Mella","Persico Dosimo","Pertica Alta","Pertica Bassa","Pescarolo Ed Uniti","Pezzaze","Piadena Drizzona","Pian Camuno","Piancogno","Pianengo","Pisogne","Pizzighettone","Polaveno","Polpenazze Del Garda","Pompiano","Poncarale","Ponte Di Legno","Pontevico","Pontoglio","Pozzolengo","Pralboino","Preseglie","Prestine","Prevalle","Provaglio D'Iseo","Provaglio VS","Puegnago Del Garda","Quinzano D'Oglio","Remedello","Rezzato","Ricengo","Ripalta Cremasca","Rivarolo Del Re","Rivolta D'Adda","Roccafranca","Rodengo Saiano","Roè Volciano","Romanengo","Roncadelle","Rovato","Rudiano","Sabbio Chiese","Sale Marasino","Salò","San Bassano","San Daniele Po","San Felice Del Benaco","San Gervasio Bresciano","San Giovanni In Croce","San Paolo","San Zeno Naviglio","Sarezzo","Saviore Dell'Adamello","Sellero","Seniga","Sergnano","Serle","Sesto Ed Uniti","Sirmione","Soiano Del Lago","Solarolo Rainerio","Soncino","Sonico","Soresina","Sospiro","Spino D'Adda","Sulzano","Tavernole Sul Mella","Temù","Tignale","Torbole Casaglia","Tornata","Torre De' Picenardi","Torricella Del Pizzo","Toscolano Maderno","Travagliato","Tremosine","Trenzano","Trescore Balneario","Trescore Cremasco","Treviso Bresciano","Urago D'Oglio","Vallio Terme","Valvestino","Verolanuova","Verolavecchia","Vestone","Vezza D'Oglio","Villa Carcina","Villanuova Sul Clisi","Visano","Vobarno","Zone"];
 
@@ -997,7 +997,7 @@ async function doReg(){
   const d=await r.json();if(!r.ok)return errA(d.error||'Errore.');
   G.u=d;G.bib=d.biblioteca;await caricaSalv();attivaApp(d.biblioteca);
 }
-async function doLogout(){tap('heavy');await fetch('/api/auth/logout',{method:'POST'});G.u=null;G.bib='';G.salv=new Set();vai('sw');}
+async function doLogout(){tap('heavy');await fetch('/api/auth/logout',{method:'POST'});G.u=null;G.bib='';vai('sw');}
 function usaSenza(){G.u=null;vai('sbib');}
 
 setupAC('gb','ddg',n=>{G.bib=n||'';document.getElementById('bbOk').disabled=!n;});
@@ -1057,30 +1057,9 @@ function dC(s){s=s.toLowerCase();if(s.includes('scaffale')||s.includes('disponib
 async function caricaSalv(){
   if(!G.u)return;
   try{
-    const[rs,rl]=await Promise.all([fetch('/api/salvati'),fetch('/api/letti')]);
-    if(rs.ok){const d=await rs.json();G.salv=new Set(d.map(s=>s.url_opac));}
+    const rl=await fetch('/api/letti');
     if(rl.ok){const d=await rl.json();G.letti=new Set(d.map(s=>s.url_opac));G.lettiData=d;}
   }catch(e){console.error('caricaSalv',e);}
-}
-async function togSalv(btn,libro){
-  if(!G.u)return;tap('medium');const url=libro.url;
-  if(G.salv.has(url)){
-    try{
-      const r=await fetch('/api/salvati');const d=await r.json();
-      const it=d.find(s=>s.url_opac===url);
-      if(it){await fetch(`/api/salvati/${it.id}`,{method:'DELETE'});}
-      G.salv.delete(url);btn.textContent='♡ Salva';btn.classList.remove('on');
-    }catch(e){console.error('togSalv del',e);}
-  }else{
-    try{
-      const r=await fetch('/api/salvati',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({titolo:libro.titolo,autore:libro.autore||'',url_opac:url,biblioteca:G.bib,disponibile:libro.disponibile?1:0})});
-      if(!r.ok){const e=await r.json();throw new Error(e.error);}
-      G.salv.add(url);btn.textContent='♥ Salvato';btn.classList.add('on');
-      // Badge: bibliofilo (10 libri salvati)
-      if(G.salv.size>=10){const nu=unlockBadge('bibliofilo');if(nu)showBadgeToast(TUTTI_BADGE.find(b=>b.id==='bibliofilo'));}
-    }catch(e){console.error('togSalv add',e);}
-  }
 }
 async function togLetto(btn,libro){
   if(!G.u)return;tap('medium');const url=libro.url;
@@ -1108,16 +1087,14 @@ function renderRis(data){
   let h=`<div class="iq"><h2>«<strong>${query}</strong>»</h2><span class="bdg">${nB}/${risultati.length} a ${biblioteca}</span></div>`;
   risultati.forEach((lib,i)=>{
     const cl=stC(lib.copie_rezzato),au=lib.autore&&lib.autore!=='—'?lib.autore:'';
-    const sb=G.u?`<button class="bsalv${G.salv.has(lib.url)?' on':''}" data-i="${i}">${G.salv.has(lib.url)?'♥ Salvato':'♡ Salva'}</button>`:'';
     const lt=G.u?`<button class="bsalv bletto${G.letti.has(lib.url)?' on':''}" data-i="${i}">${G.letti.has(lib.url)?'✓ Letto':'○ Segna come letto'}</button>`:'';
     let ch='';
     if(!lib.copie_rezzato?.length)ch=`<div class="ctcop"><span class="assl">Non presente a ${biblioteca}</span></div>`;
     else{const rr=lib.copie_rezzato.map(c=>`<div class="copr"><div class="cdot ${dC(c.stato)}"></div><div class="cb"><div><span class="cc">${c.collocazione}</span><span class="ci">${c.inventario}</span></div><div class="cs">${c.stato}</div>${c.rientra?`<div class="cri">Rientra: ${c.rientra}</div>`:''}</div></div>`).join('');ch=`<div class="ctcop">${rr}</div>`;}
-    h+=`<div class="card ${cl}" style="animation-delay:${i*.04}s" data-i="${i}"><div class="cth"><div class="ctt">${lib.titolo}</div>${au?`<div class="cta">${au}</div>`:''}</div>${G.u?`<div class="ctact">${sb}${lt}</div>`:''}${ch}<a class="cln" href="${lib.url}" target="_blank" rel="noopener">Apri nel catalogo →</a></div>`;
+    h+=`<div class="card ${cl}" style="animation-delay:${i*.04}s" data-i="${i}"><div class="cth"><div class="ctt">${lib.titolo}</div>${au?`<div class="cta">${au}</div>`:''}</div>${G.u?`<div class="ctact">${lt}</div>`:''}${ch}<a class="cln" href="${lib.url}" target="_blank" rel="noopener">Apri nel catalogo →</a></div>`;
   });
   main.innerHTML=h;
   if(G.u){
-    main.querySelectorAll('.bsalv:not(.bletto)').forEach(btn=>{const i=parseInt(btn.dataset.i);btn.addEventListener('click',()=>togSalv(btn,risultati[i]));});
     main.querySelectorAll('.bletto').forEach(btn=>{const i=parseInt(btn.dataset.i);btn.addEventListener('click',()=>togLetto(btn,risultati[i]));});
   }
 }
@@ -1147,13 +1124,11 @@ document.getElementById('it').addEventListener('keydown',e=>{if(e.key==='Enter')
 
 /* ATLANTE */
 function cardEC(libro,label){
-  const s=G.salv.has(libro.url),l=G.letti.has(libro.url);
-  const sb=G.u?`<button class="besalv${s?' on':''}" data-url="${libro.url}" data-t="${(libro.titolo||'').replace(/"/g,'&quot;')}" data-a="${(libro.autore||'').replace(/"/g,'&quot;')}">${s?'♥ Salvato':'♡ Salva'}</button>`:'';
+  const l=G.letti.has(libro.url);
   const lt=G.u?`<button class="besalv bletto${l?' on':''}" data-url="${libro.url}" data-t="${(libro.titolo||'').replace(/"/g,'&quot;')}" data-a="${(libro.autore||'').replace(/"/g,'&quot;')}">${l?'✓ Letto':'○ Segna come letto'}</button>`:'';
-  return`<div class="ec"><div class="ech"><div class="ecl">${label}</div><div class="ect">${libro.titolo}</div>${libro.autore?`<div class="eca">${libro.autore}</div>`:''}</div><div class="ecact"><a class="bopac" href="${libro.url}" target="_blank" rel="noopener">Apri nel catalogo →</a>${sb}${lt}</div></div>`;
+  return`<div class="ec"><div class="ech"><div class="ecl">${label}</div><div class="ect">${libro.titolo}</div>${libro.autore?`<div class="eca">${libro.autore}</div>`:''}</div><div class="ecact"><a class="bopac" href="${libro.url}" target="_blank" rel="noopener">Apri nel catalogo →</a>${lt}</div></div>`;
 }
 function attSalv(c){
-  c.querySelectorAll('.besalv:not(.bletto)').forEach(b=>{if(G.salv.has(b.dataset.url)){b.textContent='♥ Salvato';b.classList.add('on');}b.addEventListener('click',async()=>togSalv(b,{url:b.dataset.url,titolo:b.dataset.t,autore:b.dataset.a}));});
   c.querySelectorAll('.bletto').forEach(b=>{if(G.letti.has(b.dataset.url)){b.textContent='✓ Letto';b.classList.add('on');}b.addEventListener('click',async()=>togLetto(b,{url:b.dataset.url,titolo:b.dataset.t,autore:b.dataset.a}));});
 }
 async function caricaCas(){
@@ -1263,7 +1238,6 @@ function selNazione(name,info,el){
 /* PANTHEON */
 const TUTTI_BADGE=[
   {id:'prima_ricerca',    ico:'📚', nome:'Prima ricerca',    desc:'Hai cercato il tuo primo libro'},
-  {id:'bibliofilo',       ico:'🌟', nome:'Bibliofilo',       desc:'10 libri salvati'},
   {id:'alexandrino',      ico:'🏛️', nome:'Alexandrino',      desc:'50 ricerche nel catalogo'},
   {id:'esploratore',      ico:'🗺️', nome:'Esploratore',      desc:'Visitato Atlante 5 volte'},
   {id:'antichita',        ico:'🏺', nome:'Custode dell\'antichità',    desc:'Costellazione Antichità completata'},
@@ -1618,12 +1592,11 @@ async function caricaMnem(){
   if(!G.u){document.getElementById('mn-noauth').style.display='';document.getElementById('mn-auth').style.display='none';return;}
   document.getElementById('mn-noauth').style.display='none';document.getElementById('mn-auth').style.display='';
   try{
-    const[stR,savR]=await Promise.all([fetch('/api/storico'),fetch('/api/salvati')]);
-    const st=await stR.json(),sav=await savR.json();
-    document.getElementById('mnr').textContent=st.tot_ricerche||0;
-    document.getElementById('mns').textContent=sav.length||0;
-    document.getElementById('mntq').innerHTML=st.top_query?.length?st.top_query.map((q,i)=>`<div class="tqi"><span class="tqr">${i+1}</span><span class="tqq">${q.query}</span><span class="tqn">${q.n}×</span></div>`).join(''):'<div class="vp">Nessuna ricerca ancora.</div>';
-    document.getElementById('mnst').innerHTML=st.ricerche?.length?st.ricerche.map(r=>`<div class="rci"><div><div class="riq">${r.query}</div><div class="rib">${r.biblioteca}</div></div><div class="rim">${r.a_bib}/${r.trovati}<br>${r.cercato_il.slice(0,10)}</div></div>`).join(''):'<div class="vp">Nessuna ricerca ancora.</div>';
+    const stR=await fetch('/api/storico');
+    const st=await stR.json();
+    const mnrEl=document.getElementById('mnr');if(mnrEl)mnrEl.textContent=st.tot_ricerche||0;
+    const mntqEl=document.getElementById('mntq');if(mntqEl)mntqEl.innerHTML=st.top_query?.length?st.top_query.map((q,i)=>`<div class="tqi"><span class="tqr">${i+1}</span><span class="tqq">${q.query}</span><span class="tqn">${q.n}×</span></div>`).join(''):'<div class="vp">Nessuna ricerca ancora.</div>';
+    const mnstEl=document.getElementById('mnst');if(mnstEl)mnstEl.innerHTML=st.ricerche?.length?st.ricerche.map(r=>`<div class="rci"><div><div class="riq">${r.query}</div><div class="rib">${r.biblioteca}</div></div><div class="rim">${r.a_bib}/${r.trovati}<br>${r.cercato_il.slice(0,10)}</div></div>`).join(''):'<div class="vp">Nessuna ricerca ancora.</div>';
   }catch(e){console.error(e);}
   renderMnemoMappa();
   renderPassaporto();
@@ -1732,15 +1705,12 @@ function aggiornaUIProf(){
 async function caricaProf(){
   if(!G.u)return;aggiornaUIProf();
   try{
-    const[rs,rl]=await Promise.all([fetch('/api/salvati'),fetch('/api/letti')]);
-    const sav=await rs.json(),lett=await rl.json();
-    G.salv=new Set(sav.map(s=>s.url_opac));
+    const rl=await fetch('/api/letti');
+    const lett=await rl.json();
     G.letti=new Set(lett.map(s=>s.url_opac));
     G.lettiData=lett;
     const ml=document.getElementById('p-mialib');
     ml.innerHTML=lett.length?lett.map(s=>`<div class="wi"><div class="wdot dv"></div><div class="wbod"><div class="wtt">${s.titolo}</div>${s.autore?`<div class="wat">${s.autore}</div>`:''}<div class="wmt">${s.biblioteca}</div></div><button class="bdel" title="Rimuovi dai letti" onclick="toglLettoProf('${encodeURIComponent(s.url_opac)}',this)">↺</button></div>`).join(''):'<div class="vp">Nessun libro segnato come letto.</div>';
-    const mi=document.getElementById('p-imper');
-    mi.innerHTML=sav.length?sav.map(s=>`<div class="wi"><div class="wdot ${G.letti.has(s.url_opac)?'dv':'do'}"></div><div class="wbod"><div class="wtt">${s.titolo}</div>${s.autore?`<div class="wat">${s.autore}</div>`:''}<div class="wmt">${s.biblioteca}${G.letti.has(s.url_opac)?' · letto':''}</div></div><button class="bdel" onclick="delSalv(${s.id},this)">✕</button></div>`).join(''):'<div class="vp">Nessun libro salvato ancora.</div>';
   }catch(e){console.error('caricaProf',e);}
 }
 async function toglLettoProf(urlEnc,btn){
@@ -1750,7 +1720,6 @@ async function toglLettoProf(urlEnc,btn){
   btn.closest('.wi').remove();
   await caricaSalv();
 }
-async function delSalv(id,btn){await fetch(`/api/salvati/${id}`,{method:'DELETE'});btn.closest('.wi').remove();await caricaSalv();await caricaProf();}
 async function salvaProfilo(){
   const nome=document.getElementById('pni').value.trim();if(!nome)return;
   const r=await fetch('/api/auth/aggiorna',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,biblioteca:G.bib})});
