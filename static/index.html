@@ -580,7 +580,7 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
       <div class="sc" data-c="o" onclick="vai('satlante')">
         <div class="sc-arr">›</div>
         <div class="sc-ico">🗺️</div><div class="sc-nome">Atlante</div>
-        <div class="sc-desc">Esplora il mondo letterario</div><div class="sc-orn">A</div>
+        <div class="sc-desc">Esplora libri e mappa del mondo</div><div class="sc-orn">A</div>
       </div>
       <div class="sc" data-c="r" onclick="vai('spant')">
         <div class="sc-arr">›</div>
@@ -639,6 +639,16 @@ body{font-family:'Inter',sans-serif;background:var(--av);color:var(--ink);min-he
     <div class="etimo">
       <div class="etn">Atlante</div><div class="eto">Dal greco antico · Ἄτλας, Átlas</div>
       <p class="etd ph">Atlante è la porta verso l'ignoto. Esplora opere, autori, paesi e tradizioni letterarie per ampliare i confini della tua biblioteca, oltre le Colonne d'Ercole.</p>
+    </div>
+    <div class="psez">
+      <div class="sh3">🎲 Libro a caso</div>
+      <button class="bric" id="btnCas" onclick="caricaCas()"><span id="spCas">↻</span> Altro libro</button>
+      <div id="ecCas"><div class="ld"><div class="sp"></div><p>Alea iacta est…</p></div></div>
+    </div>
+    <div class="psez">
+      <div class="sh3">✍️ Autore del momento</div>
+      <button class="bric" id="btnAut" onclick="caricaAut()"><span id="spAut">↻</span> Altro autore</button>
+      <div id="ecAut"><div class="ld"><div class="sp"></div><p>Cerco un autore…</p></div></div>
     </div>
     <div class="psez">
       <div class="sh3">🗺️ Mappa del mondo letterario</div>
@@ -1387,6 +1397,21 @@ const COSTELLAZIONI=[
 /* Normalizza titolo/autore per confronto */
 function normLib(s){return norm((s||'').replace(/['']/g,"'")).trim();}
 
+/* Rimuove date <1903-1950> e virgole, restituisce set di parole significative dell'autore */
+function autWords(s){
+  const clean=normLib((s||'').replace(/<[^>]*>/g,' ').replace(/,/g,' '));
+  return new Set(clean.split(/\s+/).filter(w=>w.length>1));
+}
+
+/* Vero se tutte le parole dell'autore "a" (più corto) sono presenti nell'autore "b" */
+function autMatch(a,b){
+  const wa=autWords(a),wb=autWords(b);
+  if(!wa.size||!wb.size)return false;
+  const[small,big]=wa.size<=wb.size?[wa,wb]:[wb,wa];
+  for(const w of small)if(!big.has(w))return false;
+  return true;
+}
+
 /* Stelle accese automaticamente perché il libro corrispondente è tra i "letti" dell'utente */
 function getAutoLitStars(){
   const set=new Set();
@@ -1398,8 +1423,8 @@ function getAutoLitStars(){
         const lt=normLib(l.titolo),la=normLib(l.autore);
         if(!lt)return false;
         const titMatch=lt===st||lt.includes(st)||st.includes(lt);
-        const autMatch=!sa||sa==='anonimo'||la.includes(sa)||sa.includes(la);
-        return titMatch&&autMatch;
+        const aut=!sa||sa==='anonimo'||autMatch(star.a,l.autore);
+        return titMatch&&aut;
       });
       if(match)set.add(star.id);
     });
@@ -1564,12 +1589,7 @@ function getLettiPerNazione(){
   Object.entries(NAZIONI).forEach(([key,info])=>{
     const trovati=[];
     G.lettiData.forEach(l=>{
-      const la=normLib(l.autore);
-      if(!la)return;
-      const match=info.autori.some(a=>{
-        const na=normLib(a.a);
-        return na&&(la.includes(na)||na.includes(la));
-      });
+      const match=info.autori.some(a=>autMatch(a.a,l.autore));
       if(match)trovati.push(l);
     });
     if(trovati.length)out[key]=trovati;
