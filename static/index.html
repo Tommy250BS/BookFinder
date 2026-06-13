@@ -863,8 +863,9 @@ async function avvia(){
   vai('sw');
   try{const r=await fetch('/api/auth/me');const d=await r.json();
     if(d.autenticato){
-      G.u=d;G.bib=d.biblioteca;await caricaSalv(true);
-      verificaBadgeRicerche(true);
+      G.u=d;G.bib=d.biblioteca;
+      await caricaBadge();
+      await caricaSalv();
       document.getElementById('wbtns').style.display='none';
       document.getElementById('wret').style.display='flex';
       document.getElementById('wrett').textContent=`Bentornato, ${d.nome.split(' ')[0]}`;
@@ -986,9 +987,7 @@ async function doLogin(){
   if(!email||!pw)return errA('Inserisci email e password.');
   const r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pw})});
   const d=await r.json();if(!r.ok)return errA(d.error||'Errore login.');
-  G.u=d;G.bib=d.biblioteca;await caricaSalv(true);
-  verificaBadgeRicerche(true);
-  attivaApp(d.biblioteca);
+  G.u=d;G.bib=d.biblioteca;await caricaBadge();await caricaSalv();attivaApp(d.biblioteca);
 }
 async function doReg(){
   tap('medium');
@@ -998,9 +997,9 @@ async function doReg(){
   if(!BIBS.some(b=>b.toLowerCase()===bib.toLowerCase()))return errA("Seleziona una biblioteca dall'elenco.");
   const r=await fetch('/api/auth/registra',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,email,password:pw,biblioteca:bib})});
   const d=await r.json();if(!r.ok)return errA(d.error||'Errore.');
-  G.u=d;G.bib=d.biblioteca;await caricaSalv(true);attivaApp(d.biblioteca);
+  G.u=d;G.bib=d.biblioteca;await caricaBadge();await caricaSalv();attivaApp(d.biblioteca);
 }
-async function doLogout(){tap('heavy');await fetch('/api/auth/logout',{method:'POST'});G.u=null;G.bib='';vai('sw');}
+async function doLogout(){tap('heavy');await fetch('/api/auth/logout',{method:'POST'});G.u=null;G.bib='';_badgeCache=null;vai('sw');}
 function usaSenza(){G.u=null;vai('sbib');}
 
 setupAC('gb','ddg',n=>{G.bib=n||'';document.getElementById('bbOk').disabled=!n;});
@@ -1057,26 +1056,12 @@ function chiudiSh(id,e){if(!e||e.target===document.getElementById(id))document.g
 const main=document.getElementById('main');
 function stC(c){if(!c?.length)return'';const ss=c.map(x=>x.stato.toLowerCase());if(ss.some(s=>s.includes('scaffale')||s.includes('disponib')))return'disp';if(ss.some(s=>s.includes('prestito')))return'prest';return'';}
 function dC(s){s=s.toLowerCase();if(s.includes('scaffale')||s.includes('disponib'))return'dv';if(s.includes('prestito'))return'dr';return'do';}
-async function caricaSalv(rivalutaBadge=false){
+async function caricaSalv(){
   if(!G.u)return;
   try{
     const rl=await fetch('/api/letti');
-    if(rl.ok){
-      const d=await rl.json();
-      G.letti=new Set(d.map(s=>s.url_opac));
-      G.lettiData=d;
-      if(rivalutaBadge)rivalutaBadgeCostellazioni();
-    }
+    if(rl.ok){const d=await rl.json();G.letti=new Set(d.map(s=>s.url_opac));G.lettiData=d;}
   }catch(e){console.error('caricaSalv',e);}
-}
-
-/* Rivaluta tutti i badge costellazione in base ai libri letti attuali (senza toast) */
-function rivalutaBadgeCostellazioni(){
-  if(!G.lettiData?.length)return;
-  const lit=getAutoLitStars();
-  COSTELLAZIONI.forEach(ep=>{
-    if(ep.stars.every(s=>lit.has(s.id)))unlockBadge(ep.badge);
-  });
 }
 async function togLetto(btn,libro){
   if(!G.u)return;tap('medium');const url=libro.url;
@@ -1126,7 +1111,12 @@ async function cerca(){
     if(!r.ok)throw new Error(`Errore ${r.status}`);
     const data=await r.json();
     renderRis(data);
-    // Verifica badge ricerche (prima_ricerca e alexandrino) con toast
+    // Badge: prima ricerca
+    if(G.u&&data.risultati?.length){
+      const nu=unlockBadge('prima_ricerca');
+      if(nu)showBadgeToast(TUTTI_BADGE.find(b=>b.id==='prima_ricerca'));
+    }
+    // Badge: alexandrino (50 ricerche) — controlla storico
     if(G.u)verificaBadgeRicerche();
   }
   catch(e){main.innerHTML=`<div class="er">⚠ ${e.message} — riprova.</div>`;}
@@ -1260,14 +1250,29 @@ const TUTTI_BADGE=[
   {id:'novecento',        ico:'✒️', nome:'Moderno',                     desc:'Costellazione Novecento completata'},
 ];
 
+/* Badge: cache in memoria (fonte: API se loggato, localStorage se ospite) */
+let _badgeCache=null;
+
 function getBadgeUnlocked(){
+  if(_badgeCache)return _badgeCache;
   const raw=localStorage.getItem('rbbc_badge_unlocked');
   try{return new Set(JSON.parse(raw)||[]);}catch{return new Set();}
 }
+
+async function caricaBadge(){
+  if(!G.u){_badgeCache=null;return;}
+  try{
+    const r=await fetch('/api/badge');
+    if(r.ok){const d=await r.json();_badgeCache=new Set(d);}
+  }catch(e){console.error('caricaBadge',e);}
+}
+
 function unlockBadge(id){
   const s=getBadgeUnlocked();
   if(s.has(id))return false;
-  s.add(id);localStorage.setItem('rbbc_badge_unlocked',JSON.stringify([...s]));
+  s.add(id);_badgeCache=s;
+  localStorage.setItem('rbbc_badge_unlocked',JSON.stringify([...s]));
+  if(G.u){fetch('/api/badge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({badge_id:id})}).catch(()=>{});}
   return true;
 }
 
@@ -1278,9 +1283,13 @@ async function renderPantheon(){
     try{const r=await fetch('/api/letti');if(r.ok){const d=await r.json();G.letti=new Set(d.map(s=>s.url_opac));G.lettiData=d;}}
     catch(e){console.error('renderPantheon caricaLetti',e);}
   }
-  // Rivaluta badge costellazioni in base ai libri letti (senza toast — il toast arriva da renderCostellazioni)
+  // Rivaluta badge costellazioni in base ai libri letti
   if(G.u&&G.lettiData?.length){
-    rivalutaBadgeCostellazioni();
+    const lit=getAutoLitStars();
+    COSTELLAZIONI.forEach(ep=>{
+      const completed=ep.stars.every(s=>lit.has(s.id));
+      if(completed)unlockBadge(ep.badge);
+    });
   }
   const unl=getBadgeUnlocked();
   gr.innerHTML=TUTTI_BADGE.map(b=>{
@@ -1565,31 +1574,30 @@ function mostraInfoStella(ep,star,wrap,isAuto){
   `;
 }
 
-/* Verifica badge alexandrino (50 ricerche) e prima_ricerca tramite storico API */
-async function verificaBadgeRicerche(silenzioso=false){
-  const unl=getBadgeUnlocked();
-  const needPrima=!unl.has('prima_ricerca');
-  const needAlex=!unl.has('alexandrino');
-  if(!needPrima&&!needAlex)return;
+/* Verifica badge alexandrino (50 ricerche) tramite storico API */
+async function verificaBadgeRicerche(){
+  if(getBadgeUnlocked().has('alexandrino'))return;
   try{
     const r=await fetch('/api/storico');if(!r.ok)return;
     const d=await r.json();
-    const tot=d.tot_ricerche||0;
-    if(needPrima&&tot>=1){
-      const nu=unlockBadge('prima_ricerca');
-      if(nu&&!silenzioso)showBadgeToast(TUTTI_BADGE.find(b=>b.id==='prima_ricerca'));
-    }
-    if(needAlex&&tot>=50){
-      const nu=unlockBadge('alexandrino');
-      if(nu&&!silenzioso)showBadgeToast(TUTTI_BADGE.find(b=>b.id==='alexandrino'));
-    }
+    if((d.tot_ricerche||0)>=50){const nu=unlockBadge('alexandrino');if(nu)showBadgeToast(TUTTI_BADGE.find(b=>b.id==='alexandrino'));}
   }catch{}
 }
 
-/* Contatore visite Atlante per badge esploratore */
-function incAtlanteVisits(){
-  const n=(parseInt(localStorage.getItem('rbbc_atlante_visits')||'0'))+1;
-  localStorage.setItem('rbbc_atlante_visits',n);
+/* Contatore visite Atlante per badge esploratore (cross-device se loggato) */
+async function incAtlanteVisits(){
+  let n;
+  if(G.u){
+    try{
+      const r=await fetch('/api/badge/atlante-visit',{method:'POST'});
+      if(r.ok){const d=await r.json();n=d.visite;}
+    }catch{}
+  }
+  if(n===undefined){
+    // fallback localStorage per ospiti
+    n=(parseInt(localStorage.getItem('rbbc_atlante_visits')||'0'))+1;
+    localStorage.setItem('rbbc_atlante_visits',n);
+  }
   if(n>=5&&!getBadgeUnlocked().has('esploratore')){
     const nu=unlockBadge('esploratore');
     if(nu)setTimeout(()=>showBadgeToast(TUTTI_BADGE.find(b=>b.id==='esploratore')),400);
