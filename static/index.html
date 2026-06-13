@@ -1179,22 +1179,31 @@ async function caricaAut(){
 
 /* MAPPA DEL MONDO LETTERARIO (D3 + TopoJSON, dati geografici reali) */
 const NAZIONI={
-  'Italy':{autori:[{a:'Italo Calvino',o:'Le città invisibili'},{a:'Umberto Eco',o:'Il nome della rosa'},{a:'Elsa Morante',o:'La storia'}]},
-  'France':{autori:[{a:'Victor Hugo',o:'I miserabili'},{a:'Marcel Proust',o:'Alla ricerca del tempo perduto'},{a:'Albert Camus',o:'Lo straniero'}]},
-  'Spain':{autori:[{a:'Miguel de Cervantes',o:'Don Chisciotte'},{a:'Carlos Ruiz Zafón',o:"L'ombra del vento"}]},
-  'United Kingdom':{nome:'Regno Unito',autori:[{a:'Jane Austen',o:'Orgoglio e pregiudizio'},{a:'George Orwell',o:'1984'},{a:'Virginia Woolf',o:'Gita al faro'}]},
-  'Germany':{nome:'Germania',autori:[{a:'Franz Kafka',o:'La metamorfosi'},{a:'Thomas Mann',o:'La montagna magica'},{a:'Hermann Hesse',o:'Siddharta'}]},
-  'Russia':{autori:[{a:'Fëdor Dostoevskij',o:'Delitto e castigo'},{a:'Lev Tolstoj',o:'Guerra e pace'},{a:'Anton Čechov',o:'Racconti'}]},
-  'United States of America':{nome:'Stati Uniti',autori:[{a:'Mark Twain',o:'Le avventure di Huckleberry Finn'},{a:'Toni Morrison',o:'Beloved'},{a:'Ernest Hemingway',o:'Il vecchio e il mare'}]},
+  'Italy':{autori:[{a:'Italo Calvino',o:'Il barone rampante'},{a:'Umberto Eco',o:'Il nome della rosa'},{a:'Elsa Morante',o:'La storia'},{a:'Dante Alighieri',o:'Divina Commedia'},{a:'Francesco Petrarca',o:'Canzoniere'},{a:'Alessandro Manzoni',o:'I promessi sposi'},{a:'Luigi Pirandello',o:'Il fu Mattia Pascal'}]},
+  'France':{autori:[{a:'François Rabelais',o:'Gargantua e Pantagruele'},{a:'Voltaire',o:'Candido'},{a:'Victor Hugo',o:'I miserabili'},{a:'Marcel Proust',o:'Alla ricerca del tempo perduto'},{a:'Albert Camus',o:'Lo straniero'}]},
+  'Spain':{autori:[{a:'Miguel de Cervantes',o:'Don Chisciotte'},{a:'Federico García Lorca',o:'Nozze di sangue'},{a:'Carlos Ruiz Zafón',o:"L'ombra del vento"}]},
+  'United Kingdom':{nome:'Regno Unito',autori:[{a:'Jane Austen',o:'Orgoglio e pregiudizio'},{a:'Charles Dickens',o:'Grandi speranze'},{a:'George Orwell',o:'1984'},{a:'J.R.R. Tolkien',o:'Il Signore degli Anelli'},{a:'Virginia Woolf',o:'Gita al faro'}]},
+  'Germany':{nome:'Germania',autori:[{a:'Johann Wolfgang von Goethe',o:'Faust'},{a:'Fratelli Grimm',o:'Fiabe'},{a:'Franz Kafka',o:'La metamorfosi'},{a:'Thomas Mann',o:'La montagna magica'},{a:'Hermann Hesse',o:'Siddharta'},{a:'Günter Grass',o:'Il tamburo di latta'}]},
+  'Russia':{autori:[{a:'Nikolaj Gogol',o:'Anime morte'},{a:'Fëdor Dostoevskij',o:'Delitto e castigo'},{a:'Lev Tolstoj',o:'Guerra e pace'},{a:'Anton Čechov',o:'Racconti'},{a:'Michail Bulgakov',o:'Il maestro e Margherita'}]},
+  'United States of America':{nome:'Stati Uniti',autori:[{a:'Mark Twain',o:'Le avventure di Huckleberry Finn'},{a:'Toni Morrison',o:'Beloved'},{a:'Ernest Hemingway',o:'Il vecchio e il mare'},{a:'Herman Melville',o:'Moby Dick'},{a:'Cormac McCarthy',o:'La strada'}]},
   'Brazil':{nome:'Brasile',autori:[{a:'Jorge Amado',o:'Gabriela, garofano e cannella'},{a:'Clarice Lispector',o:"L'ora della stella"}]},
   'Argentina':{autori:[{a:'Jorge Luis Borges',o:'Finzioni'},{a:'Julio Cortázar',o:'Rayuela'}]},
-  'Japan':{nome:'Giappone',autori:[{a:'Haruki Murakami',o:'Norwegian Wood'},{a:'Yukio Mishima',o:"Il padiglione d'oro"}]},
-  'China':{nome:'Cina',autori:[{a:'Lu Xun',o:'Diario di un pazzo'},{a:'Yu Hua',o:'Vivere!'}]},
+  'Japan':{nome:'Giappone',autori:[{a:'Haruki Murakami',o:'Norwegian Wood'},{a:'Kazuo Ishiguro',o:'Non lasciarmi'},{a:'Yukio Mishima',o:"Il padiglione d'oro"}]},
+  'China':{nome:'Cina',autori:[{a:'Lu Xun',o:'Diario di un pazzo'},{a:'Wu Cheng\'en',o:'Il viaggio in Occidente'},{a:'Cao Xueqin',o:'Il sogno della camera rossa'},{a:'Yu Hua',o:'Vivere!'}]},
   'Egypt':{nome:'Egitto',autori:[{a:'Naguib Mahfouz',o:'Il Cairo nuovo'}]},
-  'Greece':{nome:'Grecia',autori:[{a:'Nikos Kazantzakis',o:'Zorba il greco'},{a:'Omero',o:"L'Odissea"}]},
+  'Greece':{nome:'Grecia',autori:[{a:'Nikos Kazantzakis',o:'Zorba il greco'},{a:'Omero',o:"L'Odissea"},{a:'Sofocle',o:'Edipo re'},{a:'Euripide',o:'Medea'},]},
   'India':{autori:[{a:'Rabindranath Tagore',o:'Gitanjali'},{a:'Arundhati Roy',o:'Il dio delle piccole cose'}]},
   'Colombia':{autori:[{a:'Gabriel García Márquez',o:'Cent\u2019anni di solitudine'}]},
-};
+  'Portugal':{nome:'Portogallo',autori:[{a:'Luís de Camões',o:'I Lusiadi'},{a:'Fernando Pessoa',o:'Il libro dell’inquietudine'},{a:'José Saramago',o:'Cecità'}]},
+  'Ireland':{nome:'Irlanda',autori:[{a:'Jonathan Swift',o:'I viaggi di Gulliver'},{a:'W.B. Yeats',o:'Poesie'},{a:'James Joyce',o:'Ulisse'},{a:'Samuel Beckett',o:'Aspettando Godot'}]},
+  'Poland':{nome:'Polonia',autori:[{a:'Adam Mickiewicz',o:'Pan Tadeusz'},{a:'Wisława Szymborska',o:'Poesie'},{a:'Stanisław Lem',o:'Solaris'},{a:'Olga Tokarczuk',o:'I vagabondi'}]},
+  'Norway':{nome:'Norvegia',autori:[{a:'Henrik Ibsen',o:'Casa di bambola'},{a:'Knut Hamsun',o:'Fame'},{a:'Sigrid Undset',o:'Kristin figlia di Lavrans'}]},
+  'Hungary':{nome:'Ungheria',autori:[{a:'Sándor Márai',o:'Le braci'},{a:'Imre Kertész',o:'Essere senza destino'}, {a:'Magda Szabó',o:'La porta'}]},
+  'Turkey':{nome:'Turchia',autori:[{a:'Yunus Emre',o:'Poesie'},{a:'Yaşar Kemal',o:'Memed il falco'},{a:'Orhan Pamuk',o:'Il mio nome è Rosso'}]},
+  'Mexico':{nome:'Messico',autori:[{a:'Juan Rulfo',o:'Pedro Páramo'},{a:'Octavio Paz',o:'Il labirinto della solitudine'}, {a:'Carlos Fuentes',o:'La morte di Artemio Cruz'}]},
+  'Chile':{nome:'Cile',autori:[{a:'Pablo Neruda',o:'Venti poesie d’amore e una canzone disperata'},{a:'Gabriela Mistral',o:'Desolazione'},{a:'Isabel Allende',o:'La casa degli spiriti'}]},
+  'Iran':{nome:'Iran',autori:[{a:'Ferdowsi',o:'Shahnameh'},{a:'Hafez',o:'Divan'},{a:'Jalal al-Din Rumi',o:'Mathnawi'},{a:'Sadegh Hedayat',o:'La civetta cieca'}]},
+  'South Korea':{nome:'Corea del Sud',autori:[ {a:'Kim Man-jung',o:'Il sogno delle nove nuvole'},{a:'Yi Mun-yol',o:'Il nostro eroe decaduto'}, {a:'Han Kang',o:'La vegetariana'}]}};
 
 function retryMappa(){
   _mapInit=false;
