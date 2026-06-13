@@ -164,8 +164,12 @@ def verifica_disponibilita(url, biblioteca):
         return {"titolo": "—", "autore": "—", "copie": []}
     m = re.search(r'<h3[^>]*>\s*([\s\S]*?)\s*</h3>', html)
     titolo = strip_tags(m.group(1)) if m else "—"
-    m = re.search(r'<h4[^>]*>\s*([\s\S]*?)\s*</h4>', html)
-    autore = strip_tags(m.group(1)) if m else "—"
+    autore = "—"
+    for h4 in re.findall(r'<h4[^>]*>\s*([\s\S]*?)\s*</h4>', html):
+        cand = strip_tags(h4)
+        if cand and cand.lower() not in ("login", "aggiungi allo scaffale", "1984 - copie") and not cand.lower().endswith("- copie"):
+            autore = cand
+            break
     copie = []
     for riga in re.findall(r'<tr[\s\S]*?</tr>', html, re.IGNORECASE):
         if not re.search(re.escape(biblioteca), strip_tags(riga), re.IGNORECASE):
