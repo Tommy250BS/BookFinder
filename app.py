@@ -107,6 +107,16 @@ def init_db():
                 ALTER TABLE salvati ADD COLUMN IF NOT EXISTS letto BOOLEAN NOT NULL DEFAULT FALSE;
             """)
 
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS badge (
+                    id SERIAL PRIMARY KEY,
+                    utente_id INTEGER NOT NULL REFERENCES utenti(id),
+                    badge_id VARCHAR(64) NOT NULL,
+                    sbloccato_il TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE (utente_id, badge_id)
+                );
+            """)
+
 init_db()
 
 #  Helpers auth 
@@ -448,6 +458,57 @@ def get_storico():
         "tot_ricerche": totali["tot"] or 0,
         "tot_libri":    totali["libri"] or 0,
     })
+
+#  API Badge
+
+@app.route("/api/badge/atlante-visit", methods=["POST"])
+@login_richiesto
+def atlante_visit():
+    """Incrementa contatore visite Atlante e restituisce il totale."""
+    u = utente_corrente()
+    db = get_db()
+    # Usa una riga speciale nella tabella badge per tracciare il contatore
+    # Strategia: teniamo N righe badge_id='_atlante_1', '_atlante_2' ecc.
+    count = db.execute(
+        "SELECT COUNT(*) as n FROM badge WHERE utente_id=%s AND badge_id LIKE '_atlante_%'",
+        (u["id"],)
+    ).fetchone()["n"]
+    new_count = count + 1
+    db.execute(
+        "INSERT INTO badge (utente_id, badge_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+        (u["id"], f"_atlante_{new_count}")
+    )
+    db.commit()
+    return jsonify({"visite": new_count})
+
+@app.route("/api/badge", methods=["GET"])
+@login_richiesto
+def get_badge():
+    u = utente_corrente()
+    rows = get_db().execute(
+        "SELECT badge_id FROM badge WHERE utente_id=%s", (u["id"],)
+    ).fetchall()
+    return jsonify([r["badge_id"] for r in rows])
+
+@app.route("/api/badge", methods=["POST"])
+@login_richiesto
+def aggiungi_badge():
+    u = utente_corrente()
+    d = request.get_json() or {}
+    badge_id = (d.get("badge_id") or "").strip()
+    if not badge_id:
+        return jsonify({"error": "badge_id mancante"}), 400
+    db = get_db()
+    try:
+        db.execute(
+            "INSERT INTO badge (utente_id, badge_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+            (u["id"], badge_id)
+        )
+        db.commit()
+        return jsonify({"ok": True})
+    except Exception as e:
+        db.rollback()
+        return jsonify({"error": str(e)}), 400
 
 # ── Esplorazione casuale ─────────────────────────────────────────────────────
 
