@@ -1254,9 +1254,22 @@ const TUTTI_BADGE=[
 let _badgeCache=null;
 
 function getBadgeUnlocked(){
-  if(_badgeCache)return _badgeCache;
+  if(G.u) return _badgeCache || new Set();
   const raw=localStorage.getItem('rbbc_badge_unlocked');
   try{return new Set(JSON.parse(raw)||[]);}catch{return new Set();}
+}
+
+function unlockBadge(id){
+  const s=getBadgeUnlocked();
+  if(s.has(id))return false;
+  s.add(id);
+  if(G.u){
+    _badgeCache=s;
+    fetch('/api/badge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({badge_id:id})}).catch(()=>{});
+  }else{
+    localStorage.setItem('rbbc_badge_unlocked',JSON.stringify([...s]));
+  }
+  return true;
 }
 
 async function caricaBadge(){
@@ -1267,15 +1280,14 @@ async function caricaBadge(){
   }catch(e){console.error('caricaBadge',e);}
 }
 
-function unlockBadge(id){
-  const s=getBadgeUnlocked();
-  if(s.has(id))return false;
-  s.add(id);_badgeCache=s;
-  localStorage.setItem('rbbc_badge_unlocked',JSON.stringify([...s]));
-  if(G.u){fetch('/api/badge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({badge_id:id})}).catch(()=>{});}
-  return true;
+async function doLogout(){
+  tap('heavy');
+  await fetch('/api/auth/logout',{method:'POST'});
+  G.u=null;G.bib='';_badgeCache=null;
+  localStorage.removeItem('rbbc_badge_unlocked');
+  vai('sw');
 }
-
+  
 async function renderPantheon(){
   const gr=document.getElementById('pant-bgr');if(!gr)return;
   // Assicura che lettiData sia caricato prima di valutare i badge costellazione
